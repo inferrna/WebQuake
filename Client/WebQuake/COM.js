@@ -153,9 +153,6 @@ COM.InitArgv = function(argv)
 
 COM.Init = function()
 {
-	if ((document.location.protocol !== 'http:') && (document.location.protocol !== 'https:'))
-		Sys.Error('Protocol is ' + document.location.protocol + ', not http: or https:');
-
 	var swaptest = new ArrayBuffer(2);
 	var swaptestview = new Uint8Array(swaptest);
 	swaptestview[0] = 1;
@@ -298,6 +295,7 @@ COM.LoadPackFile = function(packfile)
 {
 	var xhr = new XMLHttpRequest();
 	xhr.overrideMimeType('text/plain; charset=x-user-defined');
+    console.log("trying to get file "+packfile);//NFP
 	xhr.open('GET', packfile, false);
 	xhr.setRequestHeader('Range', 'bytes=0-11');
 	xhr.send();
@@ -339,9 +337,43 @@ COM.LoadPackFile = function(packfile)
 
 COM.AddGameDirectory = function(dir)
 {
+    //"QUAKE/ID1"
+    console.log("dir is "+dir);
+    var retst = new RegExp(dir+'\/?pak\\d?\.pak', "i");
+    var paks = navigator.getDeviceStorage('sdcard');
+    // Let's browse all the files available
+    var cursor = paks.enumerate(dir);
 	var search = {filename: dir, pack: []};
 	var pak, i = 0;
-	for (;;)
+    var readed = false;
+    cursor.onsuccess = function () {
+      var file = this.result;
+      if(retst.test(file.name)){
+          console.log("Pak file found: " + file.name);
+          var request = paks.get(file.name);
+          var reader = new FileReader();
+          reader.addEventListener("loadend", function() {
+             search.pack.push(reader.result);//contains the contents of blob as a typed array
+          });
+          request.onsuccess = function(){reader.readAsArrayBuffer(this.result);};
+          request.onerror = function () { console.warn("Unable to get the file: " + fnm + "got error: '\n    "+this.error); };
+      } else console.log("Non-pak file found: " + file.name);
+      // Once we found a file we check if there is other results
+      if (!this.done) {
+        // Then we move to the next result, which call the cursor
+        // success with the next file as result.
+        this.continue();
+      } else {
+        readed = true;
+        console.log(search.pack.length+" pak files readed");  
+      }
+    }
+
+    cursor.onerror = function () {
+      console.warn("No file found: " + this.error);
+    }
+
+	/*for (;;)
 	{
 		pak = COM.LoadPackFile(dir + '/' + 'pak' + i + '.pak');
 		if (pak == null)
@@ -349,7 +381,7 @@ COM.AddGameDirectory = function(dir)
 		search.pack[search.pack.length] = pak;
 		++i;
 	}
-	COM.searchpaths[COM.searchpaths.length] = search;
+	COM.searchpaths[COM.searchpaths.length] = search;*/
 };
 
 COM.InitFilesystem = function()

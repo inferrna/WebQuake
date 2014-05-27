@@ -1,0 +1,27 @@
+{
+  "version": "0.1",
+  "name": "WebQuake",
+  "launch_path": "/index.html",
+  "description": "Port of quake1 to javascript",
+  "type": "privileged",
+  "default_locale": "en",
+  "icons": {
+    "256": "/images/q256.png",
+    "128": "/images/q128.png",
+    "120": "/images/q120.png",
+    "90": "/images/q90.png",
+    "60": "/images/q60.png",
+    "16": "/images/q16.png"
+  },
+  "developer": {
+    "name": "Inferrna",
+    "url": "http://borgu.org"
+  },
+  "permissions": {
+      "systemXHR": {"description":"For access to translate.google.com"},
+      "device-storage:sdcard": {"access":"readonly", "description":"For access to books in storage"},
+      "tcp-socket":{"description":"For requesting dictd servers"}
+  },
+  "installs_allowed_from": ["*"]
+}
+
