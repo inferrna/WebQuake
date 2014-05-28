@@ -335,7 +335,7 @@ COM.LoadPackFile = function(packfile)
 	return pack;
 };
 
-COM.AddGameDirectory = function(dir)
+COM.AddGameDirectory = function(dir, callback)
 {
     //"QUAKE/ID1"
     console.log("dir is "+dir);
@@ -350,22 +350,30 @@ COM.AddGameDirectory = function(dir)
       var file = this.result;
       if(retst.test(file.name)){
           console.log("Pak file found: " + file.name);
-          var request = paks.get(file.name);
           var reader = new FileReader();
           reader.addEventListener("loadend", function() {
              search.pack.push(reader.result);//contains the contents of blob as a typed array
+             console.log("Succes on read "+file.name);//NFP
           });
-          request.onsuccess = function(){reader.readAsArrayBuffer(this.result);};
+          var request = paks.get(file.name);
+          request.onsuccess = function(){
+                    console.log("Succes on open "+file.name);//NFP
+                    reader.readAsArrayBuffer(file);
+              };
           request.onerror = function () { console.warn("Unable to get the file: " + fnm + "got error: '\n    "+this.error); };
       } else console.log("Non-pak file found: " + file.name);
       // Once we found a file we check if there is other results
       if (!this.done) {
         // Then we move to the next result, which call the cursor
         // success with the next file as result.
+        console.log(search.pack.length+" pak files readed in process");//NFP 
         this.continue();
       } else {
         readed = true;
-        console.log(search.pack.length+" pak files readed");  
+        console.log(search.pack.length+" pak files readed in the end");//NFP
+	    COM.searchpaths.push(search);
+        callback();
+        return;
       }
     }
 
@@ -392,25 +400,31 @@ COM.InitFilesystem = function()
 	if (i != null)
 		search = COM.argv[i + 1];
 	if (search != null)
-		COM.AddGameDirectory(search);
+		COM.AddGameDirectory(search, additionsadd);
 	else
-		COM.AddGameDirectory('id1');
-		
-	if (COM.rogue === true)
-		COM.AddGameDirectory('rogue');
-	else if (COM.hipnotic === true)
-		COM.AddGameDirectory('hipnotic');
-		
-	i = COM.CheckParm('-game');
-	if (i != null)
-	{
-		search = COM.argv[i + 1];
-		if (search != null)
-		{
-			COM.modified = true;
-			COM.AddGameDirectory(search);
-		}
+		COM.AddGameDirectory('id1', additionsadd);
+	function additionsadd(){
+        console.log("COM.InitFilesystem additionsadd()");//NFP
+        if (COM.rogue === true)
+            COM.AddGameDirectory('rogue', gameadd);
+        else if (COM.hipnotic === true)
+            COM.AddGameDirectory('hipnotic', gameadd);
 	}
-
-	COM.gamedir = [COM.searchpaths[COM.searchpaths.length - 1]];
+	function gameadd(){
+        console.log("COM.InitFilesystem gameadd()");//NFP
+        i = COM.CheckParm('-game');
+        if (i != null)
+        {
+            search = COM.argv[i + 1];
+            if (search != null)
+            {
+                COM.modified = true;
+                COM.AddGameDirectory(search, end);
+            }
+        }
+    }
+    function end(){
+        console.log("COM.InitFilesystem end()");//NFP
+	    COM.gamedir = [COM.searchpaths[COM.searchpaths.length - 1]];
+    }
 };
