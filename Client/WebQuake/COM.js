@@ -362,6 +362,9 @@ COM.AddGameDirectory = function(dir, callback)
           var reader = new FileReader();
           reader.addEventListener("loadend", function() {
              search.pack.push(reader.result);//contains the contents of blob as a typed array
+             var arrau = new Uint8Array(reader.result);
+             FS.writeFile(file.name, array, { encoding: 'binary' });
+             //_jsextract(file.name);
              console.log("Succes on read "+file.name);//NFP
              console.log("This done is "+this.error);//NFP
              if(search.pack.length>1) totalsuccess();

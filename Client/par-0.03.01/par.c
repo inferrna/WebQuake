@@ -850,7 +850,7 @@ basename( char* name ) {
 }
 
 
-int main( int argc, char** argv) {
+int maine( int argc, char** argv) {
 /*
  * main() par
  * started      : Sat Jul 4 00:33:50 MET DST 1998 @beast
@@ -1089,7 +1089,7 @@ EMSCRIPTEN_KEEPALIVE jsextract(char* filename){
     params[0] = "par";
     params[1] = "-x";
     params[2] = filename;
-    main(3, params);
+    maine(3, params);
 }
 #endif
 

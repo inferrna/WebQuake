@@ -1,1 +1,1 @@
-emcc -Dhtml -O3 -flto par.c -o par.js
+emcc -Dhtml -O3 -g2 -flto par.c -o par.js
