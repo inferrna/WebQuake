@@ -221,6 +221,8 @@ COM.WriteTextFile = function(filename, data)
 
 COM.LoadFile = function(filename)
 {
+    console.log(filename+" requested");//NFP
+    console.log("COM.searchpaths.length = "+COM.searchpaths.length);//NFP
 	filename = filename.toLowerCase();
 	var xhr = new XMLHttpRequest();
 	xhr.overrideMimeType('text/plain; charset=x-user-defined');
@@ -231,6 +233,7 @@ COM.LoadFile = function(filename)
 		search = COM.searchpaths[i];
 		netpath = search.filename + '/' + filename;
 		data = localStorage.getItem('Quake.' + netpath);
+        console.log(netpath+"at the end requested");//NFP
 		if (data != null)
 		{
 			Sys.Print('FindFile: ' + netpath + '\n');
@@ -348,12 +351,20 @@ COM.AddGameDirectory = function(dir, callback)
     var readed = false;
     cursor.onsuccess = function () {
       var file = this.result;
+      function totalsuccess(){
+        readed = true;
+        console.log(search.pack.length+" pak files readed in the end");//NFP
+        COM.searchpaths.push(search);
+        callback();
+      }
       if(retst.test(file.name)){
           console.log("Pak file found: " + file.name);
           var reader = new FileReader();
           reader.addEventListener("loadend", function() {
              search.pack.push(reader.result);//contains the contents of blob as a typed array
              console.log("Succes on read "+file.name);//NFP
+             console.log("This done is "+this.error);//NFP
+             if(search.pack.length>1) totalsuccess();
           });
           var request = paks.get(file.name);
           request.onsuccess = function(){
@@ -363,16 +374,13 @@ COM.AddGameDirectory = function(dir, callback)
           request.onerror = function () { console.warn("Unable to get the file: " + fnm + "got error: '\n    "+this.error); };
       } else console.log("Non-pak file found: " + file.name);
       // Once we found a file we check if there is other results
-      if (!this.done) {
+      if (!this.done || this.result===undefined) {
         // Then we move to the next result, which call the cursor
         // success with the next file as result.
         console.log(search.pack.length+" pak files readed in process");//NFP 
         this.continue();
       } else {
-        readed = true;
-        console.log(search.pack.length+" pak files readed in the end");//NFP
-	    COM.searchpaths.push(search);
-        callback();
+        totalsuccess();
         return;
       }
     }
@@ -380,7 +388,7 @@ COM.AddGameDirectory = function(dir, callback)
     cursor.onerror = function () {
       console.warn("No file found: " + this.error);
     }
-
+    alert("Pause1.. Press when done, please.");
 	/*for (;;)
 	{
 		pak = COM.LoadPackFile(dir + '/' + 'pak' + i + '.pak');
@@ -409,6 +417,7 @@ COM.InitFilesystem = function()
             COM.AddGameDirectory('rogue', gameadd);
         else if (COM.hipnotic === true)
             COM.AddGameDirectory('hipnotic', gameadd);
+        else gameadd();
 	}
 	function gameadd(){
         console.log("COM.InitFilesystem gameadd()");//NFP
@@ -422,9 +431,12 @@ COM.InitFilesystem = function()
                 COM.AddGameDirectory(search, end);
             }
         }
+        if(!null || !search) end();
+        console.log("COM.InitFilesystem gameadd(), "+i+", "+search);//NFP
     }
     function end(){
         console.log("COM.InitFilesystem end()");//NFP
 	    COM.gamedir = [COM.searchpaths[COM.searchpaths.length - 1]];
     }
+    alert("Pause2.. Press when done, please.");
 };

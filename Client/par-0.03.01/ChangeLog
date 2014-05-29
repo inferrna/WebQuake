@@ -1,0 +1,16 @@
+par
+
+v0.01 1998-08-22
+- initial release
+
+v0.02.01 2001-02-27
+- core dump fixed, "par -c"
+- email updated
+
+v0.03.01 2004-08-06
+- sys_errlist[] -> strerror()
+- toc check less pedantic (padding allowed)
+  thanks to David Costanzo <david_costanzo@yahoo.com>
+- changed to current configure/make configuration
+- option V added
+- some other stuff updated
