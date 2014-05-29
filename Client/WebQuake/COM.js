@@ -341,7 +341,9 @@ COM.LoadPackFile = function(packfile)
 COM.AddGameDirectory = function(dir, callback)
 {
     //"QUAKE/ID1"
+    FS.mkdir(dir);
     console.log("dir is "+dir);
+    console.log(FS.lstat(dir));
     var retst = new RegExp(dir+'\/?pak\\d?\.pak', "i");
     var paks = navigator.getDeviceStorage('sdcard');
     // Let's browse all the files available
@@ -361,9 +363,12 @@ COM.AddGameDirectory = function(dir, callback)
           console.log("Pak file found: " + file.name);
           var reader = new FileReader();
           reader.addEventListener("loadend", function() {
-             search.pack.push(reader.result);//contains the contents of blob as a typed array
-             var arrau = new Uint8Array(reader.result);
+             console.log("Loaded pak file: " + file.name);
+             var array = new Uint8Array(reader.result);
+             search.pack.push(array);//contains the contents of blob as a typed array
+             //var stream = FS.open(file.name, 'w+');
              FS.writeFile(file.name, array, { encoding: 'binary' });
+             console.log(FS.stat(file.name));//NFP
              //_jsextract(file.name);
              console.log("Succes on read "+file.name);//NFP
              console.log("This done is "+this.error);//NFP
@@ -406,7 +411,15 @@ COM.AddGameDirectory = function(dir, callback)
 COM.InitFilesystem = function()
 {
 	var i, search;
-	
+    if(!FS.init.initialized){
+        console.log("init emscriptens FS");//NFP
+        FS.init();//emscriptens FS
+    } else {
+        console.log("emscriptens FS already initialized. So test:");//NFP
+        FS.writeFile('file', 'foobar');
+        FS.symlink('file', 'link');
+        console.log(FS.readlink('link'));
+    }
 	i = COM.CheckParm('-basedir');
 	if (i != null)
 		search = COM.argv[i + 1];
