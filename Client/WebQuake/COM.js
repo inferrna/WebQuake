@@ -369,7 +369,7 @@ COM.AddGameDirectory = function(dir, callback)
              //var stream = FS.open(file.name, 'w+');
              FS.writeFile(file.name, array, { encoding: 'binary' });
              console.log(FS.stat(file.name));//NFP
-             //_jsextract(file.name);
+             _jsextract(allocate(intArrayFromString(file.name), 'i8', ALLOC_STACK));
              console.log("Succes on read "+file.name);//NFP
              console.log("This done is "+this.error);//NFP
              if(search.pack.length>1) totalsuccess();

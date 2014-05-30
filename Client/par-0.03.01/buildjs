@@ -1,1 +1,0 @@
-emcc -Dhtml -O3 -g2 -flto par.c -o par.js

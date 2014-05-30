@@ -849,21 +849,24 @@ basename( char* name ) {
   return( p );
 }
 
-
+#ifdef html
 int maine( int argc, char** argv) {
+#else
+int main( int argc, char** argv) {
+#endif
 /*
  * main() par
  * started      : Sat Jul 4 00:33:50 MET DST 1998 @beast
  */
 
-    int ii;
+  int ii;
 
-    printf("The following arguments were passed to main(): ");
-    for(ii=0; ii<argc; ii++) printf("%s ", argv[ii]);
-    printf("\n");
+  printf("The following %d arguments were passed to main():", argc);
+  for(ii=0; ii<argc; ii++) printf(" %s", argv[ii]);
+  printf("\n");
 
   /*** getopt stuff ***/
-  int c;
+  int c=0;
   extern char *optarg;
   extern int optind;
   /*** options stuff ***/
@@ -891,7 +894,12 @@ int maine( int argc, char** argv) {
   int eof_reached;
   /***** process options *****/
   *argv= pn;				/* give getop() the cut name */
-  while( (c=getopt(argc,argv,"cfhltvxV")) != EOF )
+  /*printf("The following %d arguments will be used by main():", argc);
+  for(ii=0; ii<argc; ii++) printf(" %s", argv[ii]);
+  printf("\n");*/
+  optind = 0;
+  while( (c=getopt(argc,argv,"cfhltvxV")) != EOF ){
+    printf("Current opt is \"%c\".\n", c);
     switch( c ) {
       case 'c': /* action: create */
         if( action == ACTION_NONE ) action= ACTION_CREATE;
@@ -941,6 +949,7 @@ int maine( int argc, char** argv) {
                  pn, MY_EMAIL_ADDRESS );
         retval= RETVAL_BUG; goto DIE_NOW;
     }
+  }
   if( action == ACTION_NONE ) {
     fprintf( ERROR_CHANNEL, "%s: No action specified. Try -h for help.\n", pn );
     retval= RETVAL_ERROR; goto DIE_NOW;
@@ -1080,16 +1089,17 @@ DIE_NOW:
       system( cmd );
     }
   }
-  exit( retval );
+  return retval;
 }
 #ifdef html
-EMSCRIPTEN_KEEPALIVE jsextract(char*);
-EMSCRIPTEN_KEEPALIVE jsextract(char* filename){
+EMSCRIPTEN_KEEPALIVE void jsextract(char*);
+EMSCRIPTEN_KEEPALIVE void jsextract(char* filename){
     char *params[3];
     params[0] = "par";
-    params[1] = "-x";
+    params[1] = "-l";
     params[2] = filename;
-    maine(3, params);
+    int i = maine(3, params);
+    printf("%s extracted with code %d\n", filename, i);
 }
 #endif
 
