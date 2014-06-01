@@ -221,8 +221,8 @@ COM.WriteTextFile = function(filename, data)
 
 COM.ReadFileEFS = function(filename){
     var stat = FS.stat(filename);
-    console.log("Stat for "+filename+" is:");//NFP
-    console.log(JSON.stringify(stat));//NFP
+    //console.log("Stat for "+filename+" is:");//NFP
+    //console.log(JSON.stringify(stat));//NFP
     var stream = FS.open(filename, 'r');
     var buf = new ArrayBuffer(stat.size);
     var dest = new Uint8Array(buf);
@@ -233,8 +233,8 @@ COM.ReadFileEFS = function(filename){
 
 COM.LoadFile = function(filename)
 {
-    console.log(filename+" requested");//NFP
-    console.log("COM.searchpaths.length = "+COM.searchpaths.length);//NFP
+    //console.log(filename+" requested");//NFP
+    //console.log("COM.searchpaths.length = "+COM.searchpaths.length);//NFP
 	filename = filename.toLowerCase();
 	Draw.BeginDisc();
     return COM.ReadFileEFS(filename);
@@ -319,8 +319,8 @@ COM.AddGameDirectory = function(dir, callback)
       var file = this.result;
       function totalsuccess(){
         readed = true;
-        console.log(search.pack.length+" pak files readed in the end");//NFP
-        console.log(JSON.stringify(FS.stat("gfx.wad")));
+        //console.log(search.pack.length+" pak files readed in the end");//NFP
+        //console.log(JSON.stringify(FS.stat("gfx.wad")));
         COM.searchpaths.push(search);
         callback();
       }
@@ -331,12 +331,11 @@ COM.AddGameDirectory = function(dir, callback)
              console.log("Loaded pak file: " + file.name);
              var array = new Uint8Array(reader.result);
              search.pack.push(array);//contains the contents of blob as a typed array
-             //var stream = FS.open(file.name, 'w+');
              FS.writeFile(file.name, array, { encoding: 'binary' });
-             console.log(JSON.stringify(FS.stat(file.name)));//NFP
+             //console.log(JSON.stringify(FS.stat(file.name)));//NFP
              _jsextract(allocate(intArrayFromString(file.name), 'i8', ALLOC_STACK));
-             console.log("Succes on read "+file.name);//NFP
-             console.log("This done is "+this.error);//NFP
+             //console.log("Succes on read "+file.name);//NFP
+             //console.log("This done is "+this.error);//NFP
              if(search.pack.length>1) totalsuccess();
           });
           var request = paks.get(file.name);
