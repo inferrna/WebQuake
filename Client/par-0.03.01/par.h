@@ -2,10 +2,6 @@
  *	$Id: par.h,v 1.3 2004/08/05 22:59:11 solyga Exp $
  */
 
-#define	DEBUG
-#undef	DEBUG
-
-
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>	/* getopt(), read(), ... */

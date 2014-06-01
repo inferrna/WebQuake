@@ -219,61 +219,25 @@ COM.WriteTextFile = function(filename, data)
 	return true;
 };
 
+COM.ReadFileEFS = function(filename){
+    var stat = FS.stat(filename);
+    console.log("Stat for "+filename+" is:");//NFP
+    console.log(JSON.stringify(stat));//NFP
+    var stream = FS.open(filename, 'r');
+    var buf = new ArrayBuffer(stat.size);
+    var dest = new Uint8Array(buf);
+    FS.read(stream, dest, 0, stat.size, 0);
+    FS.close(stream);
+    return buf;
+};
+
 COM.LoadFile = function(filename)
 {
     console.log(filename+" requested");//NFP
     console.log("COM.searchpaths.length = "+COM.searchpaths.length);//NFP
 	filename = filename.toLowerCase();
-	var xhr = new XMLHttpRequest();
-	xhr.overrideMimeType('text/plain; charset=x-user-defined');
-	var i, j, k, search, netpath, pak, file, data;
 	Draw.BeginDisc();
-	for (i = COM.searchpaths.length - 1; i >= 0; --i)
-	{
-		search = COM.searchpaths[i];
-		netpath = search.filename + '/' + filename;
-		data = localStorage.getItem('Quake.' + netpath);
-        console.log(netpath+"at the end requested");//NFP
-		if (data != null)
-		{
-			Sys.Print('FindFile: ' + netpath + '\n');
-			Draw.EndDisc();
-			return Q.strmem(data);
-		}
-		for (j = search.pack.length - 1; j >= 0; --j)
-		{
-			pak = search.pack[j];
-			for (k = 0; k < pak.length; ++k)
-			{
-				file = pak[k];
-				if (file.name !== filename)
-					continue;
-				if (file.filelen === 0)
-				{
-					Draw.EndDisc();
-					return new ArrayBuffer(0);
-				}
-				xhr.open('GET', search.filename + '/pak' + j + '.pak', false);
-				xhr.setRequestHeader('Range', 'bytes=' + file.filepos + '-' + (file.filepos + file.filelen - 1));
-				xhr.send();
-				if ((xhr.status >= 200) && (xhr.status <= 299) && (xhr.responseText.length === file.filelen))
-				{
-					Sys.Print('PackFile: ' + search.filename + '/pak' + j + '.pak : ' + filename + '\n')
-					Draw.EndDisc();
-					return Q.strmem(xhr.responseText);
-				}
-				break;
-			}
-		}
-		xhr.open('GET', netpath, false);
-		xhr.send();
-		if ((xhr.status >= 200) && (xhr.status <= 299))
-		{
-			Sys.Print('FindFile: ' + netpath + '\n');
-			Draw.EndDisc();
-			return Q.strmem(xhr.responseText);
-		}
-	}
+    return COM.ReadFileEFS(filename);
 	Sys.Print('FindFile: can\'t find ' + filename + '\n');
 	Draw.EndDisc();
 };
@@ -356,6 +320,7 @@ COM.AddGameDirectory = function(dir, callback)
       function totalsuccess(){
         readed = true;
         console.log(search.pack.length+" pak files readed in the end");//NFP
+        console.log(JSON.stringify(FS.stat("gfx.wad")));
         COM.searchpaths.push(search);
         callback();
       }
@@ -368,7 +333,7 @@ COM.AddGameDirectory = function(dir, callback)
              search.pack.push(array);//contains the contents of blob as a typed array
              //var stream = FS.open(file.name, 'w+');
              FS.writeFile(file.name, array, { encoding: 'binary' });
-             console.log(FS.stat(file.name));//NFP
+             console.log(JSON.stringify(FS.stat(file.name)));//NFP
              _jsextract(allocate(intArrayFromString(file.name), 'i8', ALLOC_STACK));
              console.log("Succes on read "+file.name);//NFP
              console.log("This done is "+this.error);//NFP

@@ -115,8 +115,8 @@ CDAudio.Update = function()
 CDAudio.Init = function()
 {
 	Cmd.AddCommand('cd', CDAudio.CD_f);
-	if (COM.CheckParm('-nocdaudio') != null)
-		return;
+	//if (COM.CheckParm('-nocdaudio') != null)
+        return;
 	var i, j, track;
 	var xhr = new XMLHttpRequest();
 	for (i = 1; i <= 99; ++i)

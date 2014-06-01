@@ -94,14 +94,14 @@ char*	add_to_list(
     p0= p1; p1+= diff;
     *p1= '\0';		/* init for first call */
 #ifdef DEBUG
-  fprintf( DEBUG_CHANNEL, "DEBUG: add_to_list(): Allocated %#08x for list.\n", p0 );
+  //fprintf( DEBUG_CHANNEL, "DEBUG: add_to_list(): Allocated %#08x for list.\n", p0 );
 #endif
   }
   /* check name */
   if( is_in_list(p0,name) ) return( p0 );
   /* append name */
 #ifdef DEBUG
-  fprintf( DEBUG_CHANNEL, "DEBUG: add_to_list(): Adding `%s' to list at %#08x.\n", name, p1 );
+  //fprintf( DEBUG_CHANNEL, "DEBUG: add_to_list(): Adding `%s' to list at %#08x.\n", name, p1 );
 #endif
   for( p=name; (*p1++=*p++)!='\0'; );
   *p1= '\0';		/* end-of-list code */
@@ -131,7 +131,7 @@ off_t	UCHARs_2_off_t(
 		unsigned char	*p )
 {
   off_t val= (off_t)0;
-  int i;
+  size_t i;
   for( i=0; i<sizeof(off_t); i++ ) val|= p[i]<<(i*8);
   return( val );
 }
@@ -141,7 +141,7 @@ off_t	off_t_2_UCHARs(
 		off_t	val,
 		unsigned char*	p )
 {
-  int i;
+  size_t i;
   for( i=0; i<sizeof(off_t); i++) p[i]= (unsigned char)(val>>(i*8)&0xff);
   return( val );
 }
@@ -365,7 +365,7 @@ RETURN:
 }
 
 
-int	check_pak_header(
+int check_pak_header(
 		struct pak_header*	p_pak_hdr,	/* pak header */
 		char*			pak_fn,		/* pak file name */
 		char*			pn )		/* name of main prog. */
@@ -559,7 +559,7 @@ int	check_pak_toc(
 
 int	list_pak_toc(
 		struct pak_tocentry*	pak_toc,	/* pak toc */
-		int			pak_noe,	/* number of entries */
+		size_t			pak_noe,	/* number of entries */
 		char*			list,		/* file name list */
 		int			verbose,	/* verbose flag */
 		int			force,		/* force flag */
@@ -567,14 +567,13 @@ int	list_pak_toc(
 		char*			pn )	/* name of main program */
 /* returns number of files listed or -1 on error */
 {
-  int list_noe;
   unsigned char* list_mark= NULL;
-  int maxlen= 0;
-  int i,j;
+  size_t maxlen= 0;
+  size_t i,j,list_noe;
   char* fn;
-  int nbl= 0;			/* number of bytes listed */
-  int nfl= 0;			/* number of files listed */
-  int tnb= 0;			/* total number of bytes */
+  size_t nbl= 0;			/* number of bytes listed */
+  size_t nfl= 0;			/* number of files listed */
+  size_t tnb= 0;			/* total number of bytes */
   if( (list_noe=is_in_list(list,"")-1) )
   {
     if( (list_mark=malloc((list_noe)*sizeof(unsigned char))) == NULL )
@@ -867,8 +866,6 @@ int main( int argc, char** argv) {
 
   /*** getopt stuff ***/
   int c=0;
-  extern char *optarg;
-  extern int optind;
   /*** options stuff ***/
   int action= ACTION_NONE;
   int indirect_files= 0;
@@ -1017,7 +1014,7 @@ int main( int argc, char** argv) {
 #ifdef DEBUG
   fprintf( DEBUG_CHANNEL, "DEBUG: main(): List has %d entries, namely:\n", is_in_list(file_list,"")-1 );
   for( i=0; i<is_in_list(file_list,"")-1; i++ )
-    fprintf( DEBUG_CHANNEL, "DEBUG: main(): %d - %#08x - `%s'\n", i, list_entry(file_list,i), list_entry(file_list,i) );
+    fprintf( DEBUG_CHANNEL, "DEBUG: main(): %d - `%s'\n", i, list_entry(file_list,i) );
 #endif
   /***** do the dirty work *****/
   switch( action ) {
@@ -1042,14 +1039,29 @@ int main( int argc, char** argv) {
     case ACTION_EXTRACT: /* extract file(s) */
       if( read_pak_header(&pak_hdr,pak_fn,pn) == -1 )
       { retval= RETVAL_ERROR; goto DIE_NOW; }
+#ifdef	DEBUG
+      printf("read_pak_header Ok\n");
+#endif
       if( (pak_nf=check_pak_header(&pak_hdr,pak_fn,pn)) == -1 )
       { retval= RETVAL_ERROR; goto DIE_NOW; }
+#ifdef	DEBUG
+      printf("check_pak_header Ok\n");
+#endif
       if( (pak_toc=read_pak_toc(&pak_hdr,pak_fn,pn)) == NULL && pak_nf )
       { retval= RETVAL_ERROR; goto DIE_NOW; }
+#ifdef	DEBUG
+      printf("read_pak_toc Ok\n");
+#endif
       if( check_pak_toc(pak_toc,pak_nf,pak_fn,pn) == -1 )
       { retval= RETVAL_ERROR; goto DIE_NOW; }
+#ifdef	DEBUG
+      printf("check_pak_toc Ok\n");
+#endif
       if( extract_pak(pak_toc,pak_nf,file_list,verbose,force,pak_fn,pn) == -1 )
       { retval= RETVAL_ERROR; goto DIE_NOW; }
+#ifdef	DEBUG
+      printf("extract_pak Ok\n");
+#endif
       break;
     case ACTION_CREATE: /* create new pak file */
       if( init_pak_header(&pak_hdr) == -1 )
@@ -1069,10 +1081,25 @@ int main( int argc, char** argv) {
       retval= RETVAL_BUG; goto DIE_NOW;
   }
 DIE_NOW:
+#ifdef	DEBUG
+      printf("go die\n");
+#endif
   free( pak_toc );
-  free( file_list );
+#ifdef	DEBUG
+      printf("free pak_toc Ok\n");
+#endif
+/*  free( file_list );
+#ifdef	DEBUG
+      printf("free file_list Ok\n");
+#endif*/
   close( pak_fd );
+#ifdef	DEBUG
+      printf("close pak_fd Ok\n");
+#endif
   close( tmp_fd );
+#ifdef	DEBUG
+      printf("close tmp_fd Ok\n");
+#endif
   if( action==ACTION_CREATE )
   { /* remove pak file on error */
 #ifndef ALLOW_EMPTY_ARCHIVES
@@ -1096,7 +1123,7 @@ EMSCRIPTEN_KEEPALIVE void jsextract(char*);
 EMSCRIPTEN_KEEPALIVE void jsextract(char* filename){
     char *params[3];
     params[0] = "par";
-    params[1] = "-l";
+    params[1] = "-x";
     params[2] = filename;
     int i = maine(3, params);
     printf("%s extracted with code %d\n", filename, i);
