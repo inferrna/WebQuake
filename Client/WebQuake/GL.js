@@ -58,13 +58,13 @@ function AsmFuncs(stdlib, env, heap) {
         bs = 4194304;
         xstep = (+~~inwidth)/(+~~outwidth);
         ystep = (+~~inheight)/(+~~outheight);
-        for (i = 1; (i | 0) < (outheight | 0); i = (i | 0) + 1 | 0){
+        for (i = 0; (i|0) < (outheight|0); i = (i+1)|0){
             mul = +floor((+~~i)*ystep);
             src = (~~mul)|0 * inwidth;
-            for (j = 1; (j | 0) < (outwidth | 0); j = (j | 0) + 1 | 0){
-                res8i[dest+j|0] = 255;//inp8i[(bs>>1) + src|0+(~~+floor((+~~j)*xstep))];
-                dest = dest+outwidth|0;
+            for (j = 0; (j | 0) < (outwidth | 0); j = (j | 0) + 1 | 0){
+                res8i[dest+j|0] = inp8i[(bs>>1) + src|0+(~~+floor((+~~j)*xstep))|0];
             }
+            dest = dest+outwidth|0;
         }
     }
     return {rotation_matrix: rotation_matrix, scale_texture: scale_texture}; //asm_funcs.scale_texture
@@ -154,8 +154,8 @@ GL.ResampleTexture = function(data, inwidth, inheight, outwidth, outheight)
     var heapout = new Uint8Array(buffer, 0, outwidth*outheight);
     heapin.set(data);
     asm_funcs.scale_texture(inwidth, inheight, outwidth, outheight); 
-	var outdata = new ArrayBuffer(outwidth * outheight);
-	var out = new Uint8Array(outdata);
+	//var outdata = new ArrayBuffer(outwidth * outheight);
+	var out = new Uint8Array(outwidth * outheight);
     out.set(heapout);
     return out;
 	/*var outdata = new ArrayBuffer(outwidth * outheight);
