@@ -52,11 +52,12 @@ Vec.RotatePointAroundVector = function(dir, point, degrees)
 	var c = Math.cos(degrees * Math.PI / 180.0);
 	var zrot = [[c, s, 0], [-s, c, 0], [0, 0, 1]];
 	var rot = Vec.ConcatRotations(Vec.ConcatRotations(m, zrot), im);
-	return [
+	var res = new Float32Array([
 		rot[0][0] * point[0] + rot[0][1] * point[1] + rot[0][2] * point[2],
 		rot[1][0] * point[0] + rot[1][1] * point[1] + rot[1][2] * point[2],
 		rot[2][0] * point[0] + rot[2][1] * point[1] + rot[2][2] * point[2]
-	];
+	]);
+    return res;
 };
 
 Vec.Anglemod = function(a)

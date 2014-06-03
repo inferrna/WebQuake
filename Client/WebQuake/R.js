@@ -1,6 +1,8 @@
-R = {};
+var R = {};
 
 // efrag
+R.rlpc = 0;
+R.rwnc = 0;
 
 R.SplitEntityOnNode = function(node)
 {
@@ -174,6 +176,11 @@ R.PushDlights = function()
 
 R.RecursiveLightPoint = function(node, start, end)
 {
+    R.rlpc++;
+    if(R.rlpc>255) {
+        R.rlpc=0;
+        return -1;
+    }
 	if (node.contents < 0)
 		return -1;
 
