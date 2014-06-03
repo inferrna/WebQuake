@@ -994,6 +994,8 @@ M.Init = function()
 	M.menuplyr = Draw.CachePic('menuplyr');
 	var buf = COM.LoadFile('gfx/menuplyr.lmp');
 	var data = GL.ResampleTexture(M.menuplyr.data, M.menuplyr.width, M.menuplyr.height, 64, 64);
+    //console.log("M rs1");
+    //console.log(Array.prototype.slice.call(data).filter(function(x){return x!=0}));
 	var trans = new Uint8Array(new ArrayBuffer(16384));
 	var i, p;
 	for (i = 0; i < 4096; ++i)

@@ -791,10 +791,13 @@ ALIAS MODELS
 ==============================================================================
 */
 
-Mod.TranslatePlayerSkin = function(data, skin)
+Mod.TranslatePlayerSkin = function(_data, skin)
 {
-	if ((Mod.loadmodel.skinwidth !== 512) || (Mod.loadmodel.skinheight !== 256))
-		data = GL.ResampleTexture(data, Mod.loadmodel.skinwidth, Mod.loadmodel.skinheight, 512, 256);
+	if ((Mod.loadmodel.skinwidth !== 512) || (Mod.loadmodel.skinheight !== 256)){
+		var data = GL.ResampleTexture(_data, Mod.loadmodel.skinwidth, Mod.loadmodel.skinheight, 512, 256);
+        //console.log("mod rs1");
+        //console.log(Array.prototype.slice.call(data).filter(function(x){return x!=0}));
+    } else var data = _data;
 	var out = new Uint8Array(new ArrayBuffer(524288));
 	var i, original;
 	for (i = 0; i < 131072; ++i)
@@ -1179,6 +1182,8 @@ Mod.LoadSpriteFrame = function(identifier, buffer, inframe, frame)
 	{
 		size = scaled_width * scaled_height;
 		data = GL.ResampleTexture(data, frame.width, frame.height, scaled_width, scaled_height);
+        //console.log("mod rs2");
+        //console.log(Array.prototype.slice.call(data).filter(function(x){return x!=0}));
 	}
 
 	var trans = new ArrayBuffer(size << 2);

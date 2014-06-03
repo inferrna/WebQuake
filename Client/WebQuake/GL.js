@@ -1,5 +1,5 @@
 GL = {};
-var BUFFER_SIZE = 4194304;
+var BUFFER_SIZE = 16777216;
 GL.textures = [];
 GL.currenttextures = [];
 GL.programs = [];
@@ -52,17 +52,21 @@ function AsmFuncs(stdlib, env, heap) {
         var dest = 0;
         var i = 0;
         var j = 0;
+        var idxd = 0;
+        var idxs = 0;
         var src = 0;
         var bs = 0;
-        i = i|0; j = j|0; dest = dest|0; src = src|0; bs = 0|0;
-        bs = 4194304;
+        i = i|0; j = j|0; dest = dest|0; src = src|0; bs = bs|0; idxd = idxd|0; idxs = idxs|0;
+        bs = 16777216;
         xstep = (+~~inwidth)/(+~~outwidth);
         ystep = (+~~inheight)/(+~~outheight);
         for (i = 0; (i|0) < (outheight|0); i = (i+1)|0){
             mul = +floor((+~~i)*ystep);
             src = (~~mul)|0 * inwidth;
             for (j = 0; (j | 0) < (outwidth | 0); j = (j | 0) + 1 | 0){
-                res8i[dest+j|0] = inp8i[(bs>>1) + src|0+(~~+floor((+~~j)*xstep))|0];
+                idxd = (bs>>1) + dest|0 + j|0;
+                idxs = src|0 + (~~+floor((+~~j)*xstep))|0;
+                res8i[idxd>>0] = inp8i[idxs>>0]|0;
             }
             dest = dest+outwidth|0;
         }
@@ -70,9 +74,13 @@ function AsmFuncs(stdlib, env, heap) {
     return {rotation_matrix: rotation_matrix, scale_texture: scale_texture}; //asm_funcs.scale_texture
 }
 
-var buffer = new ArrayBuffer(BUFFER_SIZE);
-var asm_funcs = AsmFuncs(window, 0, buffer);
-
+if(!window['asm_funcs']){
+    console.warn("Init buffer. Must be single.");
+    var buffer = new ArrayBuffer(BUFFER_SIZE);
+    window['mybuffer'] = buffer;
+    var asm_funcs = AsmFuncs(window, 0, window['mybuffer']);
+    window['asm_funcs'] = asm_funcs;
+}
 GL.Bind = function(target, texnum)
 {
 	if (GL.currenttextures[target] !== texnum)
@@ -150,16 +158,19 @@ GL.Set2D = function()
 
 GL.ResampleTexture = function(data, inwidth, inheight, outwidth, outheight)
 {
-    var heapin = new Uint8Array(buffer, BUFFER_SIZE >> 1, inwidth*inheight);
-    var heapout = new Uint8Array(buffer, 0, outwidth*outheight);
+    /*//console.log("GL.ResampleTexture got "+inwidth+"x"+inheight+"=="+inwidth*inheight+" data:");
+    //console.log(Array.prototype.slice.call(data).filter(function(x){return x!=0}));
+    var heapin = new Uint8Array(window['mybuffer'], 0, inwidth * inheight);
+    var heapout = new Uint8Array(window['mybuffer'], BUFFER_SIZE >> 1, outwidth * outheight);
     heapin.set(data);
-    asm_funcs.scale_texture(inwidth, inheight, outwidth, outheight); 
-	//var outdata = new ArrayBuffer(outwidth * outheight);
+    //for(var i=0; i<inwidth * inheight; i++) heapin[i]=data[i];
+    window['asm_funcs'].scale_texture(inwidth, inheight, outwidth, outheight); 
+	//var out = new Uint8Array(outwidth * outheight);
+    //out.set(heapout);
+    //console.log("GL.ResampleTexture gives "+outwidth+"x"+outheight+"=="+outwidth*outheight+" out:");
+    //console.log(Array.prototype.slice.call(out).filter(function(x){return x!=0}));
+    return heapout;*/
 	var out = new Uint8Array(outwidth * outheight);
-    out.set(heapout);
-    return out;
-	/*var outdata = new ArrayBuffer(outwidth * outheight);
-	var out = new Uint8Array(outdata);
 	var xstep = inwidth / outwidth, ystep = inheight / outheight;
 	var src, dest = 0, y;
 	var i, j;
@@ -170,7 +181,7 @@ GL.ResampleTexture = function(data, inwidth, inheight, outwidth, outheight)
 			out[dest + j] = data[src + Math.floor(j * xstep)];
 		dest += outwidth;
 	}
-	return out;*/
+	return out;
 };
 
 GL.Upload = function(data, width, height)
@@ -197,8 +208,11 @@ GL.Upload = function(data, width, height)
 		scaled_width = 1024;
 	if (scaled_height > 1024)
 		scaled_height = 1024;
-	if ((scaled_width !== width) || (scaled_height !== height))
+	if ((scaled_width !== width) || (scaled_height !== height)){
 		data = GL.ResampleTexture(data, width, height, scaled_width, scaled_height);
+        //console.log("rs1");
+        //console.log(Array.prototype.slice.call(data).filter(function(x){return x!=0}));
+    }
 	var trans = new ArrayBuffer((scaled_width * scaled_height) << 2)
 	var trans32 = new Uint32Array(trans);
 	var i;
@@ -259,12 +273,14 @@ GL.LoadTexture = function(identifier, width, height, data)
 	scaled_height >>= GL.picmip.value;
 	if (scaled_height === 0)
 		scaled_height = 1;
-	if ((scaled_width !== width) || (scaled_height !== height))
-		data = GL.ResampleTexture(data, width, height, scaled_width, scaled_height);
-
+	if ((scaled_width !== width) || (scaled_height !== height)){
+		var rsdata = GL.ResampleTexture(data, width, height, scaled_width, scaled_height);
+        //console.log("rs2");
+        //console.log(Array.prototype.slice.call(rsdata).filter(function(x){return x!=0}));
+    } else var rsdata = data;
 	glt = {texnum: gl.createTexture(), identifier: identifier, width: width, height: height};
 	GL.Bind(0, glt.texnum);
-	GL.Upload(data, scaled_width, scaled_height);
+	GL.Upload(rsdata, scaled_width, scaled_height);
 	GL.textures[GL.textures.length] = glt;
 	return glt;
 };
@@ -293,9 +309,11 @@ GL.LoadPicTexture = function(pic)
 		scaled_width = 1024;
 	if (scaled_height > 1024)
 		scaled_height = 1024;
-	if ((scaled_width !== pic.width) || (scaled_height !== pic.height))
+	if ((scaled_width !== pic.width) || (scaled_height !== pic.height)){
 		data = GL.ResampleTexture(data, pic.width, pic.height, scaled_width, scaled_height);
-
+        //console.log("rs3");
+        //console.log(Array.prototype.slice.call(data).filter(function(x){return x!=0}));
+    }
 	var texnum = gl.createTexture();
 	GL.Bind(0, texnum);
 	var trans = new ArrayBuffer((scaled_width * scaled_height) << 2)
@@ -415,8 +433,8 @@ GL.RotationMatrix = function(pitch, yaw, roll)
 		-sy * cr + cy * sp * sr,	cy * cr + sy * sp * sr,		cp * sr,
 		-sy * -sr + cy * sp * cr,	cy * -sr + sy * sp * cr,	cp * cr
 	];*/
-    asm_funcs.rotation_matrix(pitch, yaw, roll);
-    return Array.prototype.slice.call(new Float32Array(buffer, 0, 9));
+    window['asm_funcs'].rotation_matrix(pitch, yaw, roll);
+    return Array.prototype.slice.call(new Float32Array(window['mybuffer'], 0, 9));
     //new Float32Array(buffer, 0, 9);
 };
 

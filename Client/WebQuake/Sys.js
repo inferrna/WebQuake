@@ -146,7 +146,7 @@ window.onload = function()
 	for (i = 0; i < Sys.events.length; ++i)
 		window[Sys.events[i]] = Sys[Sys.events[i]];
 
-	Sys.frame = setInterval(Host.Frame, 1000.0 / 60.0);
+	Sys.frame = setInterval(Host.Frame, 1000.0 / 25.0);
 };
 
 Sys.onbeforeunload = function()

@@ -93,19 +93,10 @@ function rt(data, inwidth, inheight, outwidth, outheight)
 	}
 	return out;*/
 }
-var arr = new Uint8Array(64*64);
-for(var i=0; i<64; i++)
-	for(var j=0; j<64; j++) arr[i*64+j] = i+j;
-arr = rt(arr, 64, 64, 8, 8);
+var s1 = 8;
+var s2 = 160;
+var arr = new Uint8Array(s1*s1);
+for(var i=0; i<s1; i++)
+	for(var j=0; j<s1; j++) arr[i*s1+j] = i+j;
+arr = rt(arr, s1, s1, s2, s2);
 console.log(Array.prototype.slice.call(arr));
-var arr1 = new Uint8Array(64*64);
-for(var i=0; i<64; i++)
-	for(var j=0; j<64; j++) arr1[i*64+j] = i+j;
-arr1 = rt(arr1, 64, 64, 8, 8);
-console.log(Array.prototype.slice.call(arr1));
-var arr2 = new Uint8Array(64*64);
-for(var i=0; i<64; i++)
-	for(var j=0; j<64; j++) arr2[i*64+j] = i+j;
-arr2 = rt(arr2, 64, 64, 8, 8);
-console.log(Array.prototype.slice.call(arr2));
-
