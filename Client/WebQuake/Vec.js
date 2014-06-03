@@ -38,24 +38,25 @@ Vec.RotatePointAroundVector = function(dir, point, degrees)
 {
 	var r = Vec.Perpendicular(dir);
 	var up = Vec.CrossProduct(r, dir);
-	var m = [
-		[r[0], up[0], dir[0]],
-		[r[1], up[1], dir[1]],
-		[r[2], up[2], dir[2]]
-	];
-	var im = [
-		[m[0][0], m[1][0], m[2][0]],
-		[m[0][1], m[1][1], m[2][1]],
-		[m[0][2], m[1][2], m[2][2]]
-	];
+	var m = new Float32Array([
+		r[0], up[0], dir[0],
+		r[1], up[1], dir[1],
+		r[2], up[2], dir[2]
+	]);
+	var im = new Float32Array(m);
+      /*[
+    	m[0], m[1], m[2],
+		m[3], m[4], m[5],
+		m[6], m[7], m[8]
+	]);*/
 	var s = Math.sin(degrees * Math.PI / 180.0);
 	var c = Math.cos(degrees * Math.PI / 180.0);
-	var zrot = [[c, s, 0], [-s, c, 0], [0, 0, 1]];
+	var zrot = new Float32Array([c, s, 0, -s, c, 0, 0, 0, 1]);
 	var rot = Vec.ConcatRotations(Vec.ConcatRotations(m, zrot), im);
 	var res = new Float32Array([
-		rot[0][0] * point[0] + rot[0][1] * point[1] + rot[0][2] * point[2],
-		rot[1][0] * point[0] + rot[1][1] * point[1] + rot[1][2] * point[2],
-		rot[2][0] * point[0] + rot[2][1] * point[1] + rot[2][2] * point[2]
+		rot[0] * point[0] + rot[1] * point[1] + rot[2] * point[2],
+		rot[3] * point[0] + rot[4] * point[1] + rot[5] * point[2],
+		rot[6] * point[0] + rot[7] * point[1] + rot[8] * point[2]
 	]);
     return res;
 };
