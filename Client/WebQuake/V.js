@@ -1,10 +1,12 @@
 V = {};
-
+V.v3a = new Float32Array(3);
+V.v3b = new Float32Array(3);
+V.v3c = new Float32Array(3);
 V.dmg_time = 0.0;
 
 V.CalcRoll = function(angles, velocity)
 {
-	var right = [];
+	var right = V.v3a;
 	Vec.AngleVectors(angles, null, right);
 	var side = velocity[0] * right[0] + velocity[1] * right[1] + velocity[2] * right[2];
 	var sign = side < 0 ? -1 : 1;
@@ -106,12 +108,12 @@ V.DriftPitch = function()
 	}
 };
 
-V.cshift_empty = [130.0, 80.0, 50.0, 0.0];
-V.cshift_water = [130.0, 80.0, 50.0, 128.0];
-V.cshift_slime = [0.0, 25.0, 5.0, 150.0];
-V.cshift_lava = [255.0, 80.0, 0.0, 150.0];
+V.cshift_empty = new Float32Array([130.0, 80.0, 50.0, 0.0]);
+V.cshift_water = new Float32Array([130.0, 80.0, 50.0, 128.0]);
+V.cshift_slime = new Float32Array([0.0, 25.0, 5.0, 150.0]);
+V.cshift_lava = new Float32Array([255.0, 80.0, 0.0, 150.0]);
 
-V.blend = [0.0, 0.0, 0.0, 0.0];
+V.blend = new Float32Array([0.0, 0.0, 0.0, 0.0]);
 
 V.ParseDamage = function()
 {
@@ -148,7 +150,7 @@ V.ParseDamage = function()
 		cshift[1] = cshift[2] = 0.0;
 	}
 
-	var forward = [], right = [];
+	var forward = V.v3b, right = V.v3c;
 	Vec.AngleVectors(ent.angles, forward, right);
 	V.dmg_roll = count * (from[0] * right[0] + from[1] * right[1] + from[2] * right[2]) * V.kickroll.value;
 	V.dmg_pitch = count * (from[0] * forward[0] + from[1] * forward[1] + from[2] * forward[2]) * V.kickpitch.value;
@@ -314,7 +316,7 @@ V.CalcRefdef = function()
 	R.refdef.viewangles[1] += iyaw;
 	R.refdef.viewangles[2] += iroll;
 
-	var forward = [], right = [], up = [];
+	var forward = V.v3a, right = V.v3b, up = V.v3c;
 	Vec.AngleVectors([-ent.angles[0], ent.angles[1], ent.angles[2]], forward, right, up);
 	R.refdef.vieworg[0] += V.ofsx.value * forward[0] + V.ofsy.value * right[0] + V.ofsz.value * up[0];
 	R.refdef.vieworg[1] += V.ofsx.value * forward[1] + V.ofsy.value * right[1] + V.ofsz.value * up[1];
