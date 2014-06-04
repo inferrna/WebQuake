@@ -1317,11 +1317,11 @@ R.EntityParticles = function(ent)
 			color: 0x6f,
 			ramp: 0.0,
 			type: R.ptype.explode,
-			org: [
+			org: new Float32Array([
 				ent.origin[0] + R.avertexnormals[i][0] * 64.0 + cp * cy * 16.0,
 				ent.origin[1] + R.avertexnormals[i][1] * 64.0 + cp * sy * 16.0,
 				ent.origin[2] + R.avertexnormals[i][2] * 64.0 + sp * -16.0
-			],
+			]),
 			vel: new Float32Array([0.0, 0.0, 0.0])
 		};
 	}
@@ -1332,7 +1332,7 @@ R.ClearParticles = function()
 	var i;
 	R.particles = [];
 	for (i = 0; i < R.numparticles; ++i)
-		R.particles[i] = {die: -1.0};
+		R.particles[i] = {die: -1.0, org: new Float32Array(3), vel: new Float32Array(3)};
 };
 
 R.ReadPointFile_f = function()
@@ -1374,8 +1374,8 @@ R.ReadPointFile_f = function()
 
 R.ParseParticleEffect = function()
 {
-	var org = [MSG.ReadCoord(), MSG.ReadCoord(), MSG.ReadCoord()];
-	var dir = [MSG.ReadChar() * 0.0625, MSG.ReadChar() * 0.0625, MSG.ReadChar() * 0.0625];
+	var org = new Float32Array([MSG.ReadCoord(), MSG.ReadCoord(), MSG.ReadCoord()]);
+	var dir = new Float32Array([MSG.ReadChar() * 0.0625, MSG.ReadChar() * 0.0625, MSG.ReadChar() * 0.0625]);
 	var msgcount = MSG.ReadByte();
 	var color = MSG.ReadByte();
 	if (msgcount === 255)
@@ -1394,12 +1394,12 @@ R.ParticleExplosion = function(org)
 			color: R.ramp1[0],
 			ramp: Math.floor(Math.random() * 4.0),
 			type: ((i & 1) !== 0) ? R.ptype.explode : R.ptype.explode2,
-			org: [
+			org: new Float32Array([
 				org[0] + Math.random() * 32.0 - 16.0,
 				org[1] + Math.random() * 32.0 - 16.0,
 				org[2] + Math.random() * 32.0 - 16.0
-			],
-			vel: [Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0]
+			]),
+			vel: new Float32Array([Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0])
 		};
 	}
 };
@@ -1413,12 +1413,12 @@ R.ParticleExplosion2 = function(org, colorStart, colorLength)
 			die: CL.state.time + 0.3,
 			color: colorStart + (colorMod++ % colorLength),
 			type: R.ptype.blob,
-			org: [
+			org: new Float32Array([
 				org[0] + Math.random() * 32.0 - 16.0,
 				org[1] + Math.random() * 32.0 - 16.0,
 				org[2] + Math.random() * 32.0 - 16.0
-			],
-			vel: [Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0]
+			]),
+			vel: new Float32Array([Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0])
 		};
 	}
 };
@@ -1429,6 +1429,8 @@ R.BlobExplosion = function(org)
 	for (i = 0; i < allocated.length; ++i)
 	{
 		p = R.particles[allocated[i]];
+        if(!p.vel) p.vel = new Float32Array(3);
+        if(!p.org) p.org = new Float32Array(3);
 		p.die = CL.state.time + 1.0 + Math.random() * 0.4;
 		if ((i & 1) !== 0)
 		{
@@ -1440,12 +1442,12 @@ R.BlobExplosion = function(org)
 			p.type = R.ptype.blob2;
 			p.color = 150 + Math.floor(Math.random() * 7.0);
 		}
-		p.org = [
+		p.org.set([
 			org[0] + Math.random() * 32.0 - 16.0,
 			org[1] + Math.random() * 32.0 - 16.0,
 			org[2] + Math.random() * 32.0 - 16.0
-		];
-		p.vel = [Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0];
+		]);
+		p.vel.set([Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0]);
 	}
 };
 
@@ -1458,12 +1460,12 @@ R.RunParticleEffect = function(org, dir, color, count)
 			die: CL.state.time + 0.6 * Math.random(),
 			color: (color & 0xf8) + Math.floor(Math.random() * 8.0),
 			type: R.ptype.slowgrav,
-			org: [
+			org: new Float32Array([
 				org[0] + Math.random() * 16.0 - 8.0,
 				org[1] + Math.random() * 16.0 - 8.0,
 				org[2] + Math.random() * 16.0 - 8.0
-			],
-			vel: [dir[0] * 15.0, dir[1] * 15.0, dir[2] * 15.0]
+			]),
+			vel: new Float32Array([dir[0] * 15.0, dir[1] * 15.0, dir[2] * 15.0])
 		};
 	}
 };
@@ -1471,7 +1473,7 @@ R.RunParticleEffect = function(org, dir, color, count)
 R.LavaSplash = function(org)
 {
 	var allocated = R.AllocParticles(1024), i, j, k = 0, p;
-	var dir = [], vel;
+	var dir = new Float32Array(3), vel;
 	for (i = -16; i <= 15; ++i)
 	{
 		for (j = -16; j <= 15; ++j)
@@ -1479,16 +1481,18 @@ R.LavaSplash = function(org)
 			if (k >= allocated.length)
 				return;
 			p = R.particles[allocated[k++]];
+            if(!p.vel) p.vel = new Float32Array(3);
+            if(!p.org) p.org = new Float32Array(3);
 			p.die = CL.state.time + 2.0 + Math.random() * 0.64;
 			p.color = 224 + Math.floor(Math.random() * 8.0);
 			p.type = R.ptype.slowgrav;
 			dir[0] = (j + Math.random) * 8.0;
 			dir[1] = (i + Math.random) * 8.0;
 			dir[2] = 256.0;
-			p.org = [org[0] + dir[0], org[1] + dir[1], org[2] + Math.random() * 64.0];
+			p.org.set([org[0] + dir[0], org[1] + dir[1], org[2] + Math.random() * 64.0]);
 			Vec.Normalize(dir);
 			vel = 50.0 + Math.random() * 64.0;
-			p.vel = [dir[0] * vel, dir[1] * vel, dir[2] * vel];
+			p.vel.set([dir[0] * vel, dir[1] * vel, dir[2] * vel]);
 		}
 	}
 };
@@ -1496,7 +1500,7 @@ R.LavaSplash = function(org)
 R.TeleportSplash = function(org)
 {
 	var allocated = R.AllocParticles(896), i, j, k, l = 0, p;
-	var dir = [], vel;
+	var dir = new Float32Array(3), vel;
 	for (i = -16; i <= 15; i += 4)
 	{
 		for (j = -16; j <= 15; j += 4)
@@ -1506,20 +1510,20 @@ R.TeleportSplash = function(org)
 				if (l >= allocated.length)
 					return;
 				p = R.particles[allocated[l++]];
+                if(!p.vel) p.vel = new Float32Array(3);
+                if(!p.org) p.org = new Float32Array(3);
 				p.die = CL.state.time + 0.2 + Math.random() * 0.16;
 				p.color = 7 + Math.floor(Math.random() * 8.0);
 				p.type = R.ptype.slowgrav;
-				dir[0] = j * 8.0;
-				dir[1] = i * 8.0;
-				dir[2] = k * 8.0;
-				p.org = [
+				dir.set([j * 8.0, i * 8.0, k * 8.0]);
+				p.org.set([
 					org[0] + i + Math.random() * 4.0,
 					org[1] + j + Math.random() * 4.0,
 					org[2] + k + Math.random() * 4.0
-				];
+				]);
 				Vec.Normalize(dir);
 				vel = 50.0 + Math.random() * 64.0;
-				p.vel = [dir[0] * vel, dir[1] * vel, dir[2] * vel];
+				p.vel.set([dir[0] * vel, dir[1] * vel, dir[2] * vel]);
 			}
 		}
 	}
@@ -1528,11 +1532,11 @@ R.TeleportSplash = function(org)
 R.tracercount = 0;
 R.RocketTrail = function(start, end, type)
 {
-	var vec = [end[0] - start[0], end[1] - start[1], end[2] - start[2]];
+	var vec = new Float32Array([end[0] - start[0], end[1] - start[1], end[2] - start[2]]);
 	var len = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
 	if (len === 0.0)
 		return;
-	vec = [vec[0] / len, vec[1] / len, vec[2] / len];
+	vec.set([vec[0] / len, vec[1] / len, vec[2] / len]);
 
 	var allocated;
 	if (type === 4)
@@ -1544,7 +1548,9 @@ R.RocketTrail = function(start, end, type)
 	for (i = 0; i < allocated.length; ++i)
 	{
 		p = R.particles[allocated[i]];
-		p.vel = new Float32Array([0.0, 0.0, 0.0]);
+        if(!p.vel) p.vel = new Float32Array(3);
+        if(!p.org) p.org = new Float32Array(3);
+		p.vel.set([0.0, 0.0, 0.0]);
 		p.die = CL.state.time + 2.0;
 		switch (type)
 		{
@@ -1553,20 +1559,20 @@ R.RocketTrail = function(start, end, type)
 			p.ramp = Math.floor(Math.random() * 4.0) + (type << 1);
 			p.color = R.ramp3[p.ramp];
 			p.type = R.ptype.fire;
-			p.org = [
+			p.org.set([
 				start[0] + Math.random() * 6.0 - 3.0,
 				start[1] + Math.random() * 6.0 - 3.0,
 				start[2] + Math.random() * 6.0 - 3.0
-			];
+			]);
 			break;
 		case 2:
 			p.type = R.ptype.grav;
 			p.color = 67 + Math.floor(Math.random() * 4.0);
-			p.org = [
+			p.org.set([
 				start[0] + Math.random() * 6.0 - 3.0,
 				start[1] + Math.random() * 6.0 - 3.0,
 				start[2] + Math.random() * 6.0 - 3.0
-			];
+			]);
 			break;
 		case 3:
 		case 5:
@@ -1576,7 +1582,7 @@ R.RocketTrail = function(start, end, type)
 				p.color = 52 + ((R.tracercount++ & 4) << 1);
 			else
 				p.color = 230 + ((R.tracercount++ & 4) << 1);
-			p.org = [start[0], start[1], start[2]];
+			p.org.set([start[0], start[1], start[2]]);
 			if ((R.tracercount & 1) !== 0)
 			{
 				p.vel[0] = 30.0 * vec[1];
@@ -1591,21 +1597,21 @@ R.RocketTrail = function(start, end, type)
 		case 4:
 			p.type = R.ptype.grav;
 			p.color = 67 + Math.floor(Math.random() * 4.0);
-			p.org = [
+			p.org.set([
 				start[0] + Math.random() * 6.0 - 3.0,
 				start[1] + Math.random() * 6.0 - 3.0,
 				start[2] + Math.random() * 6.0 - 3.0
-			];
+			]);
 			break;
 		case 6:
 			p.color = 152 + Math.floor(Math.random() * 4.0);
 			p.type = R.ptype.tracer;
 			p.die = CL.state.time + 0.3;
-			p.org = [
+			p.org.set([
 				start[0] + Math.random() * 16.0 - 8.0,
 				start[1] + Math.random() * 16.0 - 8.0,
 				start[2] + Math.random() * 16.0 - 8.0
-			];
+			]);
 		}
 		start[0] += vec[0];
 		start[1] += vec[1];
@@ -1701,7 +1707,7 @@ R.DrawParticles = function()
 
 R.AllocParticles = function(count)
 {
-	var allocated = [], i;
+	var allocated = new Uint32Array(count), i;
 	for (i = 0; i < R.numparticles; ++i)
 	{
 		if (count === 0)
