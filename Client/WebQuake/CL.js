@@ -1,4 +1,4 @@
-CL = {};
+var CL = {};
 
 CL.cshift = {
 	contents: 0,
@@ -538,26 +538,29 @@ CL.ClearState = function()
 			sidemove: 0.0,
 			upmove: 0.0
 		},
-		stats: [
+		stats: new Float32Array([
 			0, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0, 0, 0, 0, 0, 0,
 			0, 0, 0, 0, 0, 0, 0, 0
-		],
+		]),
 		items: 0,
-		item_gettime: [
+		item_gettime: new Float32Array([
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-		],
+		]),
 		faceanimtime: 0.0,
-		cshifts: [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
-		mviewangles: [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
-		viewangles: [0.0, 0.0, 0.0],
-		mvelocity: [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
-		velocity: [0.0, 0.0, 0.0],
-		punchangle: [0.0, 0.0, 0.0],
+		cshifts: [new Float32Array([0.0, 0.0, 0.0, 0.0]),
+                  new Float32Array([0.0, 0.0, 0.0, 0.0]),
+                  new Float32Array([0.0, 0.0, 0.0, 0.0]),
+                  new Float32Array([0.0, 0.0, 0.0, 0.0])],
+		mviewangles: [new Float32Array([0.0, 0.0, 0.0]), new Float32Array([0.0, 0.0, 0.0])],
+		viewangles: new Float32Array([0.0, 0.0, 0.0]),
+		mvelocity: [new Float32Array([0.0, 0.0, 0.0]), new Float32Array([0.0, 0.0, 0.0])],
+		velocity: new Float32Array([0.0, 0.0, 0.0]),
+		punchangle: new Float32Array([0.0, 0.0, 0.0]),
 		idealpitch: 0.0,
 		pitchvel: 0.0,
 		driftmove: 0.0,
@@ -565,13 +568,13 @@ CL.ClearState = function()
 		crouch: 0.0,
 		intermission: 0,
 		completed_time: 0,
-		mtime: [0.0, 0.0],
+		mtime: new Float32Array([0.0, 0.0]),
 		time: 0.0,
 		oldtime: 0.0,
 		last_received_message: 0.0,
 		viewentity: 0,
 		num_statics: 0,
-		viewent: {num: -1, origin: [0.0, 0.0, 0.0], angles: [0.0, 0.0, 0.0], skinnum: 0},
+		viewent: {num: -1, origin: new Float32Array([0.0, 0.0, 0.0]), angles: new Float32Array([0.0, 0.0, 0.0]), skinnum: 0},
 		cdtrack: 0,
 		looptrack: 0
 	};
@@ -733,7 +736,7 @@ CL.AllocDlight = function(key)
 		if (dl == null)
 			dl = CL.dlights[0];
 	}
-	dl.origin = [0.0, 0.0, 0.0];
+	dl.origin = new Float32Array([0.0, 0.0, 0.0]);
 	dl.radius = 0.0;
 	dl.die = 0.0;
 	dl.decay = 0.0;
@@ -1050,8 +1053,8 @@ CL.EntityNum = function(num)
 			num: num,
 			update_type: 0,
 			baseline: {
-				origin: [0.0, 0.0, 0.0],
-				angles: [0.0, 0.0, 0.0],
+				origin: new Float32Array([0.0, 0.0, 0.0]),
+				angles: new Float32Array([0.0, 0.0, 0.0]),
 				modelindex: 0,
 				frame: 0,
 				colormap: 0,
@@ -1059,10 +1062,10 @@ CL.EntityNum = function(num)
 				effects: 0
 			},
 			msgtime: 0.0,
-			msg_origins: [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
-			origin: [0.0, 0.0, 0.0],
-			msg_angles: [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
-			angles: [0.0, 0.0, 0.0],
+			msg_origins: [new Float32Array([0.0, 0.0, 0.0]), new Float32Array([0.0, 0.0, 0.0])],
+			origin: new Float32Array([0.0, 0.0, 0.0]),
+			msg_angles: [new Float32Array([0.0, 0.0, 0.0]), new Float32Array([0.0, 0.0, 0.0])],
+			angles: new Float32Array([0.0, 0.0, 0.0]),
 			frame: 0,
 			syncbase: 0.0,
 			effects: 0,
@@ -1326,8 +1329,8 @@ CL.ParseStatic = function()
 		update_type: 0,
 		baseline: {origin: [], angles: []},
 		msgtime: 0.0,
-		msg_origins: [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
-		msg_angles: [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
+		msg_origins: [new Float32Array([0.0, 0.0, 0.0]), new Float32Array([0.0, 0.0, 0.0])],
+		msg_angles: [new Float32Array([0.0, 0.0, 0.0]), new Float32Array([0.0, 0.0, 0.0])],
 		syncbase: 0.0,
 		visframe: 0,
 		dlightframe: 0,
@@ -1564,8 +1567,8 @@ CL.InitTEnts = function()
 CL.ParseBeam = function(m)
 {
 	var ent = MSG.ReadShort();
-	var start = [MSG.ReadCoord(), MSG.ReadCoord(), MSG.ReadCoord()];
-	var end = [MSG.ReadCoord(), MSG.ReadCoord(), MSG.ReadCoord()];
+	var start = new Float32Array([MSG.ReadCoord(), MSG.ReadCoord(), MSG.ReadCoord()]);
+	var end = new Float32Array([MSG.ReadCoord(), MSG.ReadCoord(), MSG.ReadCoord()]);
 	var i, b;
 	for (i = 0; i <= 23; ++i)
 	{
@@ -1574,8 +1577,8 @@ CL.ParseBeam = function(m)
 			continue;
 		b.model = m;
 		b.endtime = CL.state.time + 0.2;
-		b.start = [start[0], start[1], start[2]];
-		b.end = [end[0], end[1], end[2]];
+		b.start = new Float32Array(3); b.start.set(start);
+		b.end = new Float32Array(3); b.end.set(end);
 		return;
 	}
 	for (i = 0; i <= 23; ++i)
@@ -1586,8 +1589,8 @@ CL.ParseBeam = function(m)
 		b.entity = ent;
 		b.model = m;
 		b.endtime = CL.state.time + 0.2;
-		b.start = [start[0], start[1], start[2]];
-		b.end = [end[0], end[1], end[2]];
+		b.start = new Float32Array(3); b.start.set(start);
+		b.end = new Float32Array(3); b.end.set(end);
 		return;
 	}
 	Con.Print('beam list overflow!\n');

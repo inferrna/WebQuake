@@ -391,24 +391,24 @@ Mod.LoadSubmodels = function(buf)
 				firstclipnode: view.getUint32(fileofs + 36, true),
 				lastclipnode: Mod.loadmodel.nodes.length - 1,
 				planes: Mod.loadmodel.planes,
-				clip_mins: [0.0, 0.0, 0.0],
-				clip_maxs: [0.0, 0.0, 0.0]
+				clip_mins: new Float32Array([0.0, 0.0, 0.0]),
+				clip_maxs: new Float32Array([0.0, 0.0, 0.0])
 			},
 			{
 				clipnodes: Mod.loadmodel.clipnodes,
 				firstclipnode: view.getUint32(fileofs + 40, true),
 				lastclipnode: Mod.loadmodel.clipnodes.length - 1,
 				planes: Mod.loadmodel.planes,
-				clip_mins: [-16.0, -16.0, -24.0],
-				clip_maxs: [16.0, 16.0, 32.0]
+				clip_mins: new Float32Array([-16.0, -16.0, -24.0]),
+				clip_maxs: new Float32Array([16.0, 16.0, 32.0])
 			},
 			{
 				clipnodes: Mod.loadmodel.clipnodes,
 				firstclipnode: view.getUint32(fileofs + 44, true),
 				lastclipnode: Mod.loadmodel.clipnodes.length - 1,
 				planes: Mod.loadmodel.planes,
-				clip_mins: [-32.0, -32.0, -24.0],
-				clip_maxs: [32.0, 32.0, 64.0]
+				clip_mins: new Float32Array([-32.0, -32.0, -24.0]),
+				clip_maxs: new Float32Array([32.0, 32.0, 64.0])
 			}
 		];
 		out.textures = Mod.loadmodel.textures;
@@ -660,8 +660,8 @@ Mod.MakeHull0 = function()
 		clipnodes: clipnodes,
 		lastclipnode: Mod.loadmodel.nodes.length - 1,
 		planes: Mod.loadmodel.planes,
-		clip_mins: [0.0, 0.0, 0.0],
-		clip_maxs: [0.0, 0.0, 0.0]
+		clip_mins: new Float32Array([0.0, 0.0, 0.0]),
+		clip_maxs: new Float32Array([0.0, 0.0, 0.0])
 	};
 	for (i = 0; i < Mod.loadmodel.nodes.length; ++i)
 	{
@@ -757,7 +757,7 @@ Mod.LoadBrushModel = function(buffer)
 	Mod.LoadEntities(buffer);
 	Mod.LoadSubmodels(buffer);
 
-	var i, vert, mins = [0.0, 0.0, 0.0], maxs = [0.0, 0.0, 0.0];
+	var i, vert, mins = new Float32Array([0.0, 0.0, 0.0]), maxs = new Float32Array([0.0, 0.0, 0.0]);
 	for (i = 0; i < Mod.loadmodel.vertexes.length; ++i)
 	{
 		vert = Mod.loadmodel.vertexes[i];

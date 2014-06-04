@@ -6,6 +6,7 @@ R.v9d = new Float32Array(9);
 R.v3a = new Float32Array(3);
 R.v3b = new Float32Array(3);
 R.v3c = new Float32Array(3);
+R.a1024c = new Uint16Array(1024);
 // efrag
 R.rlpc = 0;
 R.rwnc = 0;
@@ -879,7 +880,7 @@ R.MakeBrushModelDisplayLists = function(m)
 		gl.deleteBuffer(m.cmds);
 	var i, j, k;
 	var cmds = [];
-	var texture, chain, leaf, surf, vert, styles = [0.0, 0.0, 0.0, 0.0];
+	var texture, chain, leaf, surf, vert, styles = new Float32Array([0.0, 0.0, 0.0, 0.0]);
 	var verts = 0;
 	m.chains = [];
 	for (i = 0; i < m.textures.length; ++i)
@@ -969,7 +970,7 @@ R.MakeWorldModelDisplayLists = function(m)
 		return;
 	var i, j, k, l;
 	var cmds = [];
-	var texture, leaf, chain, surf, vert, styles = [0.0, 0.0, 0.0, 0.0];
+	var texture, leaf, chain, surf, vert, styles = new Float32Array([0.0, 0.0, 0.0, 0.0]);
 	var verts = 0;
 	for (i = 0; i < m.textures.length; ++i)
 	{
@@ -1321,7 +1322,7 @@ R.EntityParticles = function(ent)
 				ent.origin[1] + R.avertexnormals[i][1] * 64.0 + cp * sy * 16.0,
 				ent.origin[2] + R.avertexnormals[i][2] * 64.0 + sp * -16.0
 			],
-			vel: [0.0, 0.0, 0.0]
+			vel: new Float32Array([0.0, 0.0, 0.0])
 		};
 	}
 };
@@ -1364,8 +1365,8 @@ R.ReadPointFile_f = function()
 			die: 99999.0,
 			color: -c & 15,
 			type: R.ptype.tracer,
-			vel: [0.0, 0.0, 0.0],
-			org: [Q.atof(org[0]), Q.atof(org[1]), Q.atof(org[2])]
+			vel: new Float32Array([0.0, 0.0, 0.0]),
+			org: new Float32Array([Q.atof(org[0]), Q.atof(org[1]), Q.atof(org[2])])
 		};
 	}
 	Con.Print(c + ' points read\n');
@@ -1543,7 +1544,7 @@ R.RocketTrail = function(start, end, type)
 	for (i = 0; i < allocated.length; ++i)
 	{
 		p = R.particles[allocated[i]];
-		p.vel = [0.0, 0.0, 0.0];
+		p.vel = new Float32Array([0.0, 0.0, 0.0]);
 		p.die = CL.state.time + 2.0;
 		switch (type)
 		{
@@ -2133,7 +2134,7 @@ R.BuildLightmaps = function()
 {
 	var i, j;
 
-	R.allocated = [];
+	R.allocated = R.a1024c;
 	for (i = 0; i < 1024; ++i)
 		R.allocated[i] = 0;
 
@@ -2189,7 +2190,7 @@ R.WarpScreen = function()
 
 R.MakeSky = function()
 {
-	var sin = [0.0, 0.19509, 0.382683, 0.55557, 0.707107, 0.831470, 0.92388, 0.980785, 1.0];
+	var sin = new Float32Array([0.0, 0.19509, 0.382683, 0.55557, 0.707107, 0.831470, 0.92388, 0.980785, 1.0]);
 	var vecs = [], i, j;
 
 	for (i = 0; i < 7; i += 2)
@@ -2214,7 +2215,7 @@ R.MakeSky = function()
 			]);
 		}
 	}
-
+    console.log("R.MakeSky vecs.length=="+vecs.length);
 	GL.CreateProgram('Sky', ['uViewAngles', 'uPerspective', 'uScale', 'uGamma', 'uTime'], ['aPoint'], ['tSolid', 'tAlpha']);
 	GL.CreateProgram('SkyChain', ['uViewOrigin', 'uViewAngles', 'uPerspective'], ['aPoint'], []);
 

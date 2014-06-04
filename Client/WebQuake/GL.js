@@ -413,7 +413,7 @@ GL.UnbindProgram = function()
 	GL.currentprogram = null;
 };
 
-GL.identity = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
+GL.identity = new Float32Array([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]);
 
 
 

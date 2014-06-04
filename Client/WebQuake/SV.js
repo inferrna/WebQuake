@@ -1,4 +1,10 @@
-SV = {};
+var SV = {};
+SV.v3a = new Float32Array(3);
+SV.v3b = new Float32Array(3);
+SV.v3c = new Float32Array(3);
+SV.v3d = new Float32Array(3);
+SV.v3e = new Float32Array(3);
+SV.v3f = new Float32Array(3);
 
 SV.movetype = {
 	none: 0,
@@ -184,8 +190,8 @@ SV.ConnectClient = function(clientnum)
 		spawn_parms = [];
 		if (client.spawn_parms == null)
 		{
-			client.spawn_parms = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+			client.spawn_parms = new Float32Array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
 		}
 		for (i = 0; i <= 15; ++i)
 			spawn_parms[i] = client.spawn_parms[i];
@@ -195,19 +201,19 @@ SV.ConnectClient = function(clientnum)
 	client.dropasap = false;
 	client.last_message = 0.0;
 	client.cmd = {forwardmove: 0.0, sidemove: 0.0, upmove: 0.0};
-	client.wishdir = [0.0, 0.0, 0.0];
+	client.wishdir = new Float32Array([0.0, 0.0, 0.0]);
 	client.message.cursize = 0;
 	client.edict = SV.server.edicts[clientnum + 1];
 	client.edict.v_int[PR.entvars.netname] = PR.netnames + (clientnum << 5);
 	SV.SetClientName(client, 'unconnected');
 	client.colors = 0;
-	client.ping_times = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+	client.ping_times = new Float32Array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
 	client.num_pings = 0;
 	if (SV.server.loadgame !== true)
 	{
-		client.spawn_parms = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+		client.spawn_parms = new Float32Array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+			0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
 	}
 	client.old_frags = 0;
 	if (SV.server.loadgame === true)
@@ -708,8 +714,8 @@ SV.SpawnServer = function(server)
 			area: {},
 			leafnums: [],
 			baseline: {
-				origin: [0.0, 0.0, 0.0],
-				angles: [0.0, 0.0, 0.0],
+				origin: new Float32Array([0.0, 0.0, 0.0]),
+				angles: new Float32Array([0.0, 0.0, 0.0]),
 				modelindex: 0,
 				frame: 0,
 				colormap: 0,
@@ -1538,7 +1544,7 @@ SV.WalkMove = function(ent)
 	var nosteporg = ED.Vector(ent, PR.entvars.origin);
 	var nostepvel = ED.Vector(ent, PR.entvars.velocity);
 	ED.SetVector(ent, PR.entvars.origin, oldorg);
-	SV.PushEntity(ent, [0.0, 0.0, 18.0]);
+	SV.PushEntity(ent, new Float32Array([0.0, 0.0, 18.0]));
 	ent.v_float[PR.entvars.velocity] = oldvel[0];
 	ent.v_float[PR.entvars.velocity1] = oldvel[1];
 	ent.v_float[PR.entvars.velocity2] = 0.0;
@@ -1551,7 +1557,7 @@ SV.WalkMove = function(ent)
 		if ((clip & 2) !== 0)
 			SV.WallFriction(ent, SV.steptrace);
 	}
-	var downtrace = SV.PushEntity(ent, [0.0, 0.0, oldvel[2] * Host.frametime - 18.0]);
+	var downtrace = SV.PushEntity(ent, new Float32Array([0.0, 0.0, oldvel[2] * Host.frametime - 18.0]));
 	if (downtrace.plane.normal[2] > 0.7)
 	{
 		if (ent.v_float[PR.entvars.solid] === SV.solid.bsp)
@@ -1754,8 +1760,8 @@ SV.SetIdealPitch = function()
 	var angleval = ent.v_float[PR.entvars.angles1] * (Math.PI / 180.0);
 	var sinval = Math.sin(angleval);
 	var cosval = Math.cos(angleval);
-	var top = [0.0, 0.0, ent.v_float[PR.entvars.origin2] + ent.v_float[PR.entvars.view_ofs2]];
-	var bottom = [0.0, 0.0, top[2] - 160.0];
+	var top = new Float32Array([0.0, 0.0, ent.v_float[PR.entvars.origin2] + ent.v_float[PR.entvars.view_ofs2]]);
+	var bottom = new Float32Array([0.0, 0.0, top[2] - 160.0]);
 	var i, tr, z = [];
 	for (i = 0; i < 6; ++i)
 	{
@@ -2116,7 +2122,7 @@ SV.InitBoxHull = function()
 		plane = {};
 		SV.box_planes[i] = plane;
 		plane.type = i >> 1;
-		plane.normal = [0.0, 0.0, 0.0];
+		plane.normal = new Float32Array([0.0, 0.0, 0.0]);
 		plane.normal[i >> 1] = 1.0;
 		plane.dist = 0.0;
 	}
@@ -2178,8 +2184,8 @@ SV.CreateAreaNode = function(depth, mins, maxs)
 	anode.axis = (maxs[0] - mins[0]) > (maxs[1] - mins[1]) ? 0 : 1;
 	anode.dist = 0.5 * (maxs[anode.axis] + mins[anode.axis]);
 
-	var maxs1 = [maxs[0], maxs[1], maxs[2]];
-	var mins2 = [mins[0], mins[1], mins[2]];
+	var maxs1 = SV.v3a; maxs1.set(maxs);
+	var mins2 = SV.v3b; mins2.set(mins);
 	maxs1[anode.axis] = mins2[anode.axis] = anode.dist;
 	anode.children = [SV.CreateAreaNode(depth + 1, mins2, maxs), SV.CreateAreaNode(depth + 1, mins, maxs1)];
 	return anode;
@@ -2443,7 +2449,7 @@ SV.ClipMoveToEntity = function(ent, start, mins, maxs, end)
 		fraction: 1.0,
 		allsolid: true,
 		endpos: [end[0], end[1], end[2]],
-		plane: {normal: [0.0, 0.0, 0.0], dist: 0.0}
+		plane: {normal: new Float32Array([0.0, 0.0, 0.0]), dist: 0.0}
 	};
 	var offset = [];
 	var hull = SV.HullForEntity(ent, mins, maxs, offset);
@@ -2525,18 +2531,20 @@ SV.Move = function(start, mins, maxs, end, type, passedict)
 		maxs: maxs,
 		type: type,
 		passedict: passedict,
-		boxmins: [],
-		boxmaxs: []
+		boxmins: SV.v3c,
+		boxmaxs: SV.v3d,
+        mins2: SV.v3e,
+        maxs2: SV.v3f
 	};
 	if (type === SV.move.missile)
 	{
-		clip.mins2 = [-15.0, -15.0, -15.0];
-		clip.maxs2 = [15.0, 15.0, 15.0];
+		clip.mins2.set([-15.0, -15.0, -15.0]);
+		clip.maxs2.set([15.0, 15.0, 15.0]);
 	}
 	else
 	{
-		clip.mins2 = [mins[0], mins[1], mins[2]];
-		clip.maxs2 = [maxs[0], maxs[1], maxs[2]];
+		clip.mins2.set(mins);
+		clip.maxs2.set(maxs);
 	}
 	var i;
 	for (i = 0; i <= 2; ++i)
