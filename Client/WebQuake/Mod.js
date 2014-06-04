@@ -1,4 +1,4 @@
-Mod = {};
+var Mod = {};
 
 Mod.effects = {
 	brightfield: 1,
@@ -345,7 +345,7 @@ Mod.LoadVertexes = function(buf)
 	var i;
 	for (i = 0; i < count; ++i)
 	{
-		Mod.loadmodel.vertexes[i] = [view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true)];
+		Mod.loadmodel.vertexes[i] = new Float32Array([view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true)]);
 		fileofs += 12;
 	}
 };
@@ -360,12 +360,12 @@ Mod.LoadSubmodels = function(buf)
 		Sys.Error('Mod.LoadSubmodels: funny lump size in ' + Mod.loadmodel.name);
 	Mod.loadmodel.submodels = [];
 
-	Mod.loadmodel.mins = [view.getFloat32(fileofs, true) - 1.0,
+	Mod.loadmodel.mins = new Float32Array([view.getFloat32(fileofs, true) - 1.0,
 		view.getFloat32(fileofs + 4, true) - 1.0,
-		view.getFloat32(fileofs + 8, true) - 1.0];
-	Mod.loadmodel.maxs = [view.getFloat32(fileofs + 12, true) + 1.0,
+		view.getFloat32(fileofs + 8, true) - 1.0]);
+	Mod.loadmodel.maxs = new Float32Array([view.getFloat32(fileofs + 12, true) + 1.0,
 		view.getFloat32(fileofs + 16, true) + 1.0,
-		view.getFloat32(fileofs + 20, true) + 1.0];
+		view.getFloat32(fileofs + 20, true) + 1.0]);
 	Mod.loadmodel.hulls[0].firstclipnode = view.getUint32(fileofs + 36, true);
 	Mod.loadmodel.hulls[1].firstclipnode = view.getUint32(fileofs + 40, true);
 	Mod.loadmodel.hulls[2].firstclipnode = view.getUint32(fileofs + 44, true);
@@ -378,13 +378,13 @@ Mod.LoadSubmodels = function(buf)
 		out.needload = false;
 		out.type = Mod.type.brush;
 		out.submodel = true;
-		out.mins = [view.getFloat32(fileofs, true) - 1.0,
+		out.mins = new Float32Array([view.getFloat32(fileofs, true) - 1.0,
 			view.getFloat32(fileofs + 4, true) - 1.0,
-			view.getFloat32(fileofs + 8, true) - 1.0];
-		out.maxs = [view.getFloat32(fileofs + 12, true) + 1.0,
+			view.getFloat32(fileofs + 8, true) - 1.0]);
+		out.maxs = new Float32Array([view.getFloat32(fileofs + 12, true) + 1.0,
 			view.getFloat32(fileofs + 16, true) + 1.0,
-			view.getFloat32(fileofs + 20, true) + 1.0];
-		out.origin = [view.getFloat32(fileofs + 24, true), view.getFloat32(fileofs + 28, true), view.getFloat32(fileofs + 32, true)];
+			view.getFloat32(fileofs + 20, true) + 1.0]);
+		out.origin = new Float32Array([view.getFloat32(fileofs + 24, true), view.getFloat32(fileofs + 28, true), view.getFloat32(fileofs + 32, true)]);
 		out.hulls = [
 			{
 				clipnodes: clipnodes,
@@ -433,7 +433,7 @@ Mod.LoadEdges = function(buf)
 	var i;
 	for (i = 0; i < count; ++i)
 	{
-		Mod.loadmodel.edges[i] = [view.getUint16(fileofs, true), view.getUint16(fileofs + 2, true)];
+		Mod.loadmodel.edges[i] = new Uint16Array([view.getUint16(fileofs, true), view.getUint16(fileofs + 2, true)]);
 		fileofs += 4;
 	}
 };
@@ -452,8 +452,8 @@ Mod.LoadTexinfo = function(buf)
 	{
 		out = {
 			vecs: [
-				[view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true), view.getFloat32(fileofs + 12, true)],
-				[view.getFloat32(fileofs + 16, true), view.getFloat32(fileofs + 20, true), view.getFloat32(fileofs + 24, true), view.getFloat32(fileofs + 28, true)]
+				new Float32Array([view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true), view.getFloat32(fileofs + 12, true)]),
+				new Float32Array([view.getFloat32(fileofs + 16, true), view.getFloat32(fileofs + 20, true), view.getFloat32(fileofs + 24, true), view.getFloat32(fileofs + 28, true)])
 			],
 			texture: view.getUint32(fileofs + 32, true),
 			flags: view.getUint32(fileofs + 36, true)
@@ -563,8 +563,8 @@ Mod.LoadNodes = function(buf)
 			contents: 0,
 			planenum: view.getUint32(fileofs, true),
 			children: [view.getInt16(fileofs + 4, true), view.getInt16(fileofs + 6, true)],
-			mins: [view.getInt16(fileofs + 8, true), view.getInt16(fileofs + 10, true), view.getInt16(fileofs + 12, true)],
-			maxs: [view.getInt16(fileofs + 14, true), view.getInt16(fileofs + 16, true), view.getInt16(fileofs + 18, true)],
+			mins: new Int16Array([view.getInt16(fileofs + 8, true), view.getInt16(fileofs + 10, true), view.getInt16(fileofs + 12, true)]),
+			maxs: new Int16Array([view.getInt16(fileofs + 14, true), view.getInt16(fileofs + 16, true), view.getInt16(fileofs + 18, true)]),
 			firstface: view.getUint16(fileofs + 20, true),
 			numfaces: view.getUint16(fileofs + 22, true),
 			cmds: []
@@ -603,11 +603,11 @@ Mod.LoadLeafs = function(buf)
 			num: i,
 			contents: view.getInt32(fileofs, true),
 			visofs: view.getInt32(fileofs + 4, true),
-			mins: [view.getInt16(fileofs + 8, true), view.getInt16(fileofs + 10, true), view.getInt16(fileofs + 12, true)],
-			maxs: [view.getInt16(fileofs + 14, true), view.getInt16(fileofs + 16, true), view.getInt16(fileofs + 18, true)],
+			mins: new Int16Array([view.getInt16(fileofs + 8, true), view.getInt16(fileofs + 10, true), view.getInt16(fileofs + 12, true)]),
+			maxs: new Int16Array([view.getInt16(fileofs + 14, true), view.getInt16(fileofs + 16, true), view.getInt16(fileofs + 18, true)]),
 			firstmarksurface: view.getUint16(fileofs + 20, true),
 			nummarksurfaces: view.getUint16(fileofs + 22, true),
-			ambient_level: [view.getUint8(fileofs + 24), view.getUint8(fileofs + 25), view.getUint8(fileofs + 26), view.getUint8(fileofs + 27)],
+			ambient_level: new Uint8Array([view.getUint8(fileofs + 24), view.getUint8(fileofs + 25), view.getUint8(fileofs + 26), view.getUint8(fileofs + 27)]),
 			cmds: [],
 			skychain: 0,
 			waterchain: 0
@@ -631,16 +631,16 @@ Mod.LoadClipnodes = function(buf)
 		firstclipnode: 0,
 		lastclipnode: count - 1,
 		planes: Mod.loadmodel.planes,
-		clip_mins: [-16.0, -16.0, -24.0],
-		clip_maxs: [16.0, 16.0, 32.0]
+		clip_mins: new Float32Array([-16.0, -16.0, -24.0]),
+		clip_maxs: new Float32Array([16.0, 16.0, 32.0])
 	};
 	Mod.loadmodel.hulls[2] = {
 		clipnodes: Mod.loadmodel.clipnodes,
 		firstclipnode: 0,
 		lastclipnode: count - 1,
 		planes: Mod.loadmodel.planes,
-		clip_mins: [-32.0, -32.0, -24.0],
-		clip_maxs: [32.0, 32.0, 64.0]
+		clip_mins:  new Float32Array([-32.0, -32.0, -24.0]),
+		clip_maxs:  new Float32Array([32.0, 32.0, 64.0])
 	};
 	var i;
 	for (i = 0; i < count; ++i)
@@ -718,7 +718,7 @@ Mod.LoadPlanes = function(buf)
 	for (i = 0; i < count; ++i)
 	{
 		out = {
-			normal: [view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true)],
+			normal:  new Float32Array([view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true)]),
 			dist: view.getFloat32(fileofs + 12, true),
 			type: view.getUint32(fileofs + 16, true),
 			signbits: 0
@@ -932,8 +932,8 @@ Mod.LoadAllFrames = function(buffer, inmodel)
 		{
 			frame = {
 				group: false,
-				bboxmin: [model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)],
-				bboxmax: [model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)],
+				bboxmin: new Uint8Array([model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)]),
+				bboxmax: new Uint8Array([model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)]),
 				name: Q.memstr(new Uint8Array(buffer, inmodel + 8, 16)),
 				v: []
 			};
@@ -952,8 +952,8 @@ Mod.LoadAllFrames = function(buffer, inmodel)
 		{
 			group = {
 				group: true,
-				bboxmin: [model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)],
-				bboxmax: [model.getUint8(inmodel + 8), model.getUint8(inmodel + 9), model.getUint8(inmodel + 10)],
+				bboxmin: new Uint8Array([model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)]),
+				bboxmax: new Uint8Array([model.getUint8(inmodel + 8), model.getUint8(inmodel + 9), model.getUint8(inmodel + 10)]),
 				frames: []
 			};
 			numframes = model.getUint32(inmodel, true);
@@ -968,15 +968,15 @@ Mod.LoadAllFrames = function(buffer, inmodel)
 			for (j = 0; j < numframes; ++j)
 			{
 				frame = group.frames[j];
-				frame.bboxmin = [model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)];
-				frame.bboxmax = [model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)];
+				frame.bboxmin = new Uint8Array([model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)]);
+				frame.bboxmax = new Uint8Array([model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)]);
 				frame.name = Q.memstr(new Uint8Array(buffer, inmodel + 8, 16));
 				frame.v = [];
 				inmodel += 24;
 				for (k = 0; k < Mod.loadmodel.numverts; ++k)
 				{
 					frame.v[k] = {
-						v: [model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)],
+						v: new Uint8Array([model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)]),
 						lightnormalindex: model.getUint8(inmodel + 3)
 					};
 					inmodel += 4;
@@ -997,8 +997,8 @@ Mod.LoadAliasModel = function(buffer)
 	var version = model.getUint32(4, true);
 	if (version !== Mod.version.alias)
 		Sys.Error(Mod.loadmodel.name + ' has wrong version number (' + version + ' should be ' + Mod.version.alias + ')');
-	Mod.loadmodel.scale = [model.getFloat32(8, true), model.getFloat32(12, true), model.getFloat32(16, true)];
-	Mod.loadmodel.scale_origin = [model.getFloat32(20, true), model.getFloat32(24, true), model.getFloat32(28, true)];
+	Mod.loadmodel.scale = new Float32Array([model.getFloat32(8, true), model.getFloat32(12, true), model.getFloat32(16, true)]);
+	Mod.loadmodel.scale_origin = new Float32Array([model.getFloat32(20, true), model.getFloat32(24, true), model.getFloat32(28, true)]);
 	Mod.loadmodel.boundingradius = model.getFloat32(32, true);
 	Mod.loadmodel.numskins = model.getUint32(48, true);
 	if (Mod.loadmodel.numskins === 0)
@@ -1016,8 +1016,8 @@ Mod.LoadAliasModel = function(buffer)
 		Sys.Error('model ' + Mod.loadmodel.name + ' has no frames');
 	Mod.loadmodel.random = model.getUint32(72, true) === 1;
 	Mod.loadmodel.flags = model.getUint32(76, true);
-	Mod.loadmodel.mins = [-16.0, -16.0, -16.0];
-	Mod.loadmodel.maxs = [16.0, 16.0, 16.0];
+	Mod.loadmodel.mins = new Float32Array([-16.0, -16.0, -16.0]);
+	Mod.loadmodel.maxs = new Float32Array([16.0, 16.0, 16.0]);
 
 	var inmodel = Mod.LoadAllSkins(buffer, 84);
 
@@ -1037,11 +1037,11 @@ Mod.LoadAliasModel = function(buffer)
 	{
 		Mod.loadmodel.triangles[i] = {
 			facesfront: model.getUint32(inmodel, true) !== 0,
-			vertindex: [
+			vertindex: new Uint32Array([
 				model.getUint32(inmodel + 4, true),
 				model.getUint32(inmodel + 8, true),
 				model.getUint32(inmodel + 12, true)
-			]
+			])
 		};
 		inmodel += 16;
 	}
@@ -1137,7 +1137,7 @@ Mod.LoadSpriteFrame = function(identifier, buffer, inframe, frame)
 	var i;
 
 	var model = new DataView(buffer);
-	frame.origin = [model.getInt32(inframe, true), -model.getInt32(inframe + 4, true)];
+	frame.origin = new Int32Array([model.getInt32(inframe, true), -model.getInt32(inframe + 4, true)]);
 	frame.width = model.getUint32(inframe + 8, true);
 	frame.height = model.getUint32(inframe + 12, true);
 	var size = frame.width * frame.height;
@@ -1220,8 +1220,8 @@ Mod.LoadSpriteModel = function(buffer)
 	if (Mod.loadmodel.numframes === 0)
 		Sys.Error('model ' + Mod.loadmodel.name + ' has no frames');
 	Mod.loadmodel.random = model.getUint32(32, true) === 1;
-	Mod.loadmodel.mins = [Mod.loadmodel.width * -0.5, Mod.loadmodel.width * -0.5, Mod.loadmodel.height * -0.5];
-	Mod.loadmodel.maxs = [Mod.loadmodel.width * 0.5, Mod.loadmodel.width * 0.5, Mod.loadmodel.height * 0.5];
+	Mod.loadmodel.mins = new Float32Array([Mod.loadmodel.width * -0.5, Mod.loadmodel.width * -0.5, Mod.loadmodel.height * -0.5]);
+	Mod.loadmodel.maxs = new Float32Array([Mod.loadmodel.width * 0.5, Mod.loadmodel.width * 0.5, Mod.loadmodel.height * 0.5]);
 
 	Mod.loadmodel.frames = [];
 	var inframe = 36, i, j, frame, group, numframes;

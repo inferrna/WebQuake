@@ -187,7 +187,7 @@ R.PushDlights = function()
 R.RecursiveLightPoint = function(node, start, end)
 {
     R.rlpc++;
-    if(R.rlpc>1023) {
+    if(R.rlpc>4095) {
         R.rlpc=0;
         return -1;
     }
@@ -203,11 +203,11 @@ R.RecursiveLightPoint = function(node, start, end)
 		return R.RecursiveLightPoint(node.children[side === true ? 1 : 0], start, end);
 
 	var frac = front / (front - back);
-	var mid = [
+	var mid = new Float32Array([
 		start[0] + (end[0] - start[0]) * frac,
 		start[1] + (end[1] - start[1]) * frac,
 		start[2] + (end[2] - start[2]) * frac
-	];
+	]);
 
 	var r = R.RecursiveLightPoint(node.children[side === true ? 1 : 0], start, mid);
 	if (r >= 0)
@@ -262,7 +262,7 @@ R.LightPoint = function(p)
 {
 	if (CL.state.worldmodel.lightdata == null)
 		return 255;
-	var r = R.RecursiveLightPoint(CL.state.worldmodel.nodes[0], p, [p[0], p[1], p[2] - 2048.0]);
+	var r = R.RecursiveLightPoint(CL.state.worldmodel.nodes[0], p, new Float32Array([p[0], p[1], p[2] - 2048.0]));
 	if (r === -1)
 		return 0;
 	return r;
@@ -962,6 +962,7 @@ R.MakeBrushModelDisplayLists = function(m)
 			verts += chain[2];
 		}
 	}
+    //console.log("cmds.length=="+cmds.length);
 	m.cmds = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, m.cmds);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cmds), gl.STATIC_DRAW);
@@ -1279,9 +1280,9 @@ R.ptype = {
 	blob2: 7
 };
 
-R.ramp1 = [0x6f, 0x6d, 0x6b, 0x69, 0x67, 0x65, 0x63, 0x61];
-R.ramp2 = [0x6f, 0x6e, 0x6d, 0x6c, 0x6b, 0x6a, 0x68, 0x66];
-R.ramp3 = [0x6d, 0x6b, 6, 5, 4, 3];
+R.ramp1 = new Uint8Array([0x6f, 0x6d, 0x6b, 0x69, 0x67, 0x65, 0x63, 0x61]);
+R.ramp2 = new Uint8Array([0x6f, 0x6e, 0x6d, 0x6c, 0x6b, 0x6a, 0x68, 0x66]);
+R.ramp3 = new Uint8Array([0x6d, 0x6b, 6, 5, 4, 3]);
 
 R.InitParticles = function()
 {
@@ -1297,7 +1298,7 @@ R.InitParticles = function()
 
 	R.avelocities = [];
 	for (i = 0; i <= 161; ++i)
-		R.avelocities[i] = [Math.random() * 2.56, Math.random() * 2.56, Math.random() * 2.56];
+		R.avelocities[i] = new Float32Array([Math.random() * 2.56, Math.random() * 2.56, Math.random() * 2.56]);
 
 	GL.CreateProgram('Particle', ['uOrigin', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uScale', 'uGamma', 'uColor'], ['aPoint'], []);
 };
@@ -2035,21 +2036,26 @@ R.MarkLeaves = function()
 			node.markvisframe = R.visframecount;
 		}
 	}
+    var p = new Float32Array(3);
 	do
 	{
+        p.set(R.refdef.vieworg);
 		if (R.novis.value !== 0)
 			break;
-		var p = [R.refdef.vieworg[0], R.refdef.vieworg[1], R.refdef.vieworg[2]];
 		var leaf;
 		if (R.viewleaf.contents <= Mod.contents.water)
 		{
-			leaf = Mod.PointInLeaf([R.refdef.vieworg[0], R.refdef.vieworg[1], R.refdef.vieworg[2] + 16.0], CL.state.worldmodel);
+			//leaf = Mod.PointInLeaf([R.refdef.vieworg[0], R.refdef.vieworg[1], R.refdef.vieworg[2] + 16.0], CL.state.worldmodel);
+            p[2] += 16.0;
+			leaf = Mod.PointInLeaf(p, CL.state.worldmodel);
 			if (leaf.contents <= Mod.contents.water)
 				break;
 		}
 		else
 		{
-			leaf = Mod.PointInLeaf([R.refdef.vieworg[0], R.refdef.vieworg[1], R.refdef.vieworg[2] - 16.0], CL.state.worldmodel);
+			//leaf = Mod.PointInLeaf([R.refdef.vieworg[0], R.refdef.vieworg[1], R.refdef.vieworg[2] - 16.0], CL.state.worldmodel);
+            p[2] -= 16.0;
+			leaf = Mod.PointInLeaf(p, CL.state.worldmodel);
 			if (leaf.contents > Mod.contents.water)
 				break;
 		}
