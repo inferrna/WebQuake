@@ -1,4 +1,7 @@
-var R = {};
+var R = {
+    emins: new Float32Array(3),
+    emaxs: new Float32Array(3)
+};
 R.v9a = new Float32Array(9);
 R.v9b = new Float32Array(9);
 R.v9c = new Float32Array(9);
