@@ -332,20 +332,20 @@ COM.AddGameDirectory = function(dir, callback)
         COM.searchpaths.push(search);
         callback();
       }
-      if(retst.test(file.name)){
+      if(file && retst.test(file.name)){
           console.log("Pak file found: " + file.name);
           var reader = new FileReader();
           reader.addEventListener("loadend", function() {
              console.log("Loaded pak file: " + file.name);
              var array = new Uint8Array(reader.result);
-             search.pack.push(array);//contains the contents of blob as a typed array
+             //search.pack.push(array);//contains the contents of blob as a typed array
              FS.writeFile(file.name, array, { encoding: 'binary' });
              delete reader.result;
              delete array;
              //console.log(JSON.stringify(FS.stat(file.name)));//NFP
-             _jsextract(allocate(intArrayFromString(file.name), 'i8', ALLOC_STACK));
-             FS.deleteFile(file.name);
-             console.log("COM.tmpfilename=="+COM.tmpfilename);//NFP
+             //_jsextract(allocate(intArrayFromString(file.name), 'i8', ALLOC_STACK));
+             _jslistfiles(allocate(intArrayFromString(file.name), 'i8', ALLOC_STACK));
+             //FS.deleteFile(file.name);
              if(search.pack.length>1) totalsuccess();
           });
           var request = paks.get(file.name);

@@ -829,18 +829,18 @@ SV.CheckBottom = function(ent)
 	];
 	for (;;)
 	{
-		if (SV.PointContents([mins[0], mins[1], mins[2] - 1.0]) !== Mod.contents.solid)
+		if (SV.PointContents(new Float32Array([mins[0], mins[1], mins[2] - 1.0])) !== Mod.contents.solid)
 			break;
-		if (SV.PointContents([mins[0], maxs[1], mins[2] - 1.0]) !== Mod.contents.solid)
+		if (SV.PointContents(new Float32Array([mins[0], maxs[1], mins[2] - 1.0])) !== Mod.contents.solid)
 			break;
-		if (SV.PointContents([maxs[0], mins[1], mins[2] - 1.0]) !== Mod.contents.solid)
+		if (SV.PointContents(new Float32Array([maxs[0], mins[1], mins[2] - 1.0])) !== Mod.contents.solid)
 			break;
-		if (SV.PointContents([maxs[0], maxs[1], mins[2] - 1.0]) !== Mod.contents.solid)
+		if (SV.PointContents(new Float32Array([maxs[0], maxs[1], mins[2] - 1.0])) !== Mod.contents.solid)
 			break;
 		return true;
 	}
-	var start = [(mins[0] + maxs[0]) * 0.5, (mins[1] + maxs[1]) * 0.5, mins[2]];
-	var stop = [start[0], start[1], start[2] - 36.0];
+	var start = new Float32Array([(mins[0] + maxs[0]) * 0.5, (mins[1] + maxs[1]) * 0.5, mins[2]]);
+	var stop = new Float32Array([start[0], start[1], start[2] - 36.0]);
 	var trace = SV.Move(start, Vec.origin, Vec.origin, stop, 1, ent);
 	if (trace.fraction === 1.0)
 		return;
@@ -905,7 +905,7 @@ SV.movestep = function(ent, move, relink)
 	neworg[0] = ent.v_float[PR.entvars.origin] + move[0];
 	neworg[1] = ent.v_float[PR.entvars.origin1] + move[1];
 	neworg[2] = ent.v_float[PR.entvars.origin2] + 18.0;
-	var end = [neworg[0], neworg[1], neworg[2] - 36.0];
+	var end = new Float32Array([neworg[0], neworg[1], neworg[2] - 36.0]);
 	trace = SV.Move(neworg, mins, maxs, end, 0, ent);
 	if (trace.allsolid === true)
 		return 0;
@@ -1151,10 +1151,10 @@ SV.FlyMove = function(ent, time)
 	var planes = [], plane;
 	var primal_velocity = ED.Vector(ent, PR.entvars.velocity);
 	var original_velocity = ED.Vector(ent, PR.entvars.velocity);
-	var new_velocity = [];
+	var new_velocity = new Float32Array(3);
 	var i, j;
 	var trace;
-	var end = [];
+	var end = new Float32Array(3);
 	var time_left = time;
 	var blocked = 0;
 	for (bumpcount = 0; bumpcount <= 3; ++bumpcount)

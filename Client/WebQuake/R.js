@@ -504,16 +504,16 @@ R.DrawAliasModel = function(e)
 	var clmodel = e.model;
 
 	if (R.CullBox(
-		[
+		new Float32Array([
 			e.origin[0] - clmodel.boundingradius,
 			e.origin[1] - clmodel.boundingradius,
 			e.origin[2] - clmodel.boundingradius
-		],
-		[
+		]),
+		new Float32Array([
 			e.origin[0] + clmodel.boundingradius,
 			e.origin[1] + clmodel.boundingradius,
 			e.origin[2] + clmodel.boundingradius
-		]) === true)
+		])) === true)
 		return;
 
 	var program;
@@ -1866,31 +1866,31 @@ R.DrawBrushModel = function(e)
 	if (clmodel.submodel === true)
 	{
 		if (R.CullBox(
-			[
+			new Float32Array([
 				e.origin[0] + clmodel.mins[0],
 				e.origin[1] + clmodel.mins[1],
 				e.origin[2] + clmodel.mins[2]
-			],
-			[
+			]),
+			new Float32Array([
 				e.origin[0] + clmodel.maxs[0],
 				e.origin[1] + clmodel.maxs[1],
 				e.origin[2] + clmodel.maxs[2]
-			]) === true)
+			])) === true)
 			return;
 	}
 	else
 	{
 		if (R.CullBox(
-			[
+			new Float32Array([
 				e.origin[0] - clmodel.radius,
 				e.origin[1] - clmodel.radius,
 				e.origin[2] - clmodel.radius
-			],
-			[
+			]),
+			new Float32Array([
 				e.origin[0] + clmodel.radius,
 				e.origin[1] + clmodel.radius,
 				e.origin[2] + clmodel.radius
-			]) === true)
+			])) === true)
 			return;
 	}
 

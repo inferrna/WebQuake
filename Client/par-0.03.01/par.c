@@ -591,13 +591,12 @@ int	list_pak_toc(
     if( list_noe==0 || is_in_list(list,fn) )
       maxlen= strlen(fn) > maxlen ? strlen(fn) : maxlen;
   }
-#ifdef html
-  char* jsfn = EM_ASM_ARGS({
-      COM.tmpfilename = new Uint8Array(512);
-      return allocate(COM.tmpfilename, 'i8', ALLOC_STACK);
-  }, 4);
-  strcpy(jsfn, fn);
-#endif
+/*#ifdef html
+  EM_ASM_ARGS({
+      COM.tmpfilename = Pointer_stringify($0);
+  }, fn);
+  //strcpy(jsfn, fn);
+#endif*/
   /* list */
   for( j=0; j<pak_noe; j++ )
   {
@@ -1069,6 +1068,9 @@ int main( int argc, char** argv) {
 #ifdef	DEBUG
       printf("extract_pak Ok\n");
 #endif
+#ifdef html
+      remove(pak_fn);
+#endif
       break;
     case ACTION_CREATE: /* create new pak file */
       if( init_pak_header(&pak_hdr) == -1 )
@@ -1126,11 +1128,31 @@ DIE_NOW:
   return retval;
 }
 #ifdef html
+EMSCRIPTEN_KEEPALIVE void jslistfiles(char*);
+EMSCRIPTEN_KEEPALIVE void jslistfiles(char* filename){
+    struct pak_header pak_hdr;		/* pak file header */
+    struct pak_tocentry *pak_toc=NULL;	/* pak file toc (array of tocentries) */
+    int pak_nf;				/* pak file number of files cantained */
+    char* fn, pn = "par";
+    printf("jslistfiles - start..");
+    read_pak_header(&pak_hdr,filename,pn);
+    printf("jslistfiles - read_pak_header Ok");
+    size_t j, pak_noe = check_pak_header(&pak_hdr,filename,pn);
+    printf("jslistfiles - check_pak_header Ok");
+    pak_toc = read_pak_toc(&pak_hdr,filename,pn);
+    printf("jslistfiles - read_pak_toc Ok");
+    for( j=0; j<pak_noe; j++ )
+    {
+        fn = pak_toc[j].f_nme;
+        printf( "%s", fn );
+    }
+    printf("jslistfiles - end.");
+}
 EMSCRIPTEN_KEEPALIVE void jsextract(char*);
 EMSCRIPTEN_KEEPALIVE void jsextract(char* filename){
     char *params[3];
     params[0] = "par";
-    params[1] = "-l";
+    params[1] = "-x";
     params[2] = filename;
     int i = maine(3, params);
     printf("%s extracted with code %d\n", filename, i);
