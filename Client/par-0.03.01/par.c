@@ -591,6 +591,13 @@ int	list_pak_toc(
     if( list_noe==0 || is_in_list(list,fn) )
       maxlen= strlen(fn) > maxlen ? strlen(fn) : maxlen;
   }
+#ifdef html
+  char* jsfn = EM_ASM_ARGS({
+      COM.tmpfilename = new Uint8Array(512);
+      return allocate(COM.tmpfilename, 'i8', ALLOC_STACK);
+  }, 4);
+  strcpy(jsfn, fn);
+#endif
   /* list */
   for( j=0; j<pak_noe; j++ )
   {
@@ -1123,7 +1130,7 @@ EMSCRIPTEN_KEEPALIVE void jsextract(char*);
 EMSCRIPTEN_KEEPALIVE void jsextract(char* filename){
     char *params[3];
     params[0] = "par";
-    params[1] = "-x";
+    params[1] = "-l";
     params[2] = filename;
     int i = maine(3, params);
     printf("%s extracted with code %d\n", filename, i);

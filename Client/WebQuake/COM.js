@@ -99,7 +99,7 @@ COM.CheckRegistered = function()
 	}
 	var check = new Uint8Array(h);
 	var pop =
-	[
+	new Uint8Array([
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x67, 0x00, 0x00,
@@ -116,7 +116,7 @@ COM.CheckRegistered = function()
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x61, 0x66, 0x61, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x65, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-	];
+	]);
 	var i;
 	for (i = 0; i < 256; ++i)
 	{
@@ -219,21 +219,28 @@ COM.WriteTextFile = function(filename, data)
 	return true;
 };
 
+COM.files = {};
+
 COM.ReadFileEFS = function(filename){
-    var stat = FS.stat(filename);
-    //console.log("Stat for "+filename+" is:");//NFP
-    //console.log(JSON.stringify(stat));//NFP
-    var stream = FS.open(filename, 'r');
-    var buf = new ArrayBuffer(stat.size);
-    var dest = new Uint8Array(buf);
-    FS.read(stream, dest, 0, stat.size, 0);
-    FS.close(stream);
+    if(COM.files[filename]){
+        console.log(filename+" already readed");
+        var buf = COM.files[filename];
+    } else {
+        console.log(filename+" still not readed");
+        var stat = FS.stat(filename);
+        var stream = FS.open(filename, 'r');
+        var buf = new ArrayBuffer(stat.size);
+        var dest = new Uint8Array(buf);
+        FS.read(stream, dest, 0, stat.size, 0);
+        FS.close(stream);
+        COM.files[filename] = buf;
+    }
     return buf;
 };
 
 COM.LoadFile = function(filename)
 {
-    //console.log(filename+" requested");//NFP
+    console.log(filename+" requested");//NFP
     //console.log("COM.searchpaths.length = "+COM.searchpaths.length);//NFP
 	filename = filename.toLowerCase();
 	Draw.BeginDisc();
@@ -308,6 +315,7 @@ COM.AddGameDirectory = function(dir, callback)
     FS.mkdir(dir);
     console.log("dir is "+dir);
     console.log(FS.lstat(dir));
+    console.log("Sync is present?"+navigator.getDeviceStorageSync||navigator.getDeviceStoragesync);
     var retst = new RegExp(dir+'\/?pak\\d?\.pak', "i");
     var paks = navigator.getDeviceStorage('sdcard');
     // Let's browse all the files available
@@ -332,10 +340,12 @@ COM.AddGameDirectory = function(dir, callback)
              var array = new Uint8Array(reader.result);
              search.pack.push(array);//contains the contents of blob as a typed array
              FS.writeFile(file.name, array, { encoding: 'binary' });
+             delete reader.result;
+             delete array;
              //console.log(JSON.stringify(FS.stat(file.name)));//NFP
              _jsextract(allocate(intArrayFromString(file.name), 'i8', ALLOC_STACK));
-             //console.log("Succes on read "+file.name);//NFP
-             //console.log("This done is "+this.error);//NFP
+             FS.deleteFile(file.name);
+             console.log("COM.tmpfilename=="+COM.tmpfilename);//NFP
              if(search.pack.length>1) totalsuccess();
           });
           var request = paks.get(file.name);
