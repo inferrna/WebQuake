@@ -1128,25 +1128,32 @@ DIE_NOW:
   return retval;
 }
 #ifdef html
-EMSCRIPTEN_KEEPALIVE void jslistfiles(char*);
-EMSCRIPTEN_KEEPALIVE void jslistfiles(char* filename){
+EMSCRIPTEN_KEEPALIVE size_t* jslistfiles(char*);
+EMSCRIPTEN_KEEPALIVE size_t* jslistfiles(char* filename){
+    printf("jslistfiles - start on %s\n", filename);
     struct pak_header pak_hdr;		/* pak file header */
     struct pak_tocentry *pak_toc=NULL;	/* pak file toc (array of tocentries) */
     int pak_nf;				/* pak file number of files cantained */
     char* fn, pn = "par";
-    printf("jslistfiles - start..");
+    size_t res[2];
+    printf("jslistfiles - start..\n");
     read_pak_header(&pak_hdr,filename,pn);
-    printf("jslistfiles - read_pak_header Ok");
+    printf("jslistfiles - read_pak_header Ok\n");
     size_t j, pak_noe = check_pak_header(&pak_hdr,filename,pn);
-    printf("jslistfiles - check_pak_header Ok");
+    printf("jslistfiles - check_pak_header Ok\n");
     pak_toc = read_pak_toc(&pak_hdr,filename,pn);
-    printf("jslistfiles - read_pak_toc Ok");
+    printf("jslistfiles - read_pak_toc Ok\n");
+    char** names = malloc(sizeof(char*)*pak_noe);
     for( j=0; j<pak_noe; j++ )
     {
         fn = pak_toc[j].f_nme;
-        printf( "%s", fn );
+        //printf( "%s\n", fn );
+        names[j] = pak_toc[j].f_nme;
     }
     printf("jslistfiles - end.");
+    res[0] = pak_noe;
+    res[1] = names;
+    return res;
 }
 EMSCRIPTEN_KEEPALIVE void jsextract(char*);
 EMSCRIPTEN_KEEPALIVE void jsextract(char* filename){

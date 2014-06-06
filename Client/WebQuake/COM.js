@@ -222,7 +222,21 @@ COM.WriteTextFile = function(filename, data)
 COM.files = {};
 
 COM.ReadFileEFS = function(filename){
-    if(COM.files[filename]){
+    for(var i=0; i<COM.searchpaths[0].pack.length; i++){
+        if(COM.searchpaths[0].pack[i].files[filename]){
+            console.log(filename+" found in pak");
+            var file = COM.searchpaths[0]
+                          .pack[i]
+                          .files[filename];
+            var buf = COM.searchpaths[0]
+                         .pack[i]
+                         .pak
+                         .buffer
+                         .slice(file.filepos, file.filepos+file.filelen);
+            return buf;
+        }
+    }
+    /*if(COM.files[filename]){
         console.log(filename+" already readed");
         var buf = COM.files[filename];
     } else {
@@ -234,8 +248,10 @@ COM.ReadFileEFS = function(filename){
         FS.read(stream, dest, 0, stat.size, 0);
         FS.close(stream);
         COM.files[filename] = buf;
-    }
-    return buf;
+    }*/
+    console.log("Failed to read "+filename+" from pak");
+    console.log(COM.searchpaths);
+    return -1;
 };
 
 COM.LoadFile = function(filename)
@@ -265,17 +281,10 @@ COM.LoadTextFile = function(filename)
 	return f.join('');
 };
 
-COM.LoadPackFile = function(packfile)
+COM.LoadPackFile = function(pakbuf)
 {
-	var xhr = new XMLHttpRequest();
-	xhr.overrideMimeType('text/plain; charset=x-user-defined');
-    console.log("trying to get file "+packfile);//NFP
-	xhr.open('GET', packfile, false);
-	xhr.setRequestHeader('Range', 'bytes=0-11');
-	xhr.send();
-	if ((xhr.status <= 199) || (xhr.status >= 300) || (xhr.responseText.length !== 12))
-		return;
-	var header = new DataView(Q.strmem(xhr.responseText));
+    console.log("COM.LoadPackFile start");
+	var header = new DataView(pakbuf);
 	if (header.getUint32(0, true) !== 0x4b434150)
 		Sys.Error(packfile + ' is not a packfile');
 	var dirofs = header.getUint32(4, true);
@@ -283,29 +292,26 @@ COM.LoadPackFile = function(packfile)
 	var numpackfiles = dirlen >> 6;
 	if (numpackfiles !== 339)
 		COM.modified = true;
-	var pack = [];
+	var pack = {}; var name = '';
+    console.log("COM.LoadPackFile numpackfiles is "+numpackfiles);
 	if (numpackfiles !== 0)
 	{
-		xhr.open('GET', packfile, false);
-		xhr.setRequestHeader('Range', 'bytes=' + dirofs + '-' + (dirofs + dirlen - 1));
-		xhr.send();
-		if ((xhr.status <= 199) || (xhr.status >= 300) || (xhr.responseText.length !== dirlen))
-			return;
-		var info = Q.strmem(xhr.responseText);
+		var info = pakbuf;
 		if (CRC.Block(new Uint8Array(info)) !== 32981)
 			COM.modified = true;
+        var dvinfo = new DataView(info, dirofs);
 		var i;
 		for (i = 0; i < numpackfiles; ++i)
 		{
-			pack[pack.length] =
+		    name = Q.memstr(new Uint8Array(info, dirofs + (i << 6), 56)).toLowerCase();
+			pack[name] =
 			{
-				name: Q.memstr(new Uint8Array(info, i << 6, 56)).toLowerCase(),
-				filepos: (new DataView(info)).getUint32((i << 6) + 56, true),
-				filelen: (new DataView(info)).getUint32((i << 6) + 60, true)
+				filepos: dvinfo.getUint32((i << 6) + 56, true),
+				filelen: dvinfo.getUint32((i << 6) + 60, true)
 			}
 		}
 	}
-	Con.Print('Added packfile ' + packfile + ' (' + numpackfiles + ' files)\n');
+	Con.Print('Added packfile (' + numpackfiles + ' files)\n');
 	return pack;
 };
 
@@ -330,21 +336,18 @@ COM.AddGameDirectory = function(dir, callback)
         //console.log(search.pack.length+" pak files readed in the end");//NFP
         //console.log(JSON.stringify(FS.stat("gfx.wad")));
         COM.searchpaths.push(search);
+        // COM.searchpaths[0].pack[i]
         callback();
       }
       if(file && retst.test(file.name)){
           console.log("Pak file found: " + file.name);
           var reader = new FileReader();
           reader.addEventListener("loadend", function() {
-             console.log("Loaded pak file: " + file.name);
-             var array = new Uint8Array(reader.result);
-             //search.pack.push(array);//contains the contents of blob as a typed array
-             FS.writeFile(file.name, array, { encoding: 'binary' });
-             delete reader.result;
-             delete array;
-             //console.log(JSON.stringify(FS.stat(file.name)));//NFP
-             //_jsextract(allocate(intArrayFromString(file.name), 'i8', ALLOC_STACK));
-             _jslistfiles(allocate(intArrayFromString(file.name), 'i8', ALLOC_STACK));
+                console.log("Loaded pak file: " + file.name);
+                var array = new Uint8Array(reader.result);
+                (function(_array){
+                    search.pack.push({pak: _array, files: COM.LoadPackFile(_array.buffer)});
+                 }(array));
              //FS.deleteFile(file.name);
              if(search.pack.length>1) totalsuccess();
           });
