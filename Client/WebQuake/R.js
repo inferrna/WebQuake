@@ -953,10 +953,10 @@ R.MakeBrushModelDisplayLists = function(m)
 			verts += chain[2];
 		}
 	}
-    console.log("cmds.length=="+cmds.length);
+    console.log("cmds.length=="+cmdslen);
 	m.cmds = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, m.cmds);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cmds), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, cmds.subarray(0, cmdslen), gl.STATIC_DRAW);
 };
 
 R.MakeWorldModelDisplayLists = function(m)
@@ -964,7 +964,8 @@ R.MakeWorldModelDisplayLists = function(m)
 	if (m.cmds != null)
 		return;
 	var i, j, k, l;
-	var cmds = [];
+	var cmds = new Float32Array(524288*4);
+    var cmdslen = 0;
 	var texture, leaf, chain, surf, vert, styles = new Float32Array([0.0, 0.0, 0.0, 0.0]);
 	var verts = 0;
 	for (i = 0; i < m.textures.length; ++i)
@@ -997,17 +998,11 @@ R.MakeWorldModelDisplayLists = function(m)
 				for (l = 0; l < surf.verts.length; ++l)
 				{
 					vert = surf.verts[l];
-					cmds[cmds.length] = vert[0];
-					cmds[cmds.length] = vert[1];
-					cmds[cmds.length] = vert[2];
-					cmds[cmds.length] = vert[3];
-					cmds[cmds.length] = vert[4];
-					cmds[cmds.length] = vert[5];
-					cmds[cmds.length] = vert[6];
-					cmds[cmds.length] = styles[0];
-					cmds[cmds.length] = styles[1];
-					cmds[cmds.length] = styles[2];
-					cmds[cmds.length] = styles[3];
+                    //if(cmdslen>=524288*4) alert("Need more");
+                    cmds.subarray(cmdslen, cmdslen+7).set(vert.subarray(0,7));
+                    cmdslen += 7;
+                    cmds.subarray(cmdslen, cmdslen+4).set(styles);
+                    cmdslen += 4;
 				}
 			}
 			if (chain[2] !== 0)
@@ -1039,9 +1034,8 @@ R.MakeWorldModelDisplayLists = function(m)
 				for (l = 0; l < surf.verts.length; ++l)
 				{
 					vert = surf.verts[l];
-					cmds[cmds.length] = vert[0];
-					cmds[cmds.length] = vert[1];
-					cmds[cmds.length] = vert[2];
+                    cmds.subarray(cmdslen, cmdslen+3).set(vert.subarray(0,3));
+                    cmdslen += 3;
 				}
 			}
 			if (chain[1] !== 0)
@@ -1072,11 +1066,8 @@ R.MakeWorldModelDisplayLists = function(m)
 				for (l = 0; l < surf.verts.length; ++l)
 				{
 					vert = surf.verts[l];
-					cmds[cmds.length] = vert[0];
-					cmds[cmds.length] = vert[1];
-					cmds[cmds.length] = vert[2];
-					cmds[cmds.length] = vert[3];
-					cmds[cmds.length] = vert[4];
+                    cmds.subarray(cmdslen, cmdslen+5).set(vert.subarray(0,5));
+                    cmdslen += 5;
 				}
 			}
 			if (chain[2] !== 0)
@@ -1088,7 +1079,7 @@ R.MakeWorldModelDisplayLists = function(m)
 	}
 	m.cmds = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, m.cmds);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cmds), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, cmds.subarray(0,cmdslen), gl.STATIC_DRAW);
 };
 
 // misc
