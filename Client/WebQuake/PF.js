@@ -59,8 +59,8 @@ PF.SetMinMaxSize = function(e, min, max)
 PF.setsize = function()
 {
 	PF.SetMinMaxSize(SV.server.edicts[PR.globals_int[4]],
-		[PR.globals_float[7], PR.globals_float[8], PR.globals_float[9]],
-		[PR.globals_float[10], PR.globals_float[11], PR.globals_float[12]]);
+		PR.globals_float.subarray(7, 10),
+		PR.globals_float.subarray(10, 13));
 };
 
 PF.setmodel = function()
@@ -118,11 +118,9 @@ PF.centerprint = function()
 
 PF.normalize = function()
 {
-	var newvalue = [PR.globals_float[4], PR.globals_float[5], PR.globals_float[6]];
+	var newvalue = new Float32Array(PR.globals_float.subarray(4, 7));
 	Vec.Normalize(newvalue);
-	PR.globals_float[1] = newvalue[0];
-	PR.globals_float[2] = newvalue[1];
-	PR.globals_float[3] = newvalue[2];
+    PR.globals_float.subarray(1, 4).set(newvalue);
 };
 
 PF.vlen = function()
@@ -497,7 +495,7 @@ PF.droptofloor = function()
 	var ent = SV.server.edicts[PR.globals_int[PR.globalvars.self]];
 	var trace = SV.Move(ED.Vector(ent, PR.entvars.origin),
 		ED.Vector(ent, PR.entvars.mins), ED.Vector(ent, PR.entvars.maxs),
-		[ent.v_float[PR.entvars.origin], ent.v_float[PR.entvars.origin1], ent.v_float[PR.entvars.origin2] - 256.0], 0, ent);
+		 new Float32Array([ent.v_float[PR.entvars.origin], ent.v_float[PR.entvars.origin1], ent.v_float[PR.entvars.origin2] - 256.0]), 0, ent);
 	if ((trace.fraction === 1.0) || (trace.allsolid === true))
 	{
 		PR.globals_float[1] = 0.0;
@@ -552,7 +550,7 @@ PF.checkbottom = function()
 
 PF.pointcontents = function()
 {
-	PR.globals_float[1] = SV.PointContents([PR.globals_float[4], PR.globals_float[5], PR.globals_float[6]]);
+	PR.globals_float[1] = SV.PointContents(PR.globals_float.subarray(4, 7));
 };
 
 PF.nextent = function()
@@ -572,9 +570,9 @@ PF.nextent = function()
 PF.aim = function()
 {
 	var ent = SV.server.edicts[PR.globals_int[4]];
-	var start = [ent.v_float[PR.entvars.origin], ent.v_float[PR.entvars.origin1], ent.v_float[PR.entvars.origin2] + 20.0];
-	var dir = [PR.globals_float[PR.globalvars.v_forward], PR.globals_float[PR.globalvars.v_forward1], PR.globals_float[PR.globalvars.v_forward2]];
-	var end = [start[0] + 2048.0 * dir[0], start[1] + 2048.0 * dir[1], start[2] + 2048.0 * dir[2]];
+	var start = new Float32Array([ent.v_float[PR.entvars.origin], ent.v_float[PR.entvars.origin1], ent.v_float[PR.entvars.origin2] + 20.0]);
+	var dir = new Float32Array([PR.globals_float[PR.globalvars.v_forward], PR.globals_float[PR.globalvars.v_forward1], PR.globals_float[PR.globalvars.v_forward2]]);
+	var end = new Float32Array([start[0] + 2048.0 * dir[0], start[1] + 2048.0 * dir[1], start[2] + 2048.0 * dir[2]]);
 	var tr = SV.Move(start, Vec.origin, Vec.origin, end, 0, ent);
 	if (tr.ent != null)
 	{
@@ -582,13 +580,11 @@ PF.aim = function()
 			((Host.teamplay.value === 0) || (ent.v_float[PR.entvars.team] <= 0) ||
 			(ent.v_float[PR.entvars.team] !== tr.ent.v_float[PR.entvars.team])))
 		{
-			PR.globals_float[1] = dir[0];
-			PR.globals_float[2] = dir[1];
-			PR.globals_float[3] = dir[2];
+			PR.globals_float.subarray(1, 4).set(dir);
 			return;
 		}
 	}
-	var bestdir = [dir[0], dir[1], dir[2]];
+	var bestdir = new Float32Array(dir);
 	var bestdist = SV.aim.value;
 	var bestent, i, check, dist, end = [];
 	for (i = 1; i < SV.server.num_edicts; ++i)
@@ -627,14 +623,10 @@ PF.aim = function()
 		end[1] = bestdir[1] * dist;
 		end[2] = dir[2];
 		Vec.Normalize(end);
-		PR.globals_float[1] = end[0];
-		PR.globals_float[2] = end[1];
-		PR.globals_float[3] = end[2];
+        PR.globals_float.subarray(1, 4).set(end);
 		return;
 	}
-	PR.globals_float[1] = bestdir[0];
-	PR.globals_float[2] = bestdir[1];
-	PR.globals_float[3] = bestdir[2];
+    PR.globals_float.subarray(1, 4).set(bestdir);
 };
 
 PF.changeyaw = function()

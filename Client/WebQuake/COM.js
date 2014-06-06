@@ -346,7 +346,7 @@ COM.AddGameDirectory = function(dir, callback)
                 console.log("Loaded pak file: " + file.name);
                 var array = new Uint8Array(reader.result);
                 (function(_array){
-                    search.pack.push({pak: _array, files: COM.LoadPackFile(_array.buffer)});
+                    search.pack.push({pak: _array, files: COM.LoadPackFile(array.buffer)});
                  }(array));
              //FS.deleteFile(file.name);
              if(search.pack.length>1) totalsuccess();

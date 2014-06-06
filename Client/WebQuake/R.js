@@ -546,7 +546,7 @@ R.DrawAliasModel = function(e)
 		dl = CL.dlights[i];
 		if (dl.die < CL.state.time)
 			continue;
-		add = dl.radius - Vec.Length([e.origin[0] - dl.origin[0], e.origin[1] - dl.origin[1], e.origin[1] - dl.origin[1]]);
+		add = dl.radius - Vec.Length(new Float32Array([e.origin[0] - dl.origin[0], e.origin[1] - dl.origin[1], e.origin[1] - dl.origin[1]]));
 		if (add > 0.0)
 		{
 			ambientlight += add;
@@ -562,15 +562,15 @@ R.DrawAliasModel = function(e)
 	gl.uniform1f(program.uAmbientLight, ambientlight * 0.0078125);
 	gl.uniform1f(program.uShadeLight, shadelight * 0.0078125);
 
-	var forward = R.v3a, right = R.v3b, up = R.v3c;
+	var forward = new Float32Array(3), right = new Float32Array(3), up = new Float32Array(3);
 	Vec.AngleVectors(e.angles, forward, right, up);
-    Vec.v3a.set([-1.0, 0.0, 0.0]);
-    Vec.v3b.set([
-            Vec.DotProduct(Vec.v3a, forward),
-            -Vec.DotProduct(Vec.v3a, right),
-            Vec.DotProduct(Vec.v3a, up)
+    R.v3a.set([-1.0, 0.0, 0.0]);
+    right.set([
+            Vec.DotProduct(R.v3a, forward),
+           -Vec.DotProduct(R.v3a, right),
+            Vec.DotProduct(R.v3a, up)
         ]);
-	gl.uniform3fv(program.uLightVec, Vec.v3b);
+	//gl.uniform3fv(program.uLightVec, right);
 
 	R.c_alias_polys += clmodel.numtris;
 
@@ -763,31 +763,31 @@ R.SetFrustum = function()
 	}
 };
 
-R.perspective = [
+R.perspective = new Float32Array([
 	0.0, 0.0, 0.0, 0.0,
 	0.0, 0.0, 0.0, 0.0,
 	0.0, 0.0, -65540.0 / 65532.0, -1.0,
 	0.0, 0.0, -524288.0 / 65532.0, 0.0
-];
+]);
 
 R.Perspective = function()
 {
-	var viewangles = [
+	var viewangles = new Float32Array([
 		R.refdef.viewangles[0] * Math.PI / 180.0,
 		(R.refdef.viewangles[1] - 90.0) * Math.PI / -180.0,
 		R.refdef.viewangles[2] * Math.PI / -180.0
-	];
+	]);
 	var sp = Math.sin(viewangles[0]);
 	var cp = Math.cos(viewangles[0]);
 	var sy = Math.sin(viewangles[1]);
 	var cy = Math.cos(viewangles[1]);
 	var sr = Math.sin(viewangles[2]);
 	var cr = Math.cos(viewangles[2]);
-	var viewMatrix = [
+	var viewMatrix = new Float32Array([
 		cr * cy + sr * sp * sy,		cp * sy,	-sr * cy + cr * sp * sy,
 		cr * -sy + sr * sp * cy,	cp * cy,	-sr * -sy + cr * sp * cy,
 		sr * cp,					-sp,		cr * cp
-	];
+	]);
 
 	if (V.gamma.value < 0.5)
 		Cvar.SetValue('gamma', 0.5);
@@ -882,7 +882,8 @@ R.MakeBrushModelDisplayLists = function(m)
 	if (m.cmds != null)
 		gl.deleteBuffer(m.cmds);
 	var i, j, k;
-	var cmds = [];
+	var cmds = new Float32Array(32768);
+    var cmdslen = 0;
 	var texture, chain, leaf, surf, vert, styles = new Float32Array([0.0, 0.0, 0.0, 0.0]);
 	var verts = 0;
 	m.chains = [];
@@ -913,17 +914,10 @@ R.MakeBrushModelDisplayLists = function(m)
 			for (k = 0; k < surf.verts.length; ++k)
 			{
 				vert = surf.verts[k];
-				cmds[cmds.length] = vert[0];
-				cmds[cmds.length] = vert[1];
-				cmds[cmds.length] = vert[2];
-				cmds[cmds.length] = vert[3];
-				cmds[cmds.length] = vert[4];
-				cmds[cmds.length] = vert[5];
-				cmds[cmds.length] = vert[6];
-				cmds[cmds.length] = styles[0];
-				cmds[cmds.length] = styles[1];
-				cmds[cmds.length] = styles[2];
-				cmds[cmds.length] = styles[3];
+                cmds.subarray(cmdslen, cmdslen+7).set(vert.subarray(0,7));
+                cmdslen += 7;
+                cmds.subarray(cmdslen, cmdslen+4).set(styles);
+                cmdslen += 4;
 			}
 		}
 		if (chain[2] !== 0)
@@ -949,11 +943,8 @@ R.MakeBrushModelDisplayLists = function(m)
 			for (k = 0; k < surf.verts.length; ++k)
 			{
 				vert = surf.verts[k];
-				cmds[cmds.length] = vert[0];
-				cmds[cmds.length] = vert[1];
-				cmds[cmds.length] = vert[2];
-				cmds[cmds.length] = vert[3];
-				cmds[cmds.length] = vert[4];
+                cmds.subarray(cmdslen, cmdslen+5).set(vert.subarray(0,5));
+                cmdslen += 5;
 			}
 		}
 		if (chain[2] !== 0)
@@ -962,7 +953,7 @@ R.MakeBrushModelDisplayLists = function(m)
 			verts += chain[2];
 		}
 	}
-    //console.log("cmds.length=="+cmds.length);
+    console.log("cmds.length=="+cmds.length);
 	m.cmds = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, m.cmds);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cmds), gl.STATIC_DRAW);
@@ -2123,7 +2114,8 @@ R.BuildSurfaceDisplayList = function(fa)
 			vec = R.currentmodel.vertexes[R.currentmodel.edges[index][0]];
 		else
 			vec = R.currentmodel.vertexes[R.currentmodel.edges[-index][1]];
-		vert = [vec[0], vec[1], vec[2]];
+		vert = new Float32Array(7);
+        vert.subarray(0,3).set(vec);
 		if (fa.sky !== true)
 		{
 			s = Vec.DotProduct(vec, texinfo.vecs[0]) + texinfo.vecs[0][3];

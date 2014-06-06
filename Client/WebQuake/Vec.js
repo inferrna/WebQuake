@@ -29,11 +29,11 @@ Vec.Perpendicular = function(v)
 		pos = 2;
 		minelem = Math.abs(v[2]);
 	}
-	var tempvec = Vec.v3a; tempvec.set(new Float32Array([0.0, 0.0, 0.0]));
+	var tempvec = new Float32Array([0.0, 0.0, 0.0]);
 	tempvec[pos] = 1.0;
 	var inv_denom = 1.0 / (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 	var d = (tempvec[0] * v[0] + tempvec[1] * v[1] + tempvec[2] * v[2]) * inv_denom;
-	var dst = Vec.v3b; dst.set([
+	var dst = new Float32Array([
 		tempvec[0] - d * v[0] * inv_denom,
 		tempvec[1] - d * v[1] * inv_denom,
 		tempvec[2] - d * v[2] * inv_denom
