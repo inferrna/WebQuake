@@ -251,7 +251,7 @@ COM.ReadFileEFS = function(filename){
     }*/
     console.log("Failed to read "+filename+" from pak");
     console.log(COM.searchpaths);
-    return -1;
+    return null;
 };
 
 COM.LoadFile = function(filename)

@@ -132,12 +132,12 @@ GL.TextureMode_f = function()
 	}
 };
 
-GL.ortho = [
+GL.ortho = new Float32Array([
 	0.0, 0.0, 0.0, 0.0,
 	0.0, 0.0, 0.0, 0.0,
 	0.0, 0.0, 0.00001, 0.0,
 	-1.0, 1.0, 0.0, 1.0
-];
+]);
 
 GL.Set2D = function()
 {
@@ -464,7 +464,7 @@ GL.Init = function()
 	GL.filter_min = gl.LINEAR_MIPMAP_NEAREST;
 	GL.filter_max = gl.LINEAR;
 
-	GL.picmip = Cvar.RegisterVariable('gl_picmip', '0');
+	GL.picmip = Cvar.RegisterVariable('gl_picmip', '2');
 	Cmd.AddCommand('gl_texturemode', GL.TextureMode_f);
 
 	GL.rect = gl.createBuffer();
