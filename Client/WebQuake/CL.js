@@ -813,7 +813,7 @@ CL.RelinkEntities = function()
 	}
 
 	var bobjrotate = Vec.Anglemod(100.0 * CL.state.time);
-	var ent, oldorg = [], dl;
+	var ent, oldorg = new Float32Array(3), dl;
 	for (i = 1; i < CL.entities.length; ++i)
 	{
 		ent = CL.entities[i];
@@ -824,9 +824,7 @@ CL.RelinkEntities = function()
 			ent.model = null;
 			continue;
 		}
-		oldorg[0] = ent.origin[0];
-		oldorg[1] = ent.origin[1];
-		oldorg[2] = ent.origin[2];
+		oldorg.set(ent);
 		if (ent.forcelink === true)
 		{
 			Vec.Copy(ent.msg_origins[0], ent.origin);
@@ -862,11 +860,11 @@ CL.RelinkEntities = function()
 			dl = CL.AllocDlight(i);
 			var fv = [];
 			Vec.AngleVectors(ent.angles, fv);
-			dl.origin = [
+			dl.origin.set([
 				ent.origin[0] + 18.0 * fv[0],
 				ent.origin[1] + 18.0 * fv[1],
 				ent.origin[2] + 16.0 + 18.0 * fv[2]
-			];
+			]);
 			dl.radius = 200.0 + Math.random() * 32.0;
 			dl.minlight = 32.0;
 			dl.die = CL.state.time + 0.1;
@@ -874,14 +872,15 @@ CL.RelinkEntities = function()
 		if ((ent.effects & Mod.effects.brightlight) !== 0)
 		{
 			dl = CL.AllocDlight(i);
-			dl.origin = [ent.origin[0], ent.origin[1], ent.origin[2] + 16.0];
-			dl.radius = 400.0 + Math.random() * 32.0;
+			dl.origin.set([ent.origin[0], ent.origin[1], ent.origin[2] + 16.0]);
+			dl.radius = 
+            400.0 + Math.random() * 32.0;
 			dl.die = CL.state.time + 0.001;
 		}
 		if ((ent.effects & Mod.effects.dimlight) !== 0)
 		{
 			dl = CL.AllocDlight(i);
-			dl.origin = [ent.origin[0], ent.origin[1], ent.origin[2] + 16.0];
+			dl.origin.set([ent.origin[0], ent.origin[1], ent.origin[2] + 16.0]);
 			dl.radius = 200.0 + Math.random() * 32.0;
 			dl.die = CL.state.time + 0.001;
 		}
@@ -897,7 +896,7 @@ CL.RelinkEntities = function()
 		{
 			R.RocketTrail(oldorg, ent.origin, 0);
 			dl = CL.AllocDlight(i)
-			dl.origin = [ent.origin[0], ent.origin[1], ent.origin[2]];
+			dl.origin.set(ent.origin);
 			dl.radius = 200.0;
 			dl.die = CL.state.time + 0.01;
 		}
@@ -1640,7 +1639,7 @@ CL.ParseTEnt = function()
 	case Protocol.te.explosion:
 		R.ParticleExplosion(pos);
 		dl = CL.AllocDlight(0);
-		dl.origin = [pos[0], pos[1], pos[2]];
+		dl.origin.set(pos);
 		dl.radius = 350.0;
 		dl.die = CL.state.time + 0.5;
 		dl.decay = 300.0;
@@ -1661,7 +1660,7 @@ CL.ParseTEnt = function()
 		var colorLength = MSG.ReadByte();
 		R.ParticleExplosion2(pos, colorStart, colorLength);
 		dl = CL.AllocDlight(0);
-		dl.origin = [pos[0], pos[1], pos[2]];
+		dl.origin.set(pos);
 		dl.radius = 350.0;
 		dl.die = CL.state.time + 0.5;
 		dl.decay = 300.0;

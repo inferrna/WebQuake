@@ -382,7 +382,7 @@ ED.LoadFromFile = function(data)
 
 ED.Vector = function(e, o)
 {
-	return [e.v_float[o], e.v_float[o + 1], e.v_float[o + 2]];
+	return new Float32Array([e.v_float[o], e.v_float[o + 1], e.v_float[o + 2]]);
 };
 
 ED.SetVector = function(e, o, v)

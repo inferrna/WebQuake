@@ -513,6 +513,7 @@ Mod.LoadFaces = function(buf)
 				v = Mod.loadmodel.vertexes[Mod.loadmodel.edges[e][0]];
 			else
 				v = Mod.loadmodel.vertexes[Mod.loadmodel.edges[-e][1]];
+            if(!v.subarray) console.log("Bad vector here");//NFP
 			val = Vec.DotProduct(v, tex.vecs[0]) + tex.vecs[0][3];
 			if (val < mins[0])
 				mins[0] = val;
@@ -776,11 +777,11 @@ Mod.LoadBrushModel = function(buffer)
 		else if (vert[2] > maxs[2])
 			maxs[2] = vert[2];
 	};
-	Mod.loadmodel.radius = Vec.Length([
+	Mod.loadmodel.radius = Vec.Length(new Float32Array([
 		Math.abs(mins[0]) > Math.abs(maxs[0]) ? Math.abs(mins[0]) : Math.abs(maxs[0]),
 		Math.abs(mins[1]) > Math.abs(maxs[1]) ? Math.abs(mins[1]) : Math.abs(maxs[1]),
 		Math.abs(mins[2]) > Math.abs(maxs[2]) ? Math.abs(mins[2]) : Math.abs(maxs[2])
-	]);
+	]));
 };
 
 /*

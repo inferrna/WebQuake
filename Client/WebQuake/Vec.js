@@ -31,8 +31,8 @@ Vec.Perpendicular = function(v)
 	}
 	var tempvec = new Float32Array([0.0, 0.0, 0.0]);
 	tempvec[pos] = 1.0;
-	var inv_denom = 1.0 / (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-	var d = (tempvec[0] * v[0] + tempvec[1] * v[1] + tempvec[2] * v[2]) * inv_denom;
+	var inv_denom = 1.0 / (Vec.DotProduct(v, v));
+	var d = (Vec.DotProduct(tempvec, v)) * inv_denom;
 	var dst = new Float32Array([
 		tempvec[0] - d * v[0] * inv_denom,
 		tempvec[1] - d * v[1] * inv_denom,
@@ -62,9 +62,12 @@ Vec.RotatePointAroundVector = function(dir, point, degrees)
 	var zrot = Vec.v9c; zrot.set([c, s, 0, -s, c, 0, 0, 0, 1]);
 	var rot = Vec.ConcatRotations(Vec.ConcatRotations(m, zrot), im);
 	var res = Vec.v3a; res.set([
-		rot[0] * point[0] + rot[1] * point[1] + rot[2] * point[2],
+        Vec.DotProduct(rot, point),
+        Vec.DotProduct(rot.subarray(3<<2, 3), point),
+        Vec.DotProduct(rot.subarray(6<<2, 3), point),
+		/*rot[0] * point[0] + rot[1] * point[1] + rot[2] * point[2],
 		rot[3] * point[0] + rot[4] * point[1] + rot[5] * point[2],
-		rot[6] * point[0] + rot[7] * point[1] + rot[8] * point[2]
+		rot[6] * point[0] + rot[7] * point[1] + rot[8] * point[2]*/
 	]);
     return res;
 };
@@ -166,14 +169,24 @@ Vec.AngleVectors = function(angles, forward, right, up)
 
 Vec.DotProduct = function(v1, v2)
 {
-	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+    /*if(!v1.subarray) {
+        console.log("Bad v1");
+        console.log(v1);
+        return 0;
+    }*/
+    (new Float32Array(window['mybuffer'], 0, 3)).set(v1.subarray(0,3));
+    (new Float32Array(window['mybuffer'], 12, 3)).set(v2.subarray(0,3));
+    return window['asm_funcs'].dot_product();
+    //return GL.datav.getFloat32(6<<2);
+	//return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 };
 
 Vec.Copy = function(v1, v2)
 {
-	v2[0] = v1[0];
+    v2.set(v1);
+	/*v2[0] = v1[0];
 	v2[1] = v1[1];
-	v2[2] = v1[2];
+	v2[2] = v1[2];*/
 };
 
 Vec.CrossProduct = function(v1, v2)
@@ -189,12 +202,12 @@ Vec.CrossProduct = function(v1, v2)
 
 Vec.Length = function(v)
 {
-	return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+	return Math.sqrt(Vec.DotProduct(v, v));
 };
 
 Vec.Normalize = function(v)
 {
-	var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+	var length = Math.sqrt(Vec.DotProduct(v, v));
 	if (length === 0.0)
 	{
 		v[0] = v[1] = v[2] = 0.0;
@@ -208,7 +221,13 @@ Vec.Normalize = function(v)
 
 Vec.ConcatRotations = function(m1, m2)
 {
-    var res = Vec.v9d;
+    //concat_rotations
+    (new Float32Array(window['mybuffer'], 0, 9)).set(m1.subarray(0,9));
+    (new Float32Array(window['mybuffer'], 9<<2, 9)).set(m2.subarray(0,9));
+    window['asm_funcs'].concat_rotations();
+    var res = new Float32Array(window['mybuffer'], 18<<2, 9);
+    return new Float32Array(res);
+    /*var res = Vec.v9d;
 	res.set([
 			m1[0] * m2[0] + m1[1] * m2[3] + m1[2] * m2[6],
 			m1[0] * m2[1] + m1[1] * m2[4] + m1[2] * m2[7],
@@ -220,5 +239,5 @@ Vec.ConcatRotations = function(m1, m2)
 			m1[6] * m2[1] + m1[7] * m2[4] + m1[8] * m2[7],
 			m1[6] * m2[2] + m1[7] * m2[5] + m1[8] * m2[8]
 	]);
-    return res;
+    return res;*/
 };

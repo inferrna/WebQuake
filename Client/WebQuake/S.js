@@ -4,10 +4,10 @@ S.channels = [];
 S.static_channels = [];
 S.ambient_channels = [];
 
-S.listener_origin = [0.0, 0.0, 0.0];
-S.listener_forward = [0.0, 0.0, 0.0];
-S.listener_right = [0.0, 0.0, 0.0];
-S.listener_up = [0.0, 0.0, 0.0];
+S.listener_origin = new Float32Array([0.0, 0.0, 0.0]);
+S.listener_forward = new Float32Array([0.0, 0.0, 0.0]);
+S.listener_right = new Float32Array([0.0, 0.0, 0.0]);
+S.listener_up = new Float32Array([0.0, 0.0, 0.0]);
 
 S.known_sfx = [];
 
@@ -162,12 +162,12 @@ S.Spatialize = function(ch)
 		return;
 	}
 
-	var source = [
+	var source = new Float32Array([
 		ch.origin[0] - S.listener_origin[0],
 		ch.origin[1] - S.listener_origin[1],
 		ch.origin[2] - S.listener_origin[2]
-	];
-	var dist = Math.sqrt(source[0] * source[0] + source[1] * source[1] + source[2] * source[2]);
+	]);
+	var dist = Math.sqrt(Vec.DotProduct(source, source));
 	if (dist !== 0.0)
 	{
 		source[0] /= dist;
@@ -193,7 +193,7 @@ S.StartSound = function(entnum, entchannel, sfx, origin, vol, attenuation)
 		return;
 
 	var target_chan = S.PickChannel(entnum, entchannel);
-	target_chan.origin = [origin[0], origin[1], origin[2]];
+	target_chan.origin = new Float32Array(origin);
 	target_chan.dist_mult = attenuation * 0.001;
 	target_chan.master_vol = vol;
 	target_chan.entnum = entnum;
@@ -362,7 +362,7 @@ S.StaticSound = function(sfx, origin, vol, attenuation)
 	}
 	var ss = {
 		sfx: sfx,
-		origin: [origin[0], origin[1], origin[2]],
+		origin: new Float32Array(origin),
 		master_vol: vol,
 		dist_mult: attenuation * 0.000015625,
 		end: Host.realtime + sfx.cache.length
@@ -667,18 +667,10 @@ S.Update = function(origin, forward, right, up)
 	if (S.nosound.value !== 0)
 		return;
 
-	S.listener_origin[0] = origin[0];
-	S.listener_origin[1] = origin[1];
-	S.listener_origin[2] = origin[2];
-	S.listener_forward[0] = forward[0];
-	S.listener_forward[1] = forward[1];
-	S.listener_forward[2] = forward[2];
-	S.listener_right[0] = right[0];
-	S.listener_right[1] = right[1];
-	S.listener_right[2] = right[2];
-	S.listener_up[0] = up[0];
-	S.listener_up[1] = up[1];
-	S.listener_up[2] = up[2];
+	S.listener_origin = new Float32Array(origin);
+	S.listener_forward = new Float32Array(forward);
+	S.listener_right = new Float32Array(right);
+	S.listener_up = new Float32Array(up);
 
 	if (S.volume.value < 0.0)
 		Cvar.SetValue('volume', 0.0);

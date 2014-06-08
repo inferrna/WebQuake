@@ -120,7 +120,7 @@ V.ParseDamage = function()
 	var armor = MSG.ReadByte();
 	var blood = MSG.ReadByte();
 	var ent = CL.entities[CL.state.viewentity];
-	var from = [MSG.ReadCoord() - ent.origin[0], MSG.ReadCoord() - ent.origin[1], MSG.ReadCoord() - ent.origin[2]];
+	var from = new Float32Array([MSG.ReadCoord() - ent.origin[0], MSG.ReadCoord() - ent.origin[1], MSG.ReadCoord() - ent.origin[2]]);
 	Vec.Normalize(from);
 	var count = (blood + armor) * 0.5;
 	if (count < 10.0)
@@ -198,31 +198,19 @@ V.CalcBlend = function()
 	var cshift = CL.state.cshifts[CL.cshift.powerup];
 	if ((CL.state.items & Def.it.quad) !== 0)
 	{
-		cshift[0] = 0.0;
-		cshift[1] = 0.0;
-		cshift[2] = 255.0;
-		cshift[3] = 30.0;
+		cshift.set([0.0, 0.0, 255.0, 30.0]);
 	}
 	else if ((CL.state.items & Def.it.suit) !== 0)
 	{
-		cshift[0] = 0.0;
-		cshift[1] = 255.0;
-		cshift[2] = 0.0;
-		cshift[3] = 20.0;
+		cshift([0.0, 255.0, 0.0, 20.0]);
 	}
 	else if ((CL.state.items & Def.it.invisibility) !== 0)
 	{
-		cshift[0] = 100.0;
-		cshift[1] = 100.0;
-		cshift[2] = 100.0;
-		cshift[3] = 100.0;
+		cshift([100.0, 100.0, 100.0, 100.0]);
 	}
 	else if ((CL.state.items & Def.it.invulnerability) !== 0)
 	{
-		cshift[0] = 255.0;
-		cshift[1] = 255.0;
-		cshift[2] = 0.0;
-		cshift[3] = 30.0;
+		cshift([255.0, 255.0, 0.0, 30.0]);
 	}
 	else
 		cshift[3] = 0.0;
@@ -257,10 +245,7 @@ V.CalcBlend = function()
 		a = 1.0;
 	else if (a < 0.0)
 		a = 0.0;
-	V.blend[0] = r;
-	V.blend[1] = g;
-	V.blend[2] = b;
-	V.blend[3] = a;
+	V.blend.set([r, g, b, a]);
 	if (V.blend[3] > 1.0)
 		V.blend[3] = 1.0;
 	else if (V.blend[3] < 0.0)
@@ -270,12 +255,10 @@ V.CalcBlend = function()
 V.CalcIntermissionRefdef = function()
 {
 	var ent = CL.entities[CL.state.viewentity];
-	R.refdef.vieworg[0] = ent.origin[0];
-	R.refdef.vieworg[1] = ent.origin[1];
-	R.refdef.vieworg[2] = ent.origin[2];
-	R.refdef.viewangles[0] = ent.angles[0] + Math.sin(CL.state.time * V.ipitch_cycle.value) * V.ipitch_level.value;
-	R.refdef.viewangles[1] = ent.angles[1] + Math.sin(CL.state.time * V.iyaw_cycle.value) * V.iyaw_level.value;
-	R.refdef.viewangles[2] = ent.angles[2] + Math.sin(CL.state.time * V.iroll_cycle.value) * V.iroll_level.value;
+	R.refdef.vieworg.set(ent.origin);
+	R.refdef.viewangles.set([ent.angles[0] + Math.sin(CL.state.time * V.ipitch_cycle.value) * V.ipitch_level.value,
+	                         ent.angles[1] + Math.sin(CL.state.time * V.iyaw_cycle.value) * V.iyaw_level.value,
+	                         ent.angles[2] + Math.sin(CL.state.time * V.iroll_cycle.value) * V.iroll_level.value]);
 	CL.state.viewent.model = null;
 };
 
@@ -289,13 +272,12 @@ V.CalcRefdef = function()
 	ent.angles[0] = -CL.state.viewangles[0];
 	var bob = V.CalcBob();
 
-	R.refdef.vieworg[0] = ent.origin[0] + 0.03125;
-	R.refdef.vieworg[1] = ent.origin[1] + 0.03125;
-	R.refdef.vieworg[2] = ent.origin[2] + CL.state.viewheight + bob + 0.03125;
+	R.refdef.vieworg.set([ent.origin[0] + 0.03125,
+	                      ent.origin[1] + 0.03125,
+                          ent.origin[2] + CL.state.viewheight + bob + 0.03125]);
 
-	R.refdef.viewangles[0] = CL.state.viewangles[0];
-	R.refdef.viewangles[1] = CL.state.viewangles[1];
-	R.refdef.viewangles[2] = CL.state.viewangles[2] + V.CalcRoll(CL.entities[CL.state.viewentity].angles, CL.state.velocity);
+	R.refdef.viewangles.set(CL.state.viewangles);
+	R.refdef.viewangles[2] += V.CalcRoll(CL.entities[CL.state.viewentity].angles, CL.state.velocity);
 
 	if (V.dmg_time > 0.0)
 	{
@@ -317,7 +299,7 @@ V.CalcRefdef = function()
 	R.refdef.viewangles[2] += iroll;
 
 	var forward = V.v3a, right = V.v3b, up = V.v3c;
-	Vec.AngleVectors([-ent.angles[0], ent.angles[1], ent.angles[2]], forward, right, up);
+	Vec.AngleVectors(new Float32Array([-ent.angles[0], ent.angles[1], ent.angles[2]]), forward, right, up);
 	R.refdef.vieworg[0] += V.ofsx.value * forward[0] + V.ofsy.value * right[0] + V.ofsz.value * up[0];
 	R.refdef.vieworg[1] += V.ofsx.value * forward[1] + V.ofsy.value * right[1] + V.ofsz.value * up[1];
 	R.refdef.vieworg[2] += V.ofsx.value * forward[2] + V.ofsy.value * right[2] + V.ofsz.value * up[2];

@@ -1,4 +1,4 @@
-GL = {};
+var GL = {};
 var BUFFER_SIZE = 16777216;
 GL.textures = [];
 GL.currenttextures = [];
@@ -40,6 +40,22 @@ function AsmFuncs(stdlib, env, heap) {
         res32f[6] =  -sy * -sr + cy * sp * cr;
         res32f[7] =  cy * -sr + sy * sp * cr;
         res32f[8] =  cp * cr;
+        return 0;
+    }
+    function dot_product(){
+        return  +((+res32f[0])*(+res32f[3])+(+res32f[1])*(+res32f[4])+(+res32f[2])*(+res32f[5])) ;
+    }
+    function concat_rotations(){
+        res32f[18] = ((+res32f[0])*(+res32f[9])+(+res32f[1])*(+res32f[12])+(+res32f[2])*(+res32f[15]));
+        res32f[19] = ((+res32f[0])*(+res32f[10])+(+res32f[1])*(+res32f[13])+(+res32f[2])*(+res32f[16]));
+        res32f[20] = ((+res32f[0])*(+res32f[11])+(+res32f[1])*(+res32f[14])+(+res32f[2])*(+res32f[17]));
+        res32f[21] = ((+res32f[3])*(+res32f[9])+(+res32f[4])*(+res32f[12])+(+res32f[5])*(+res32f[15]));
+        res32f[22] = ((+res32f[3])*(+res32f[10])+(+res32f[4])*(+res32f[13])+(+res32f[5])*(+res32f[16]));
+        res32f[23] = ((+res32f[3])*(+res32f[11])+(+res32f[4])*(+res32f[14])+(+res32f[5])*(+res32f[17]));
+        res32f[24] = ((+res32f[6])*(+res32f[9])+(+res32f[7])*(+res32f[12])+(+res32f[8])*(+res32f[15]));
+        res32f[25] = ((+res32f[6])*(+res32f[10])+(+res32f[7])*(+res32f[13])+(+res32f[8])*(+res32f[16]));
+        res32f[26] = ((+res32f[6])*(+res32f[11])+(+res32f[7])*(+res32f[14])+(+res32f[8])*(+res32f[17]));
+        return 0;
     }
     function scale_texture(inwidth, inheight, outwidth, outheight){
         inwidth = inwidth|0;
@@ -70,8 +86,14 @@ function AsmFuncs(stdlib, env, heap) {
             }
             dest = dest+outwidth|0;
         }
+        return 0;
     }
-    return {rotation_matrix: rotation_matrix, scale_texture: scale_texture}; //asm_funcs.scale_texture
+    return {
+            rotation_matrix: rotation_matrix,
+            scale_texture: scale_texture,
+            dot_product: dot_product,
+            concat_rotations: concat_rotations
+            };
 }
 
 if(!window['asm_funcs']){
@@ -80,6 +102,7 @@ if(!window['asm_funcs']){
     window['mybuffer'] = buffer;
     var asm_funcs = AsmFuncs(window, 0, window['mybuffer']);
     window['asm_funcs'] = asm_funcs;
+    GL.datav = new DataView(window['mybuffer']);
 }
 GL.Bind = function(target, texnum)
 {

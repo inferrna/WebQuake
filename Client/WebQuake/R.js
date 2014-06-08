@@ -75,7 +75,7 @@ R.RenderDlights = function()
 		l = CL.dlights[i];
 		if ((l.die < CL.state.time) || (l.radius === 0.0))
 			continue;
-		if (Vec.Length([l.origin[0] - R.refdef.vieworg[0], l.origin[1] - R.refdef.vieworg[1], l.origin[2] - R.refdef.vieworg[2]]) < (l.radius * 0.35))
+		if (Vec.Length(new Float32Array([l.origin[0] - R.refdef.vieworg[0], l.origin[1] - R.refdef.vieworg[1], l.origin[2] - R.refdef.vieworg[2]])) < (l.radius * 0.35))
 		{
 			a = l.radius * 0.0003;
 			V.blend[3] += a * (1.0 - V.blend[3]);
@@ -225,6 +225,7 @@ R.RecursiveLightPoint = function(node, start, end)
 
 		tex = CL.state.worldmodel.texinfo[surf.texinfo];
 
+        if(!mid.subarray) console.log("Bad vector here");//NFP
 		s = Vec.DotProduct(mid, tex.vecs[0]) + tex.vecs[0][3];
 		t = Vec.DotProduct(mid, tex.vecs[1]) + tex.vecs[1][3];
 		if ((s < surf.texturemins[0]) || (t < surf.texturemins[1]))
@@ -565,6 +566,7 @@ R.DrawAliasModel = function(e)
 	var forward = new Float32Array(3), right = new Float32Array(3), up = new Float32Array(3);
 	Vec.AngleVectors(e.angles, forward, right, up);
     R.v3a.set([-1.0, 0.0, 0.0]);
+    if(!R.v3a.subarray) console.log("Bad vector here");//NFP
     right.set([
             Vec.DotProduct(R.v3a, forward),
            -Vec.DotProduct(R.v3a, right),
@@ -750,6 +752,7 @@ R.SetFrustum = function()
 	{
 		out = R.frustum[i];
 		out.type = 5;
+        if(!R.refdef.vieworg.subarray) console.log("Bad vector here");//NFP
 		out.dist = Vec.DotProduct(R.refdef.vieworg, out.normal);
 		out.signbits = 0;
 		if (out.normal[0] < 0.0)
@@ -1720,28 +1723,30 @@ R.AddDynamicLights = function(surf)
 	var size = smax * tmax;
 	var tex = CL.state.worldmodel.texinfo[surf.texinfo];
 	var i, light, s, t;
-	var dist, rad, minlight, impact = [], local = [], sd, td;
+	var dist, rad, minlight, impact = new Float32Array(3), local = new Float32Array(2), sd, td;
 
-	var blocklights = [];
-	for (i = 0; i < size; ++i)
-		blocklights[i] = 0;
+	var blocklights = new Uint32Array(size);
+	//for (i = 0; i < size; ++i)
+	//	blocklights[i] = 0;
 
 	for (i = 0; i <= 31; ++i)
 	{
 		if (((surf.dlightbits >>> i) & 1) === 0)
 			continue;
 		light = CL.dlights[i];
+        if(!light.origin.subarray) console.log("Bad vector here");//NFP
 		dist = Vec.DotProduct(light.origin, surf.plane.normal) - surf.plane.dist;
 		rad = light.radius - Math.abs(dist);
 		minlight = light.minlight;
 		if (rad < minlight)
 			continue;
 		minlight = rad - minlight;
-		impact[0] = light.origin[0] - surf.plane.normal[0] * dist;
-		impact[1] = light.origin[1] - surf.plane.normal[1] * dist;
-		impact[2] = light.origin[2] - surf.plane.normal[2] * dist;
-		local[0] = Vec.DotProduct(impact, tex.vecs[0]) + tex.vecs[0][3] - surf.texturemins[0];
-		local[1] = Vec.DotProduct(impact, tex.vecs[1]) + tex.vecs[1][3] - surf.texturemins[1];
+		impact.set([light.origin[0] - surf.plane.normal[0] * dist,
+                    light.origin[1] - surf.plane.normal[1] * dist,
+                    light.origin[2] - surf.plane.normal[2] * dist]);
+        if(!impact.subarray) console.log("Bad vector here");//NFP
+		local.set([Vec.DotProduct(impact, tex.vecs[0]) + tex.vecs[0][3] - surf.texturemins[0],
+                   Vec.DotProduct(impact, tex.vecs[1]) + tex.vecs[1][3] - surf.texturemins[1]]);
 		for (t = 0; t < tmax; ++t)
 		{
 			td = local[1] - (t << 4);
@@ -1759,7 +1764,7 @@ R.AddDynamicLights = function(surf)
 				else
 					dist = td + (sd >> 1);
 				if (dist < minlight)
-					blocklights[t * smax + s] += Math.floor((rad - dist) * 256.0);
+					blocklights[t * smax + s] += Math.floor(rad - dist) << 8;
 			}
 		}
 	}
@@ -2095,20 +2100,21 @@ R.BuildSurfaceDisplayList = function(fa)
 	fa.verts = [];
 	if (fa.numedges <= 2)
 		return;
-	var i, index, vec, vert, s, t;
+	var i, index, vec = new Float32Array(3), vert, s, t;
 	var texinfo = R.currentmodel.texinfo[fa.texinfo];
 	var texture = R.currentmodel.textures[texinfo.texture];
 	for (i = 0; i < fa.numedges; ++i)
 	{
 		index = R.currentmodel.surfedges[fa.firstedge + i];
 		if (index > 0)
-			vec = R.currentmodel.vertexes[R.currentmodel.edges[index][0]];
+			vec.set(R.currentmodel.vertexes[R.currentmodel.edges[index][0]]);
 		else
-			vec = R.currentmodel.vertexes[R.currentmodel.edges[-index][1]];
+			vec.set(R.currentmodel.vertexes[R.currentmodel.edges[-index][1]]);
 		vert = new Float32Array(7);
         vert.subarray(0,3).set(vec);
 		if (fa.sky !== true)
 		{
+            if(!vec.subarray) console.log("Bad vector here");//NFP
 			s = Vec.DotProduct(vec, texinfo.vecs[0]) + texinfo.vecs[0][3];
 			t = Vec.DotProduct(vec, texinfo.vecs[1]) + texinfo.vecs[1][3];
 			vert[3] = s / texture.width;
@@ -2189,19 +2195,21 @@ R.WarpScreen = function()
 R.MakeSky = function()
 {
 	var sin = new Float32Array([0.0, 0.19509, 0.382683, 0.55557, 0.707107, 0.831470, 0.92388, 0.980785, 1.0]);
-	var vecs = [], i, j;
+	var vecs = new Float32Array(1024), i, j;
+    var vecslen = 0;
 
 	for (i = 0; i < 7; i += 2)
 	{
-		vecs = vecs.concat(
+		vecs.subarray(vecslen, vecslen+9).set(
 		[
 			0.0, 0.0, 1.0,
 			sin[i + 2] * 0.19509, sin[6 - i] * 0.19509, 0.980785,
 			sin[i] * 0.19509, sin[8 - i] * 0.19509, 0.980785
 		]);
+        vecslen+=9;
 		for (j = 0; j < 7; ++j)
 		{
-			vecs = vecs.concat(
+			vecs.subarray(vecslen, vecslen+18).set(
 			[
 				sin[i] * sin[8 - j], sin[8 - i] * sin[8 - j], sin[j],
 				sin[i] * sin[7 - j], sin[8 - i] * sin[7 - j], sin[j + 1],
@@ -2211,6 +2219,7 @@ R.MakeSky = function()
 				sin[i + 2] * sin[7 - j], sin[6 - i] * sin[7 - j], sin[j + 1],
 				sin[i + 2] * sin[8 - j], sin[6 - i] * sin[8 - j], sin[j]
 			]);
+            vecslen+=18;
 		}
 	}
     console.log("R.MakeSky vecs.length=="+vecs.length);
@@ -2219,7 +2228,7 @@ R.MakeSky = function()
 
 	R.skyvecs = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, R.skyvecs);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vecs), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, vecs.subarray(0, vecslen), gl.STATIC_DRAW);
 };
 
 R.DrawSkyBox = function()

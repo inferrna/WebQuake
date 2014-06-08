@@ -1,4 +1,4 @@
-PR = {};
+var PR = {};
 
 PR.etype = {
 	ev_void: 0,
@@ -374,12 +374,12 @@ PR.LoadProgs = function()
 			name: view.getUint32(ofs + 16, true),
 			file: view.getUint32(ofs + 20, true),
 			numparms: view.getUint32(ofs + 24, true),
-			parm_size: [
+			parm_size: new Uint8Array([
 				view.getUint8(ofs + 28), view.getUint8(ofs + 29),
 				view.getUint8(ofs + 30), view.getUint8(ofs + 31),
 				view.getUint8(ofs + 32), view.getUint8(ofs + 33),
 				view.getUint8(ofs + 34), view.getUint8(ofs + 35)
-			]
+			])
 		};
 		ofs += 36;
 	}

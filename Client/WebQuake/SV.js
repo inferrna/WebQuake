@@ -1205,7 +1205,7 @@ SV.FlyMove = function(ent, time)
 			ED.SetVector(ent, PR.entvars.velocity, Vec.origin);
 			return 3;
 		}
-		planes[numplanes++] = [trace.plane.normal[0], trace.plane.normal[1], trace.plane.normal[2]];
+		planes[numplanes++] = new Float32Array(trace.plane.normal);
 		for (i = 0; i < numplanes; ++i)
 		{
 			SV.ClipVelocity(original_velocity, planes[i], new_velocity, 1.0);
@@ -1819,7 +1819,7 @@ SV.UserFriction = function()
 SV.Accelerate = function(wishvel, air)
 {
 	var ent = SV.player;
-	var wishdir = [wishvel[0], wishvel[1], wishvel[2]];
+	var wishdir = new Float32Array(wishvel);
 	var wishspeed = Vec.Normalize(wishdir);
 	if ((air === true) && (wishspeed > 30.0))
 		wishspeed = 30.0;
@@ -1842,11 +1842,11 @@ SV.WaterMove = function()
 	var ent = SV.player, cmd = Host.client.cmd;
 	var forward = [], right = [];
 	Vec.AngleVectors(ED.Vector(ent, PR.entvars.v_angle), forward, right);
-	var wishvel = [
+	var wishvel = new Float32Array([
 		forward[0] * cmd.forwardmove + right[0] * cmd.sidemove,
 		forward[1] * cmd.forwardmove + right[1] * cmd.sidemove,
 		forward[2] * cmd.forwardmove + right[2] * cmd.sidemove
-	];
+	]);
 	if ((cmd.forwardmove === 0.0) && (cmd.sidemove === 0.0) && (cmd.upmove === 0.0))
 		wishvel[2] -= 60.0;
 	else
@@ -1907,17 +1907,17 @@ SV.AirMove = function()
 {
 	var ent = SV.player;
 	var cmd = Host.client.cmd;
-	var forward = [], right = [];
+	var forward = new Float32Array(3), right = new Float32Array(3);
 	Vec.AngleVectors(ED.Vector(ent, PR.entvars.angles), forward, right);
 	var fmove = cmd.forwardmove;
 	var smove = cmd.sidemove;
 	if ((SV.server.time < ent.v_float[PR.entvars.teleport_time]) && (fmove < 0.0))
 		fmove = 0.0;
-	var wishvel = [
+	var wishvel = new Float32Array([
 		forward[0] * fmove + right[0] * smove,
 		forward[1] * fmove + right[1] * smove,
-		((ent.v_float[PR.entvars.movetype] >> 0) !== SV.movetype.walk) ? cmd.upmove : 0.0];
-	var wishdir = [wishvel[0], wishvel[1], wishvel[2]];
+		((ent.v_float[PR.entvars.movetype] >> 0) !== SV.movetype.walk) ? cmd.upmove : 0.0]);
+	var wishdir = new Float32Array(wishvel);
 	if (Vec.Normalize(wishdir) > SV.maxspeed.value)
 	{
 		wishvel[0] = wishdir[0] * SV.maxspeed.value;
@@ -2414,12 +2414,12 @@ SV.RecursiveHullCheck = function(hull, num, p1f, p2f, p1, p2, trace)
 
 	if (side === 0)
 	{
-		trace.plane.normal = [plane.normal[0], plane.normal[1], plane.normal[2]];
+		trace.plane.normal = new Float32Array(plane.normal);
 		trace.plane.dist = plane.dist;
 	}
 	else
 	{
-		trace.plane.normal = [-plane.normal[0], -plane.normal[1], -plane.normal[2]];
+		trace.plane.normal = new Float32Array([-plane.normal[0], -plane.normal[1], -plane.normal[2]]);
 		trace.plane.dist = -plane.dist;
 	}
 
@@ -2429,7 +2429,7 @@ SV.RecursiveHullCheck = function(hull, num, p1f, p2f, p1, p2, trace)
 		if (frac < 0.0)
 		{
 			trace.fraction = midf;
-			trace.endpos = [mid[0], mid[1], mid[2]];
+			trace.endpos = new Float32Array(mid);
 			Con.DPrint('backup past 0\n');
 			return;
 		}
@@ -2440,7 +2440,7 @@ SV.RecursiveHullCheck = function(hull, num, p1f, p2f, p1, p2, trace)
 	}
 
 	trace.fraction = midf;
-	trace.endpos = [mid[0], mid[1], mid[2]];
+	trace.endpos = new Float32Array(mid);
 };
 
 SV.ClipMoveToEntity = function(ent, start, mins, maxs, end)
@@ -2448,14 +2448,14 @@ SV.ClipMoveToEntity = function(ent, start, mins, maxs, end)
 	var trace = {
 		fraction: 1.0,
 		allsolid: true,
-		endpos: [end[0], end[1], end[2]],
+		endpos: new Float32Array(end),
 		plane: {normal: new Float32Array([0.0, 0.0, 0.0]), dist: 0.0}
 	};
 	var offset = [];
 	var hull = SV.HullForEntity(ent, mins, maxs, offset);
 	SV.RecursiveHullCheck(hull, hull.firstclipnode, 0.0, 1.0,
-		[start[0] - offset[0], start[1] - offset[1], start[2] - offset[2]],
-		[end[0] - offset[0], end[1] - offset[1], end[2] - offset[2]], trace);
+		new Float32Array([start[0] - offset[0], start[1] - offset[1], start[2] - offset[2]]),
+		new Float32Array([end[0] - offset[0], end[1] - offset[1], end[2] - offset[2]]), trace);
 	if (trace.fraction !== 1.0)
 	{
 		trace.endpos[0] += offset[0];
