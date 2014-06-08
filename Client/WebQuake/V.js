@@ -1,4 +1,4 @@
-V = {};
+var V = {};
 V.v3a = new Float32Array(3);
 V.v3b = new Float32Array(3);
 V.v3c = new Float32Array(3);
@@ -8,7 +8,7 @@ V.CalcRoll = function(angles, velocity)
 {
 	var right = V.v3a;
 	Vec.AngleVectors(angles, null, right);
-	var side = velocity[0] * right[0] + velocity[1] * right[1] + velocity[2] * right[2];
+	var side = Vec.DotProduct(velocity, right);
 	var sign = side < 0 ? -1 : 1;
 	side = Math.abs(side);
 	if (side < V.rollspeed.value)
@@ -150,10 +150,10 @@ V.ParseDamage = function()
 		cshift[1] = cshift[2] = 0.0;
 	}
 
-	var forward = V.v3b, right = V.v3c;
+	var forward = V.v3a, right = V.v3b;
 	Vec.AngleVectors(ent.angles, forward, right);
-	V.dmg_roll = count * (from[0] * right[0] + from[1] * right[1] + from[2] * right[2]) * V.kickroll.value;
-	V.dmg_pitch = count * (from[0] * forward[0] + from[1] * forward[1] + from[2] * forward[2]) * V.kickpitch.value;
+	V.dmg_roll = count * Vec.DotProduct(from, right) * V.kickroll.value;
+	V.dmg_pitch = count * Vec.DotProduct(from, forward) * V.kickpitch.value;
 	V.dmg_time = V.kicktime.value;
 };
 

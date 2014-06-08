@@ -513,7 +513,6 @@ Mod.LoadFaces = function(buf)
 				v = Mod.loadmodel.vertexes[Mod.loadmodel.edges[e][0]];
 			else
 				v = Mod.loadmodel.vertexes[Mod.loadmodel.edges[-e][1]];
-            if(!v.subarray) console.log("Bad vector here");//NFP
 			val = Vec.DotProduct(v, tex.vecs[0]) + tex.vecs[0][3];
 			if (val < mins[0])
 				mins[0] = val;

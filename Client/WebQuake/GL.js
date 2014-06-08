@@ -457,7 +457,7 @@ GL.RotationMatrix = function(pitch, yaw, roll)
 		-sy * -sr + cy * sp * cr,	cy * -sr + sy * sp * cr,	cp * cr
 	];*/
     window['asm_funcs'].rotation_matrix(pitch, yaw, roll);
-    return Array.prototype.slice.call(new Float32Array(window['mybuffer'], 0, 9));
+    return new Float32Array(window['mybuffer'], 0, 9);
     //new Float32Array(buffer, 0, 9);
 };
 

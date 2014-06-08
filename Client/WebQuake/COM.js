@@ -224,7 +224,7 @@ COM.files = {};
 COM.ReadFileEFS = function(filename){
     for(var i=0; i<COM.searchpaths[0].pack.length; i++){
         if(COM.searchpaths[0].pack[i].files[filename]){
-            console.log(filename+" found in pak");
+            //console.log(filename+" found in pak");
             var file = COM.searchpaths[0]
                           .pack[i]
                           .files[filename];
@@ -249,7 +249,7 @@ COM.ReadFileEFS = function(filename){
         FS.close(stream);
         COM.files[filename] = buf;
     }*/
-    console.log("Failed to read "+filename+" from pak");
+    console.warn("Failed to read "+filename+" from pak");
     console.log(COM.searchpaths);
     return null;
 };

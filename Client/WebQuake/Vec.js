@@ -169,11 +169,6 @@ Vec.AngleVectors = function(angles, forward, right, up)
 
 Vec.DotProduct = function(v1, v2)
 {
-    /*if(!v1.subarray) {
-        console.log("Bad v1");
-        console.log(v1);
-        return 0;
-    }*/
     (new Float32Array(window['mybuffer'], 0, 3)).set(v1.subarray(0,3));
     (new Float32Array(window['mybuffer'], 12, 3)).set(v2.subarray(0,3));
     return window['asm_funcs'].dot_product();
@@ -191,7 +186,7 @@ Vec.Copy = function(v1, v2)
 
 Vec.CrossProduct = function(v1, v2)
 {
-    var res = Vec.v3c;
+    var res = new Float32Array(3);//Vec.v3c;
 	res.set([
 		v1[1] * v2[2] - v1[2] * v2[1],
 		v1[2] * v2[0] - v1[0] * v2[2],

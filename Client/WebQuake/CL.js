@@ -791,7 +791,7 @@ CL.LerpPoint = function()
 CL.RelinkEntities = function()
 {
 	var i, j;
-	var frac = CL.LerpPoint(), f, d, delta = [];
+	var frac = CL.LerpPoint(), f, d, delta = new Float32Array(3);
 
 	CL.numvisedicts = 0;
 
@@ -858,7 +858,7 @@ CL.RelinkEntities = function()
 		if ((ent.effects & Mod.effects.muzzleflash) !== 0)
 		{
 			dl = CL.AllocDlight(i);
-			var fv = [];
+			var fv = new Float32Array(3);
 			Vec.AngleVectors(ent.angles, fv);
 			dl.origin.set([
 				ent.origin[0] + 18.0 * fv[0],
@@ -1326,7 +1326,7 @@ CL.ParseStatic = function()
 	var ent = {
 		num: -1,
 		update_type: 0,
-		baseline: {origin: [], angles: []},
+		baseline: {origin: new Float32Array(3), angles: new Float32Array(3)},
 		msgtime: 0.0,
 		msg_origins: [new Float32Array([0.0, 0.0, 0.0]), new Float32Array([0.0, 0.0, 0.0])],
 		msg_angles: [new Float32Array([0.0, 0.0, 0.0]), new Float32Array([0.0, 0.0, 0.0])],
@@ -1342,8 +1342,8 @@ CL.ParseStatic = function()
 	ent.frame = ent.baseline.frame;
 	ent.skinnum = ent.baseline.skin;
 	ent.effects = ent.baseline.effects;
-	ent.origin = [ent.baseline.origin[0], ent.baseline.origin[1], ent.baseline.origin[2]];
-	ent.angles = [ent.baseline.angles[0], ent.baseline.angles[1], ent.baseline.angles[2]];
+	ent.origin = new Float32Array(ent.baseline.origin);
+	ent.angles = new Float32Array(ent.baseline.angles);
 	R.currententity = ent;
 	R.emins.set([ent.origin[0] + ent.model.mins[0], ent.origin[1] + ent.model.mins[1], ent.origin[2] + ent.model.mins[2]]);
 	R.emaxs.set([ent.origin[0] + ent.model.maxs[0], ent.origin[1] + ent.model.maxs[1], ent.origin[2] + ent.model.maxs[2]]);
@@ -1682,7 +1682,7 @@ CL.NewTempEntity = function()
 CL.UpdateTEnts = function()
 {
 	CL.num_temp_entities = 0;
-	var i, b, dist = [], yaw, pitch, org = [], d, ent;
+	var i, b, dist = new Float32Array(3), yaw, pitch, org = new Float32Array(3), d, ent;
 	for (i = 0; i <= 23; ++i)
 	{
 		b = CL.beams[i];
@@ -1707,10 +1707,8 @@ CL.UpdateTEnts = function()
 			if (pitch < 0)
 				pitch += 360;
 		}
-		org[0] = b.start[0];
-		org[1] = b.start[1];
-		org[2] = b.start[2];
-		d = Math.sqrt(dist[0] * dist[0] + dist[1] * dist[1] + dist[2] * dist[2]);
+		org.set(b.start);
+		d = Math.sqrt(Vec.DotProduct(dist, dist));
 		if (d !== 0.0)
 		{
 			dist[0] /= d;
@@ -1720,9 +1718,9 @@ CL.UpdateTEnts = function()
 		for (; d > 0.0; )
 		{
 			ent = CL.NewTempEntity();
-			ent.origin = [org[0], org[1], org[2]];
+			ent.origin = new Float32Array(org);
 			ent.model = b.model;
-			ent.angles = [pitch, yaw, Math.random() * 360.0];
+			ent.angles = new Float32Array([pitch, yaw, Math.random() * 360.0]);
 			org[0] += dist[0] * 30.0;
 			org[1] += dist[1] * 30.0;
 			org[2] += dist[2] * 30.0;

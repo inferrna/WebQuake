@@ -97,7 +97,7 @@ R.MarkLights = function(light, bit, node)
 	if (node.contents < 0)
 		return;
 	var normal = node.plane.normal;
-	var dist = light.origin[0] * normal[0] + light.origin[1] * normal[1] + light.origin[2] * normal[2] - node.plane.dist;
+	var dist = Vec.DotProduct(light.origin, normal) - node.plane.dist;
 	if (dist > light.radius)
 	{
 		R.MarkLights(light, bit, node.children[0]);
@@ -195,8 +195,8 @@ R.RecursiveLightPoint = function(node, start, end)
 		return -1;
 
 	var normal = node.plane.normal;
-	var front = start[0] * normal[0] + start[1] * normal[1] + start[2] * normal[2] - node.plane.dist;
-	var back = end[0] * normal[0] + end[1] * normal[1] + end[2] * normal[2] - node.plane.dist;
+	var front = Vec.DotProduct(start, normal) - node.plane.dist;
+	var back = Vec.DotProduct(end, normal) - node.plane.dist;
 	var side = front < 0;
 
 	if ((back < 0) === side)
@@ -225,19 +225,19 @@ R.RecursiveLightPoint = function(node, start, end)
 
 		tex = CL.state.worldmodel.texinfo[surf.texinfo];
 
-        if(!mid.subarray) console.log("Bad vector here");//NFP
 		s = Vec.DotProduct(mid, tex.vecs[0]) + tex.vecs[0][3];
-		t = Vec.DotProduct(mid, tex.vecs[1]) + tex.vecs[1][3];
-		if ((s < surf.texturemins[0]) || (t < surf.texturemins[1]))
+		if (s < surf.texturemins[0])
 			continue;
-
-		ds = s - surf.texturemins[0];
-		dt = t - surf.texturemins[1];
-		if ((ds > surf.extents[0]) || (dt > surf.extents[1]))
+		t = Vec.DotProduct(mid, tex.vecs[1]) + tex.vecs[1][3];
+		if (t < surf.texturemins[1])
 			continue;
 
 		if (surf.lightofs === 0)
 			return 0;
+		ds = s - surf.texturemins[0];
+		dt = t - surf.texturemins[1];
+		if ((ds > surf.extents[0]) || (dt > surf.extents[1]))
+			continue;
 
 		ds >>= 4;
 		dt >>= 4;
@@ -566,7 +566,6 @@ R.DrawAliasModel = function(e)
 	var forward = new Float32Array(3), right = new Float32Array(3), up = new Float32Array(3);
 	Vec.AngleVectors(e.angles, forward, right, up);
     R.v3a.set([-1.0, 0.0, 0.0]);
-    if(!R.v3a.subarray) console.log("Bad vector here");//NFP
     right.set([
             Vec.DotProduct(R.v3a, forward),
            -Vec.DotProduct(R.v3a, right),
@@ -752,7 +751,6 @@ R.SetFrustum = function()
 	{
 		out = R.frustum[i];
 		out.type = 5;
-        if(!R.refdef.vieworg.subarray) console.log("Bad vector here");//NFP
 		out.dist = Vec.DotProduct(R.refdef.vieworg, out.normal);
 		out.signbits = 0;
 		if (out.normal[0] < 0.0)
@@ -956,7 +954,6 @@ R.MakeBrushModelDisplayLists = function(m)
 			verts += chain[2];
 		}
 	}
-    console.log("cmds.length=="+cmdslen);
 	m.cmds = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, m.cmds);
 	gl.bufferData(gl.ARRAY_BUFFER, cmds.subarray(0, cmdslen), gl.STATIC_DRAW);
@@ -1522,7 +1519,7 @@ R.tracercount = 0;
 R.RocketTrail = function(start, end, type)
 {
 	var vec = new Float32Array([end[0] - start[0], end[1] - start[1], end[2] - start[2]]);
-	var len = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+	var len = Math.sqrt(Vec.DotProduct(vec, vec));
 	if (len === 0.0)
 		return;
 	vec.set([vec[0] / len, vec[1] / len, vec[2] / len]);
@@ -1734,7 +1731,6 @@ R.AddDynamicLights = function(surf)
 		if (((surf.dlightbits >>> i) & 1) === 0)
 			continue;
 		light = CL.dlights[i];
-        if(!light.origin.subarray) console.log("Bad vector here");//NFP
 		dist = Vec.DotProduct(light.origin, surf.plane.normal) - surf.plane.dist;
 		rad = light.radius - Math.abs(dist);
 		minlight = light.minlight;
@@ -1744,7 +1740,6 @@ R.AddDynamicLights = function(surf)
 		impact.set([light.origin[0] - surf.plane.normal[0] * dist,
                     light.origin[1] - surf.plane.normal[1] * dist,
                     light.origin[2] - surf.plane.normal[2] * dist]);
-        if(!impact.subarray) console.log("Bad vector here");//NFP
 		local.set([Vec.DotProduct(impact, tex.vecs[0]) + tex.vecs[0][3] - surf.texturemins[0],
                    Vec.DotProduct(impact, tex.vecs[1]) + tex.vecs[1][3] - surf.texturemins[1]]);
 		for (t = 0; t < tmax; ++t)
@@ -2114,7 +2109,6 @@ R.BuildSurfaceDisplayList = function(fa)
         vert.subarray(0,3).set(vec);
 		if (fa.sky !== true)
 		{
-            if(!vec.subarray) console.log("Bad vector here");//NFP
 			s = Vec.DotProduct(vec, texinfo.vecs[0]) + texinfo.vecs[0][3];
 			t = Vec.DotProduct(vec, texinfo.vecs[1]) + texinfo.vecs[1][3];
 			vert[3] = s / texture.width;
@@ -2222,7 +2216,6 @@ R.MakeSky = function()
             vecslen+=18;
 		}
 	}
-    console.log("R.MakeSky vecs.length=="+vecs.length);
 	GL.CreateProgram('Sky', ['uViewAngles', 'uPerspective', 'uScale', 'uGamma', 'uTime'], ['aPoint'], ['tSolid', 'tAlpha']);
 	GL.CreateProgram('SkyChain', ['uViewOrigin', 'uViewAngles', 'uPerspective'], ['aPoint'], []);
 
