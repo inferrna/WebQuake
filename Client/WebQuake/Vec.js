@@ -169,8 +169,8 @@ Vec.AngleVectors = function(angles, forward, right, up)
 
 Vec.DotProduct = function(v1, v2)
 {
-    (new Float32Array(window['mybuffer'], 0, 3)).set(v1.subarray(0,3));
-    (new Float32Array(window['mybuffer'], 12, 3)).set(v2.subarray(0,3));
+    (new Float64Array(window['mybuffer'], 0, 3)).set(v1.subarray(0,3));
+    (new Float64Array(window['mybuffer'], 3<<3, 3)).set(v2.subarray(0,3));
     return window['asm_funcs'].dot_product();
     //return GL.datav.getFloat32(6<<2);
 	//return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
@@ -217,10 +217,10 @@ Vec.Normalize = function(v)
 Vec.ConcatRotations = function(m1, m2)
 {
     //concat_rotations
-    (new Float32Array(window['mybuffer'], 0, 9)).set(m1.subarray(0,9));
-    (new Float32Array(window['mybuffer'], 9<<2, 9)).set(m2.subarray(0,9));
+    (new Float64Array(window['mybuffer'], 0, 9)).set(m1.subarray(0,9));
+    (new Float64Array(window['mybuffer'], 9<<3, 9)).set(m2.subarray(0,9));
     window['asm_funcs'].concat_rotations();
-    var res = new Float32Array(window['mybuffer'], 18<<2, 9);
+    var res = new Float64Array(window['mybuffer'], 18<<3, 9);
     return new Float32Array(res);
     /*var res = Vec.v9d;
 	res.set([

@@ -9,6 +9,7 @@ function AsmFuncs(stdlib, env, heap) {
     var cos = stdlib.Math.cos;
     var floor = stdlib.Math.floor;
     var res32f = new stdlib.Float32Array(heap);
+    var res64f = new stdlib.Float64Array(heap);
     var res8i = new stdlib.Uint8Array(heap);
     var inp8i = new stdlib.Uint8Array(heap);
     function rotation_matrix(pitch, yaw, roll){
@@ -31,22 +32,23 @@ function AsmFuncs(stdlib, env, heap) {
         cy = +cos(yaw);
         sr = +sin(roll);
         cr = +cos(roll);
-        res32f[0] =  cy * cp;
-        res32f[1] =  sy * cp;
-        res32f[2] =  -sp;
-        res32f[3] =  -sy * cr + cy * sp * sr;
-        res32f[4] =  cy * cr + sy * sp * sr;
-        res32f[5] =   cp * sr;
-        res32f[6] =  -sy * -sr + cy * sp * cr;
-        res32f[7] =  cy * -sr + sy * sp * cr;
-        res32f[8] =  cp * cr;
+        res64f[0] = +(cy * cp);
+        res64f[1] = +(sy * cp);
+        res64f[2] = +(-sp);
+        res64f[3] = +(-sy * cr + cy * sp * sr);
+        res64f[4] = +(cy * cr + sy * sp * sr);
+        res64f[5] = +( cp * sr);
+        res64f[6] = +(-sy * -sr + cy * sp * cr);
+        res64f[7] = +(cy * -sr + sy * sp * cr);
+        res64f[8] = +(cp * cr);
         return 0;
     }
     function dot_product(){
-        return  +((+res32f[0])*(+res32f[3])+(+res32f[1])*(+res32f[4])+(+res32f[2])*(+res32f[5])) ;
+        //return  +((+res32f[0])*(+res32f[3])+(+res32f[1])*(+res32f[4])+(+res32f[2])*(+res32f[5])) ;
+        return  +(res64f[0]*res64f[3]+res64f[1]*res64f[4]+res64f[2]*res64f[5]);
     }
     function concat_rotations(){
-        res32f[18] = ((+res32f[0])*(+res32f[9])+(+res32f[1])*(+res32f[12])+(+res32f[2])*(+res32f[15]));
+        /*res32f[18] = ((+res32f[0])*(+res32f[9])+(+res32f[1])*(+res32f[12])+(+res32f[2])*(+res32f[15]));
         res32f[19] = ((+res32f[0])*(+res32f[10])+(+res32f[1])*(+res32f[13])+(+res32f[2])*(+res32f[16]));
         res32f[20] = ((+res32f[0])*(+res32f[11])+(+res32f[1])*(+res32f[14])+(+res32f[2])*(+res32f[17]));
         res32f[21] = ((+res32f[3])*(+res32f[9])+(+res32f[4])*(+res32f[12])+(+res32f[5])*(+res32f[15]));
@@ -54,7 +56,16 @@ function AsmFuncs(stdlib, env, heap) {
         res32f[23] = ((+res32f[3])*(+res32f[11])+(+res32f[4])*(+res32f[14])+(+res32f[5])*(+res32f[17]));
         res32f[24] = ((+res32f[6])*(+res32f[9])+(+res32f[7])*(+res32f[12])+(+res32f[8])*(+res32f[15]));
         res32f[25] = ((+res32f[6])*(+res32f[10])+(+res32f[7])*(+res32f[13])+(+res32f[8])*(+res32f[16]));
-        res32f[26] = ((+res32f[6])*(+res32f[11])+(+res32f[7])*(+res32f[14])+(+res32f[8])*(+res32f[17]));
+        res32f[26] = ((+res32f[6])*(+res32f[11])+(+res32f[7])*(+res32f[14])+(+res32f[8])*(+res32f[17]));*/
+        res64f[18] = +(res64f[0]*res64f[ 9]+res64f[1]*res64f[12]+res64f[2]*res64f[15]);
+        res64f[19] = +(res64f[0]*res64f[10]+res64f[1]*res64f[13]+res64f[2]*res64f[16]);
+        res64f[20] = +(res64f[0]*res64f[11]+res64f[1]*res64f[14]+res64f[2]*res64f[17]);
+        res64f[21] = +(res64f[3]*res64f[ 9]+res64f[4]*res64f[12]+res64f[5]*res64f[15]);
+        res64f[22] = +(res64f[3]*res64f[10]+res64f[4]*res64f[13]+res64f[5]*res64f[16]);
+        res64f[23] = +(res64f[3]*res64f[11]+res64f[4]*res64f[14]+res64f[5]*res64f[17]);
+        res64f[24] = +(res64f[6]*res64f[ 9]+res64f[7]*res64f[12]+res64f[8]*res64f[15]);
+        res64f[25] = +(res64f[6]*res64f[10]+res64f[7]*res64f[13]+res64f[8]*res64f[16]);
+        res64f[26] = +(res64f[6]*res64f[11]+res64f[7]*res64f[14]+res64f[8]*res64f[17]);
         return 0;
     }
     function scale_texture(inwidth, inheight, outwidth, outheight){
@@ -457,8 +468,8 @@ GL.RotationMatrix = function(pitch, yaw, roll)
 		-sy * -sr + cy * sp * cr,	cy * -sr + sy * sp * cr,	cp * cr
 	];*/
     window['asm_funcs'].rotation_matrix(pitch, yaw, roll);
-    return new Float32Array(window['mybuffer'], 0, 9);
-    //new Float32Array(buffer, 0, 9);
+    var res = new Float64Array(window['mybuffer'], 0, 9);
+    return new Float32Array(res);
 };
 
 GL.Init = function()

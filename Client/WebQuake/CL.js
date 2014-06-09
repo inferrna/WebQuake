@@ -873,8 +873,7 @@ CL.RelinkEntities = function()
 		{
 			dl = CL.AllocDlight(i);
 			dl.origin.set([ent.origin[0], ent.origin[1], ent.origin[2] + 16.0]);
-			dl.radius = 
-            400.0 + Math.random() * 32.0;
+			dl.radius = 400.0 + Math.random() * 32.0;
 			dl.die = CL.state.time + 0.001;
 		}
 		if ((ent.effects & Mod.effects.dimlight) !== 0)

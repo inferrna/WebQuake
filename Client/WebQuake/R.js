@@ -883,7 +883,7 @@ R.MakeBrushModelDisplayLists = function(m)
 	if (m.cmds != null)
 		gl.deleteBuffer(m.cmds);
 	var i, j, k;
-	var cmds = new Float32Array(32768);
+	var cmds = new Float32Array(65536);
     var cmdslen = 0;
 	var texture, chain, leaf, surf, vert, styles = new Float32Array([0.0, 0.0, 0.0, 0.0]);
 	var verts = 0;
