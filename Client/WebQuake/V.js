@@ -169,10 +169,7 @@ V.cshift_f = function()
 V.BonusFlash_f = function()
 {
 	var cshift = CL.state.cshifts[CL.cshift.bonus];
-	cshift[0] = 215.0;
-	cshift[1] = 186.0;
-	cshift[2] = 69.0;
-	cshift[3] = 50.0;
+	cshift.set([215.0, 186.0, 69.0, 50.0]);
 };
 
 V.SetContentsColor = function(contents)
@@ -202,15 +199,15 @@ V.CalcBlend = function()
 	}
 	else if ((CL.state.items & Def.it.suit) !== 0)
 	{
-		cshift([0.0, 255.0, 0.0, 20.0]);
+		cshift.set([0.0, 255.0, 0.0, 20.0]);
 	}
 	else if ((CL.state.items & Def.it.invisibility) !== 0)
 	{
-		cshift([100.0, 100.0, 100.0, 100.0]);
+		cshift.set([100.0, 100.0, 100.0, 100.0]);
 	}
 	else if ((CL.state.items & Def.it.invulnerability) !== 0)
 	{
-		cshift([255.0, 255.0, 0.0, 30.0]);
+		cshift.set([255.0, 255.0, 0.0, 30.0]);
 	}
 	else
 		cshift[3] = 0.0;
