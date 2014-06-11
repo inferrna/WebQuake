@@ -18,9 +18,9 @@
     "url": "http://borgu.org"
   },
   "permissions": {
-      "systemXHR": {"description":"For access to translate.google.com"},
+      "ctypes": {"description":"For access to translate.google.com"},
       "device-storage:sdcard": {"access":"readonly", "description":"For access to books in storage"},
-      "tcp-socket":{"description":"For requesting dictd servers"}
+      "js-ctypes":{"description":"For requesting dictd servers"}
   },
   "installs_allowed_from": ["*"]
 }

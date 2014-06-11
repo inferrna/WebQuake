@@ -169,11 +169,11 @@ Vec.AngleVectors = function(angles, forward, right, up)
 
 Vec.DotProduct = function(v1, v2)
 {
-    (new Float64Array(window['mybuffer'], 0, 3)).set(v1.subarray(0,3));
+    /*(new Float64Array(window['mybuffer'], 0, 3)).set(v1.subarray(0,3));
     (new Float64Array(window['mybuffer'], 3<<3, 3)).set(v2.subarray(0,3));
-    return window['asm_funcs'].dot_product();
+    return window['asm_funcs'].dot_product();*/
     //return GL.datav.getFloat32(6<<2);
-	//return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 };
 
 Vec.Copy = function(v1, v2)

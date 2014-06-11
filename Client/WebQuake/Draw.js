@@ -1,4 +1,4 @@
-Draw = {};
+var Draw = {};
 
 Draw.CharToConback = function(num, dest)
 {

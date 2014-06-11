@@ -94,18 +94,22 @@ R.RenderDlights = function()
 
 R.MarkLights = function(light, bit, node)
 {
+    if(!R.nodemarked[node.num]) R.nodemarked[node.num] = 1;
+    else return;
 	if (node.contents < 0)
 		return;
 	var normal = node.plane.normal;
 	var dist = Vec.DotProduct(light.origin, normal) - node.plane.dist;
 	if (dist > light.radius)
 	{
-		R.MarkLights(light, bit, node.children[0]);
+        if (node.children[0].children) R.MarkLights(light, bit, node.children[0].children[0]);
+        else R.MarkLights(light, bit, node.children[0]);
 		return;
 	}
 	if (dist < -light.radius)
 	{
-		R.MarkLights(light, bit, node.children[1]);
+        if (node.children[1].children) R.MarkLights(light, bit, node.children[1].children[1]);
+        else R.MarkLights(light, bit, node.children[1]);
 		return;
 	}
 	var i, surf;
@@ -121,17 +125,19 @@ R.MarkLights = function(light, bit, node)
 		}
 		surf.dlightbits += bit;
 	}
-	R.MarkLights(light, bit, node.children[0]);
-	R.MarkLights(light, bit, node.children[1]);
+    R.MarkLights(light, bit, node.children[0]);
+    R.MarkLights(light, bit, node.children[1]);
+    if(node.parent) R.MarkLights(light, bit, node.parent);
 };
 
 R.PushDlights = function()
 {
+    R.nodemarked = new Uint8Array(CL.state.worldmodel.nodes.length);
 	if (R.flashblend.value !== 0)
 		return;
 	var i;
 	for (i = 0; i <= 1023; ++i)
-		R.lightmap_modified[i] = false;
+		R.lightmap_modified[i] = 0;
 
 	var l, bit = 1, j, ent;
 	for (i = 0; i <= 31; ++i)
@@ -167,9 +173,9 @@ R.PushDlights = function()
 	var start;
 	for (i = 0; i <= 1023; ++i)
 	{
-		if ((start == null) && (R.lightmap_modified[i] === true))
+		if ((start == null) && (R.lightmap_modified[i] === 1))
 			start = i;
-		else if ((start != null) && (R.lightmap_modified[i] !== true))
+		else if ((start != null) && (R.lightmap_modified[i] === 0))
 		{
 			gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, start, 1024, i - start, gl.ALPHA, gl.UNSIGNED_BYTE,
 				R.dlightmaps.subarray(start << 10, i << 10));
@@ -1542,7 +1548,7 @@ R.RocketTrail = function(start, end, type)
 		{
 		case 0:
 		case 1:
-			p.ramp = Math.floor(Math.random() * 4.0) + (type << 1);
+			p.ramp = Math.floor(Math.random())<<2 + (type << 1);
 			p.color = R.ramp3[p.ramp];
 			p.type = R.ptype.fire;
 			p.org.set([
@@ -1582,7 +1588,7 @@ R.RocketTrail = function(start, end, type)
 			break;
 		case 4:
 			p.type = R.ptype.grav;
-			p.color = 67 + Math.floor(Math.random() * 4.0);
+			p.color = 67 + Math.floor(Math.random())<<2;
 			p.org.set([
 				start[0] + Math.random() * 6.0 - 3.0,
 				start[1] + Math.random() * 6.0 - 3.0,
@@ -1628,9 +1634,9 @@ R.DrawParticles = function()
 		color = VID.d_8to24table[p.color];
 		gl.uniform3f(program.uColor, color & 0xff, (color >> 8) & 0xff, color >> 16);
 		gl.uniform3fv(program.uOrigin, p.org);
-		scale = (p.org[0] - R.refdef.vieworg[0]) * R.vpn[0]
-			+ (p.org[1] - R.refdef.vieworg[1]) * R.vpn[1]
-			+ (p.org[2] - R.refdef.vieworg[2]) * R.vpn[2];
+		scale =   (p.org[0] - R.refdef.vieworg[0]) * R.vpn[0]
+     			+ (p.org[1] - R.refdef.vieworg[1]) * R.vpn[1]
+	    		+ (p.org[2] - R.refdef.vieworg[2]) * R.vpn[2];
 		if (scale < 20.0)
 			gl.uniform1f(program.uScale, 0.75);
 		else
@@ -1709,7 +1715,7 @@ R.AllocParticles = function(count)
 
 // surf
 
-R.lightmap_modified = [];
+R.lightmap_modified = new Uint8Array(4194304);
 R.lightmaps = new Uint8Array(new ArrayBuffer(4194304));
 R.dlightmaps = new Uint8Array(new ArrayBuffer(1048576));
 
@@ -1768,7 +1774,7 @@ R.AddDynamicLights = function(surf)
 	var dest, bl;
 	for (t = 0; t < tmax; ++t)
 	{
-		R.lightmap_modified[surf.light_t + t] = true;
+		R.lightmap_modified[surf.light_t + t] = 1;
 		dest = ((surf.light_t + t) << 10) + surf.light_s;
 		for (s = 0; s < smax; ++s)
 		{
@@ -1787,7 +1793,7 @@ R.RemoveDynamicLights = function(surf)
 	var dest, s, t;
 	for (t = 0; t < tmax; ++t)
 	{
-		R.lightmap_modified[surf.light_t + t] = true;
+		R.lightmap_modified[surf.light_t + t] = 1;
 		dest = ((surf.light_t + t) << 10) + surf.light_s;
 		for (s = 0; s < smax; ++s)
 			R.dlightmaps[dest + s] = 0;
