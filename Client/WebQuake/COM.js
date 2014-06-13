@@ -1,4 +1,6 @@
-COM = {};
+var a = new Int32Array(32);
+console.log(a.__proto__.constructor(8));
+var COM = {};
 
 COM.argv = [];
 
