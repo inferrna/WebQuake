@@ -14,20 +14,20 @@ Vec.Perpendicular = function(v)
 {
 	var pos = 0;
 	var minelem = 1;
-	if (Math.abs(v[0]) < minelem)
-	{
-		pos = 0;
-		minelem = Math.abs(v[0]);
-	}
-	if (Math.abs(v[1]) < minelem)
-	{
-		pos = 1;
-		minelem = Math.abs(v[1]);
-	}
 	if (Math.abs(v[2]) < minelem)
 	{
 		pos = 2;
 		minelem = Math.abs(v[2]);
+	}
+	else if (Math.abs(v[1]) < minelem)
+	{
+		pos = 1;
+		minelem = Math.abs(v[1]);
+	}
+	else if (Math.abs(v[0]) < minelem)
+	{
+		pos = 0;
+		minelem = Math.abs(v[0]);
 	}
 	var tempvec = new Float32Array([0.0, 0.0, 0.0]);
 	tempvec[pos] = 1.0;
@@ -149,21 +149,19 @@ Vec.AngleVectors = function(angles, forward, right, up)
 
 	if (forward != null)
 	{
-		forward[0] = cp * cy;
-		forward[1] = cp * sy;
-		forward[2] = -sp;
+		forward.set([cp * cy, cp * sy, -sp]);
 	}
 	if (right != null)
 	{
-		right[0] = cr * sy - sr * sp * cy;
-		right[1] = -sr * sp * sy - cr * cy;
-		right[2] = -sr * cp;
+		right.set([cr * sy - sr * sp * cy,
+		          -sr * sp * sy - cr * cy,
+		          -sr * cp]);
 	}
 	if (up != null)
 	{
-		up[0] = cr * sp * cy + sr * sy;
-		up[1] = cr * sp * sy - sr * cy;
-		up[2] = cr * cp;
+		up.set([cr * sp * cy + sr * sy,
+		        cr * sp * sy - sr * cy,
+		        cr * cp]);
 	}
 };
 
