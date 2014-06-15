@@ -209,7 +209,8 @@ R.RecursiveLightPoint = function(node, start, end)
 		return R.RecursiveLightPoint(node.children[side === true ? 1 : 0], start, end);
 
 	var frac = front / (front - back);
-	var mid = new Float32Array([
+	var mid = R.v3c;
+    mid.set([
 		start[0] + (end[0] - start[0]) * frac,
 		start[1] + (end[1] - start[1]) * frac,
 		start[2] + (end[2] - start[2]) * frac
