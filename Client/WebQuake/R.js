@@ -2,6 +2,8 @@ var R = {
     emins: new Float32Array(3),
     emaxs: new Float32Array(3)
 };
+R.reclighta = new Worker("Rworker.js");
+
 R.v9a = new Float32Array(9);
 R.v9b = new Float32Array(9);
 R.v9c = new Float32Array(9);
@@ -269,6 +271,18 @@ R.LightPoint = function(p)
 {
 	if (CL.state.worldmodel.lightdata == null)
 		return 255;
+    //node, start, end, lightdata, faces, texinfo, lightstylevalue
+    R.reclighta.postMessage({
+        node: CL.state.worldmodel.nodes[0],
+        start: p,
+        end: new Float32Array([p[0], p[1], p[2] - 2048.0]),
+        lightdata: CL.state.worldmodel.lightdata,
+        faces: CL.state.worldmodel.faces,
+        texinfo: CL.state.worldmodel.texinfo,
+        lightstylevalue: R.lightstylevalue
+    });
+
+
 	var r = R.RecursiveLightPoint(CL.state.worldmodel.nodes[0], p, new Float32Array([p[0], p[1], p[2] - 2048.0]));
 	if (r === -1)
 		return 0;
