@@ -1,0 +1,2 @@
+var CB = {};
+CB.callbacks = {};
