@@ -256,7 +256,7 @@ COM.ReadFileEFS = function(filename){
 
 COM.LoadFile = function(filename)
 {
-    console.log(filename+" requested");//NFP
+    //console.log(filename+" requested");//NFP
     //console.log("COM.searchpaths.length = "+COM.searchpaths.length);//NFP
 	filename = filename.toLowerCase();
 	Draw.BeginDisc();

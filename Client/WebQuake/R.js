@@ -2,11 +2,19 @@ var R = {
     emins: new Float32Array(3),
     emaxs: new Float32Array(3)
 };
-R.reclighta = new Worker("Rworker.js");
-R.reclighta.onmessage = function(oEvent){
-    console.log("R.reclighta.onmessage");//NFP
-    console.log(oEvent.data);//NFP
-    CB.callbacks[oEvent.data[0]](oEvent.data[1])
+reclighta = new Worker("Rworker.js");
+reclighta.onmessage = function(oEvent){
+    //console.log("R.reclighta.onmessage");//NFP
+    //console.log(oEvent.data);//NFP
+    if(oEvent.data['res']){
+        console.log("R.reclighta.onmessage got res");//NFP
+        var func = oEvent.data['res'][0];
+        var parm = oEvent.data['res'][1];
+        CB.callbacks[func](parm);
+    } else { 
+        console.log("R.reclighta.onmessage");//NFP
+        console.log(oEvent.data);//NFP
+    }
 };
 
 R.v9a = new Float32Array(9);
@@ -284,8 +292,9 @@ R.LightPoint = function(p, callback)
             callback(0);
         callback(r);
     };
-    R.reclighta.postMessage({
-        node: CL.state.worldmodel.nodes[0],
+    //console.log("Going R.reclighta.postMessage");
+    reclighta.postMessage({
+        nodes: CL.state.worldmodel.nodes,
         start: p,
         end: new Float32Array([p[0], p[1], p[2] - 2048.0]),
         lightdata: CL.state.worldmodel.lightdata,
