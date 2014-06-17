@@ -3,6 +3,11 @@ var R = {
     emaxs: new Float32Array(3)
 };
 R.reclighta = new Worker("Rworker.js");
+R.reclighta.onmessage = function(oEvent){
+    console.log("R.reclighta.onmessage");//NFP
+    console.log(oEvent.data);//NFP
+    CB.callbacks[oEvent.data[0]](oEvent.data[1])
+};
 
 R.v9a = new Float32Array(9);
 R.v9b = new Float32Array(9);
@@ -267,11 +272,18 @@ R.RecursiveLightPoint = function(node, start, end)
 	return R.RecursiveLightPoint(node.children[side !== true ? 1 : 0], mid, end);
 };
 
-R.LightPoint = function(p)
+R.LightPoint = function(p, callback)
 {
 	if (CL.state.worldmodel.lightdata == null)
-		return 255;
+		callback(255);
     //node, start, end, lightdata, faces, texinfo, lightstylevalue
+    
+	/*var r = R.RecursiveLightPoint(CL.state.worldmodel.nodes[0], p, new Float32Array([p[0], p[1], p[2] - 2048.0]));*/
+	CB.callbacks['R.LightPoint'] = function(r){
+        if (r === -1)
+            callback(0);
+        callback(r);
+    };
     R.reclighta.postMessage({
         node: CL.state.worldmodel.nodes[0],
         start: p,
@@ -279,14 +291,10 @@ R.LightPoint = function(p)
         lightdata: CL.state.worldmodel.lightdata,
         faces: CL.state.worldmodel.faces,
         texinfo: CL.state.worldmodel.texinfo,
-        lightstylevalue: R.lightstylevalue
+        lightstylevalue: R.lightstylevalue,
+        callback: 'R.LightPoint'
     });
 
-
-	var r = R.RecursiveLightPoint(CL.state.worldmodel.nodes[0], p, new Float32Array([p[0], p[1], p[2] - 2048.0]));
-	if (r === -1)
-		return 0;
-	return r;
 };
 
 // main
@@ -557,94 +565,95 @@ R.DrawAliasModel = function(e)
 	gl.uniform3fv(program.uOrigin, e.origin);
 	gl.uniformMatrix3fv(program.uAngles, false, GL.RotationMatrix(e.angles[0], e.angles[1], e.angles[2]));
 
-	var ambientlight = R.LightPoint(e.origin);
-	var shadelight = ambientlight;
-	if ((e === CL.state.viewent) && (ambientlight < 24.0))
-		ambientlight = shadelight = 24.0;
-	var i, dl, add;
-	for (i = 0; i <= 31; ++i)
-	{
-		dl = CL.dlights[i];
-		if (dl.die < CL.state.time)
-			continue;
-		add = dl.radius - Vec.Length(new Float32Array([e.origin[0] - dl.origin[0], e.origin[1] - dl.origin[1], e.origin[1] - dl.origin[1]]));
-		if (add > 0.0)
-		{
-			ambientlight += add;
-			shadelight += add;
-		}
-	}
-	if (ambientlight > 128.0)
-		ambientlight = 128.0;
-	if ((ambientlight + shadelight) > 192.0)
-		shadelight = 192.0 - ambientlight;
-	if ((e.num >= 1) && (e.num <= CL.state.maxclients) && (ambientlight < 8.0))
-		ambientlight = shadelight = 8.0;
-	gl.uniform1f(program.uAmbientLight, ambientlight * 0.0078125);
-	gl.uniform1f(program.uShadeLight, shadelight * 0.0078125);
+	R.LightPoint(e.origin, function(ambientlight){
+        var shadelight = ambientlight;
+        if ((e === CL.state.viewent) && (ambientlight < 24.0))
+            ambientlight = shadelight = 24.0;
+        var i, dl, add;
+        for (i = 0; i <= 31; ++i)
+        {
+            dl = CL.dlights[i];
+            if (dl.die < CL.state.time)
+                continue;
+            add = dl.radius - Vec.Length(new Float32Array([e.origin[0] - dl.origin[0], e.origin[1] - dl.origin[1], e.origin[1] - dl.origin[1]]));
+            if (add > 0.0)
+            {
+                ambientlight += add;
+                shadelight += add;
+            }
+        }
+        if (ambientlight > 128.0)
+            ambientlight = 128.0;
+        if ((ambientlight + shadelight) > 192.0)
+            shadelight = 192.0 - ambientlight;
+        if ((e.num >= 1) && (e.num <= CL.state.maxclients) && (ambientlight < 8.0))
+            ambientlight = shadelight = 8.0;
+        gl.uniform1f(program.uAmbientLight, ambientlight * 0.0078125);
+        gl.uniform1f(program.uShadeLight, shadelight * 0.0078125);
 
-	var forward = new Float32Array(3), right = new Float32Array(3), up = new Float32Array(3);
-	Vec.AngleVectors(e.angles, forward, right, up);
-    R.v3a.set([-1.0, 0.0, 0.0]);
-    right.set([
-            Vec.DotProduct(R.v3a, forward),
-           -Vec.DotProduct(R.v3a, right),
-            Vec.DotProduct(R.v3a, up)
-        ]);
-	//gl.uniform3fv(program.uLightVec, right);
+        var forward = new Float32Array(3), right = new Float32Array(3), up = new Float32Array(3);
+        Vec.AngleVectors(e.angles, forward, right, up);
+        R.v3a.set([-1.0, 0.0, 0.0]);
+        right.set([
+                Vec.DotProduct(R.v3a, forward),
+               -Vec.DotProduct(R.v3a, right),
+                Vec.DotProduct(R.v3a, up)
+            ]);
+        //gl.uniform3fv(program.uLightVec, right);
 
-	R.c_alias_polys += clmodel.numtris;
+        R.c_alias_polys += clmodel.numtris;
 
-	var num, fullinterval, targettime, i;
-	var time = CL.state.time + e.syncbase;
-	num = e.frame;
-	if ((num >= clmodel.numframes) || (num < 0))
-	{
-		Con.DPrint('R.DrawAliasModel: no such frame ' + num + '\n');
-		num = 0;
-	}
-	var frame = clmodel.frames[num];
-	if (frame.group === true)
-	{	
-		num = frame.frames.length - 1;
-		fullinterval = frame.frames[num].interval;
-		targettime = time - Math.floor(time / fullinterval) * fullinterval;
-		for (i = 0; i < num; ++i)
-		{
-			if (frame.frames[i].interval > targettime)
-				break;
-		}
-		frame = frame.frames[i];
-	}
-	gl.bindBuffer(gl.ARRAY_BUFFER, clmodel.cmds);
-	gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 24, frame.cmdofs);
-	gl.vertexAttribPointer(program.aLightNormal, 3, gl.FLOAT, false, 24, frame.cmdofs + 12);
-	gl.vertexAttribPointer(program.aTexCoord, 2, gl.FLOAT, false, 0, 0);
+        var num, fullinterval, targettime, i;
+        var time = CL.state.time + e.syncbase;
+        num = e.frame;
+        if ((num >= clmodel.numframes) || (num < 0))
+        {
+            Con.DPrint('R.DrawAliasModel: no such frame ' + num + '\n');
+            num = 0;
+        }
+        var frame = clmodel.frames[num];
+        if (frame.group === true)
+        {	
+            num = frame.frames.length - 1;
+            fullinterval = frame.frames[num].interval;
+            targettime = time - Math.floor(time / fullinterval) * fullinterval;
+            for (i = 0; i < num; ++i)
+            {
+                if (frame.frames[i].interval > targettime)
+                    break;
+            }
+            frame = frame.frames[i];
+        }
+        gl.bindBuffer(gl.ARRAY_BUFFER, clmodel.cmds);
+        gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 24, frame.cmdofs);
+        gl.vertexAttribPointer(program.aLightNormal, 3, gl.FLOAT, false, 24, frame.cmdofs + 12);
+        gl.vertexAttribPointer(program.aTexCoord, 2, gl.FLOAT, false, 0, 0);
 
-	num = e.skinnum;
-	if ((num >= clmodel.numskins) || (num < 0))
-	{
-		Con.DPrint('R.DrawAliasModel: no such skin # ' + num + '\n');
-		num = 0;
-	}
-	var skin = clmodel.skins[num];
-	if (skin.group === true)
-	{	
-		num = skin.skins.length - 1;
-		fullinterval = skin.skins[num].interval;
-		targettime = time - Math.floor(time / fullinterval) * fullinterval;
-		for (i = 0; i < num; ++i)
-		{
-			if (skin.skins[i].interval > targettime)
-				break;
-		}
-		skin = skin.skins[i];
-	}
-	GL.Bind(program.tTexture, skin.texturenum.texnum);
-	if (clmodel.player === true)
-		GL.Bind(program.tPlayer, skin.playertexture);
+        num = e.skinnum;
+        if ((num >= clmodel.numskins) || (num < 0))
+        {
+            Con.DPrint('R.DrawAliasModel: no such skin # ' + num + '\n');
+            num = 0;
+        }
+        var skin = clmodel.skins[num];
+        if (skin.group === true)
+        {	
+            num = skin.skins.length - 1;
+            fullinterval = skin.skins[num].interval;
+            targettime = time - Math.floor(time / fullinterval) * fullinterval;
+            for (i = 0; i < num; ++i)
+            {
+                if (skin.skins[i].interval > targettime)
+                    break;
+            }
+            skin = skin.skins[i];
+        }
+        GL.Bind(program.tTexture, skin.texturenum.texnum);
+        if (clmodel.player === true)
+            GL.Bind(program.tPlayer, skin.playertexture);
 
-	gl.drawArrays(gl.TRIANGLES, 0, clmodel.numtris * 3);
+        gl.drawArrays(gl.TRIANGLES, 0, clmodel.numtris * 3);
+    });
 };
 
 R.DrawEntitiesOnList = function()

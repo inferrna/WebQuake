@@ -85,7 +85,8 @@ onmessage = function (oEvent) {
                                   oEvent.data.faces,
                                   oEvent.data.texinfo,
                                   oEvent.data.lightstylevalue);
+    var clbk = oEvent.callback+'';
+    postMessage([clbk, res]);
     delete oEvent.data;
     delete oEvent;
-    postMessage(res);
 };
