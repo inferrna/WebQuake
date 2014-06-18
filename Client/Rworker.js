@@ -10,7 +10,11 @@ function DotProduct(v1, v2)
 
 function RecursiveLightPoint(node, start, end, lightdata, faces, texinfo, lightstylevalue)
 {
-    postMessage("Going RecursiveLightPoint"+rcount);   
+    /*postMessage("Going RecursiveLightPoint"+rcount);
+    if(!faces) postMessage("faces is null");
+    if(!lightdata) postMessage("lightdata is null");
+    if(!texinfo) postMessage("texinfo is null");
+    if(!lightstylevalue) postMessage("lightstylevalue is null");*/
 	if (node.contents < 0)
 		return -1;
 
@@ -20,7 +24,7 @@ function RecursiveLightPoint(node, start, end, lightdata, faces, texinfo, lights
 	var side = front < 0;
 
 	if ((back < 0) === side)
-		return RecursiveLightPoint(node.children[side === true ? 1 : 0], start, end);
+		return RecursiveLightPoint(node.children[side === true ? 1 : 0], start, end, lightdata, faces, texinfo, lightstylevalue);
 
 	var frac = front / (front - back);
 	var mid = new Float32Array([
@@ -29,7 +33,7 @@ function RecursiveLightPoint(node, start, end, lightdata, faces, texinfo, lights
 		start[2] + (end[2] - start[2]) * frac
 	]);
 
-	var r = RecursiveLightPoint(node.children[side === true ? 1 : 0], start, mid);
+	var r = RecursiveLightPoint(node.children[side === true ? 1 : 0], start, mid, lightdata, faces, texinfo, lightstylevalue);
 	if (r >= 0)
 		return r;
 
@@ -76,21 +80,24 @@ function RecursiveLightPoint(node, start, end, lightdata, faces, texinfo, lights
 		}
 		return r >> 8;
 	}
-	return RecursiveLightPoint(node.children[side !== true ? 1 : 0], mid, end);
+	return RecursiveLightPoint(node.children[side !== true ? 1 : 0], mid, end, lightdata, faces, texinfo, lightstylevalue);
 }
 
 onmessage = function (oEvent) {
     rcount = 0;
     postMessage("Enter worker");
-    var res = RecursiveLightPoint(oEvent.data.nodes[0], 
-                                  oEvent.data.start,
-                                  oEvent.data.end,
-                                  oEvent.data.lightdata,
-                                  oEvent.data.faces,
-                                  oEvent.data.texinfo,
-                                  oEvent.data.lightstylevalue);
-    var clbk = oEvent.callback+'';
+    postMessage(oEvent.data);
+    try{
+        var res = RecursiveLightPoint(oEvent.data.nodes[0],\ 
+                                      oEvent.data.start,\
+                                      oEvent.data.end,\
+                                      oEvent.data.lightdata,\
+                                      oEvent.data.faces,\
+                                      oEvent.data.texinfo,\
+                                      oEvent.data.lightstylevalue);
+    } catch(e) { postMessage("Worker got error\n"+e); }
+    var clbk = oEvent.data.callback+'';
     postMessage({'res': [clbk, res]});
-    delete oEvent.data;
-    delete oEvent;
+    //delete oEvent.data;
+    //delete oEvent;
 };
