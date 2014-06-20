@@ -2065,6 +2065,7 @@ R.MarkLeaves = function()
 	} while (false);
 	R.drawsky = false;
 	R.RecursiveWorldNode(CL.state.worldmodel.nodes[0]);
+    console.log(CL.state.worldmodel.nodes);//NFP
 };
 
 R.AllocBlock = function(surf)
