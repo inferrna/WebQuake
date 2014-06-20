@@ -1,6 +1,7 @@
 var R = {
     emins: new Float32Array(3),
-    emaxs: new Float32Array(3)
+    emaxs: new Float32Array(3),
+    LightCount: 0
 };
 reclighta = new Worker("Rworker.js");
 reclighta.onmessage = function(oEvent){
@@ -282,6 +283,8 @@ R.RecursiveLightPoint = function(node, start, end)
 
 R.LightPoint = function(p, callback)
 {
+    ++R.LightCount;
+    console.log("R.LightCount == "+R.LightCount);
 	if (CL.state.worldmodel.lightdata == null)
 		callback(255);
     //node, start, end, lightdata, faces, texinfo, lightstylevalue

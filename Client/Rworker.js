@@ -15,9 +15,9 @@ function RecursiveLightPoint(node, start, end, lightdata, faces, texinfo, lights
     if(!lightdata) postMessage("lightdata is null");
     if(!texinfo) postMessage("texinfo is null");
     if(!lightstylevalue) postMessage("lightstylevalue is null");*/
-	if (node.contents < 0)
+	if (node.contents<0 | rcount>1024)
 		return -1;
-
+    ++rcount;
 	var normal = node.plane.normal;
 	var front = DotProduct(start, normal) - node.plane.dist;
 	var back = DotProduct(end, normal) - node.plane.dist;
@@ -85,9 +85,10 @@ function RecursiveLightPoint(node, start, end, lightdata, faces, texinfo, lights
 
 onmessage = function (oEvent) {
     rcount = 0;
-    postMessage("Enter worker");
-    postMessage(oEvent.data);
-    try{
+    var res = -1;
+    //postMessage("Enter worker");
+    //postMessage(oEvent.data);
+    /*try{
         var res = RecursiveLightPoint(oEvent.data.nodes[0],\ 
                                       oEvent.data.start,\
                                       oEvent.data.end,\
@@ -95,9 +96,9 @@ onmessage = function (oEvent) {
                                       oEvent.data.faces,\
                                       oEvent.data.texinfo,\
                                       oEvent.data.lightstylevalue);
-    } catch(e) { postMessage("Worker got error\n"+e); }
+    } catch(e) { postMessage("Worker got error\n"+e); }*/
     var clbk = oEvent.data.callback+'';
     postMessage({'res': [clbk, res]});
-    //delete oEvent.data;
-    //delete oEvent;
+    delete oEvent.data;
+    delete oEvent;
 };
