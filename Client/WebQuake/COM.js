@@ -320,9 +320,6 @@ COM.LoadPackFile = function(pakbuf)
 COM.AddGameDirectory = function(dir, callback)
 {
     //"QUAKE/ID1"
-    FS.mkdir(dir);
-    console.log("dir is "+dir);
-    console.log(FS.lstat(dir));
     console.log("Sync is present?"+navigator.getDeviceStorageSync||navigator.getDeviceStoragesync);
     var retst = new RegExp(dir+'\/?pak\\d?\.pak', "i");
     var paks = navigator.getDeviceStorage('sdcard');
@@ -390,7 +387,7 @@ COM.AddGameDirectory = function(dir, callback)
 COM.InitFilesystem = function()
 {
 	var i, search;
-    if(!FS.init.initialized){
+    /*if(!FS.init.initialized){
         console.log("init emscriptens FS");//NFP
         FS.init();//emscriptens FS
     } else {
@@ -398,7 +395,7 @@ COM.InitFilesystem = function()
         FS.writeFile('file', 'foobar');
         FS.symlink('file', 'link');
         console.log(FS.readlink('link'));
-    }
+    }*/
 	i = COM.CheckParm('-basedir');
 	if (i != null)
 		search = COM.argv[i + 1];
