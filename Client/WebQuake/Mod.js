@@ -312,7 +312,7 @@ Mod.LoadLighting = function(buf)
 	var filelen = view.getUint32((Mod.lump.lighting << 3) + 8, true);
 	if (filelen === 0)
 		return;
-	Mod.loadmodel.lightdata = mUint8Array(new ArrayBuffer(filelen));
+	Mod.loadmodel.lightdata = mUint8Array(filelen);
 	Mod.loadmodel.lightdata.set(mUint8Array(buf, fileofs, filelen));
 };
 
@@ -323,7 +323,7 @@ Mod.LoadVisibility = function(buf)
 	var filelen = view.getUint32((Mod.lump.visibility << 3) + 8, true);
 	if (filelen === 0)
 		return;
-	Mod.loadmodel.visdata = mUint8Array(new ArrayBuffer(filelen));
+	Mod.loadmodel.visdata = mUint8Array(filelen);
 	Mod.loadmodel.visdata.set(mUint8Array(buf, fileofs, filelen));
 };
 
@@ -800,7 +800,7 @@ Mod.TranslatePlayerSkin = function(_data, skin)
         //console.log("mod rs1");
         //console.log(Array.prototype.slice.call(data).filter(function(x){return x!=0}));
     } else var data = _data;
-	var out = mUint8Array(new ArrayBuffer(524288));
+	var out = mUint8Array(524288);
 	var i, original;
 	for (i = 0; i < 131072; ++i)
 	{

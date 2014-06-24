@@ -34,7 +34,7 @@ R.SplitEntityOnNode = function(node)
 
 R.dlightframecount = 0;
 
-R.lightstylevalue = new Uint8Array(new ArrayBuffer(64));
+R.lightstylevalue = mUint8Array(64);
 
 R.AnimateLight = function()
 {
@@ -132,7 +132,7 @@ R.MarkLights = function(light, bit, node)
 
 R.PushDlights = function()
 {
-    R.nodemarked = new Uint8Array(CL.state.worldmodel.nodes.length);
+    R.nodemarked = mUint8Array(CL.state.worldmodel.nodes.length);
 	if (R.flashblend.value !== 0)
 		return;
 	var i;
@@ -1093,7 +1093,7 @@ R.MakeWorldModelDisplayLists = function(m)
 
 R.InitTextures = function()
 {
-	var data = new Uint8Array(new ArrayBuffer(256));
+	var data = mUint8Array(256);
 	var i, j;
 	for (i = 0; i < 8; ++i)
 	{
@@ -1133,13 +1133,13 @@ R.InitTextures = function()
 
 	R.fullbright_texture = gl.createTexture();
 	GL.Bind(0, R.fullbright_texture);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 0, 0, 0]));
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, mUint8Array([255, 0, 0, 0]));
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
 	R.null_texture = gl.createTexture();
 	GL.Bind(0, R.null_texture);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, mUint8Array([0, 0, 0, 0]));
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 };
@@ -1269,9 +1269,9 @@ R.ptype = {
 	blob2: 7
 };
 
-R.ramp1 = new Uint8Array([0x6f, 0x6d, 0x6b, 0x69, 0x67, 0x65, 0x63, 0x61]);
-R.ramp2 = new Uint8Array([0x6f, 0x6e, 0x6d, 0x6c, 0x6b, 0x6a, 0x68, 0x66]);
-R.ramp3 = new Uint8Array([0x6d, 0x6b, 6, 5, 4, 3]);
+R.ramp1 = mUint8Array([0x6f, 0x6d, 0x6b, 0x69, 0x67, 0x65, 0x63, 0x61]);
+R.ramp2 = mUint8Array([0x6f, 0x6e, 0x6d, 0x6c, 0x6b, 0x6a, 0x68, 0x66]);
+R.ramp3 = mUint8Array([0x6d, 0x6b, 6, 5, 4, 3]);
 
 R.InitParticles = function()
 {
@@ -1716,9 +1716,9 @@ R.AllocParticles = function(count)
 
 // surf
 
-R.lightmap_modified = new Uint8Array(4194304);
-R.lightmaps = new Uint8Array(new ArrayBuffer(4194304));
-R.dlightmaps = new Uint8Array(new ArrayBuffer(1048576));
+R.lightmap_modified = mUint8Array(4194304);
+R.lightmaps = mUint8Array(4194304);
+R.dlightmaps = mUint8Array(1048576);
 
 R.AddDynamicLights = function(surf)
 {
@@ -2305,7 +2305,7 @@ R.InitSky = function(src)
 			trans32[(i << 7) + j] = COM.LittleLong(VID.d_8to24table[src[(i << 8) + j + 128]] + 0xff000000);
 	}
 	GL.Bind(0, R.solidskytexture);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(trans));
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, mUint8Array(trans));
 	gl.generateMipmap(gl.TEXTURE_2D);
 
 	for (i = 0; i < 128; ++i)
@@ -2320,6 +2320,6 @@ R.InitSky = function(src)
 		}
 	}
 	GL.Bind(0, R.alphaskytexture);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(trans));
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, mUint8Array(trans));
 	gl.generateMipmap(gl.TEXTURE_2D);
 };
