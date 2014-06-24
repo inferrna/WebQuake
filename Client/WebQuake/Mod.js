@@ -1,4 +1,5 @@
 var Mod = {};
+var tout = mUint8Array(524288);
 
 Mod.effects = {
 	brightfield: 1,
@@ -64,7 +65,8 @@ Mod.PointInLeaf = function(p, model)
 
 Mod.DecompressVis = function(i, model)
 {
-	var decompressed = [], c, out, row = (model.leafs.length + 7) >> 3;
+	var c, out, row = (model.leafs.length + 7) >> 3;
+    var decompressed = mUint8Array(row);
 	if (model.visdata == null)
 	{
 		for (; row >= 0; --row)
@@ -227,20 +229,20 @@ Mod.LoadTextures = function(buf)
 		miptexofs += fileofs;
 		tx =
 		{
-			name: Q.memstr(new Uint8Array(buf, miptexofs, 16)),
+			name: Q.memstr(mUint8Array(buf, miptexofs, 16)),
 			width: view.getUint32(miptexofs + 16, true),
 			height: view.getUint32(miptexofs + 20, true)
 		}
 		if (tx.name.substring(0, 3).toLowerCase() === 'sky')
 		{
-			R.InitSky(new Uint8Array(buf, miptexofs + view.getUint32(miptexofs + 24, true), 32768));
+			R.InitSky(mUint8Array(buf, miptexofs + view.getUint32(miptexofs + 24, true), 32768));
 			tx.texturenum = R.solidskytexture;
 			R.skytexturenum = i;
 			tx.sky = true;
 		}
 		else
 		{
-			glt = GL.LoadTexture(tx.name, tx.width, tx.height, new Uint8Array(buf, miptexofs + view.getUint32(miptexofs + 24, true), tx.width * tx.height));
+			glt = GL.LoadTexture(tx.name, tx.width, tx.height, mUint8Array(buf, miptexofs + view.getUint32(miptexofs + 24, true), tx.width * tx.height));
 			tx.texturenum = glt.texnum;
 			if (tx.name.charCodeAt(0) === 42)
 				tx.turbulent = true;
@@ -257,8 +259,9 @@ Mod.LoadTextures = function(buf)
 		if (tx.name.charCodeAt(1) !== 48)
 			continue;
 		name = tx.name.substring(2);
-		tx.anims = [i];
-		tx.alternate_anims = [];
+		tx.anims = mUint8Array(64);
+        tx.anims[0] = i;
+		tx.alternate_anims = mUint8Array(64);
 		for (j = 0; j < nummiptex; ++j)
 		{
 			tx2 = Mod.loadmodel.textures[j];
@@ -287,16 +290,16 @@ Mod.LoadTextures = function(buf)
 			}
 			Sys.Error('Bad animating texture ' + tx.name);
 		}
-		for (j = 0; j < tx.anims.length; ++j)
+		/*for (j = 0; j < tx.anims.length; ++j)
 		{
-			if (tx.anims[j] == null)
+			if (tx.anims[j] === 0)
 				Sys.Error('Missing frame ' + j + ' of ' + tx.name);
 		}
 		for (j = 0; j < tx.alternate_anims.length; ++j)
 		{
-			if (tx.alternate_anims[j] == null)
+			if (tx.alternate_anims[j] === 0)
 				Sys.Error('Missing frame ' + j + ' of ' + tx.name);
-		}
+		}*/
 		Mod.loadmodel.textures[i] = tx;
 	}
 
@@ -310,8 +313,8 @@ Mod.LoadLighting = function(buf)
 	var filelen = view.getUint32((Mod.lump.lighting << 3) + 8, true);
 	if (filelen === 0)
 		return;
-	Mod.loadmodel.lightdata = new Uint8Array(new ArrayBuffer(filelen));
-	Mod.loadmodel.lightdata.set(new Uint8Array(buf, fileofs, filelen));
+	Mod.loadmodel.lightdata = mUint8Array(filelen);
+	Mod.loadmodel.lightdata.set(mUint8Array(buf, fileofs, filelen));
 };
 
 Mod.LoadVisibility = function(buf)
@@ -321,8 +324,8 @@ Mod.LoadVisibility = function(buf)
 	var filelen = view.getUint32((Mod.lump.visibility << 3) + 8, true);
 	if (filelen === 0)
 		return;
-	Mod.loadmodel.visdata = new Uint8Array(new ArrayBuffer(filelen));
-	Mod.loadmodel.visdata.set(new Uint8Array(buf, fileofs, filelen));
+	Mod.loadmodel.visdata = mUint8Array(filelen);
+	Mod.loadmodel.visdata.set(mUint8Array(buf, fileofs, filelen));
 };
 
 Mod.LoadEntities = function(buf)
@@ -330,7 +333,7 @@ Mod.LoadEntities = function(buf)
 	var view = new DataView(buf);
 	var fileofs = view.getUint32((Mod.lump.entities << 3) + 4, true);
 	var filelen = view.getUint32((Mod.lump.entities << 3) + 8, true);
-	Mod.loadmodel.entities = Q.memstr(new Uint8Array(buf, fileofs, filelen));
+	Mod.loadmodel.entities = Q.memstr(mUint8Array(buf, fileofs, filelen));
 };
 
 Mod.LoadVertexes = function(buf)
@@ -483,7 +486,7 @@ Mod.LoadFaces = function(buf)
 	var mins, maxs, j, e, tex, v, val;
 	for (i = 0; i < count; ++i)
 	{
-		styles = new Uint8Array(buf, fileofs + 12, 4);
+		styles = mUint8Array(buf, fileofs + 12, 4);
 		out =
 		{
 			plane: Mod.loadmodel.planes[view.getUint16(fileofs, true)],
@@ -607,7 +610,7 @@ Mod.LoadLeafs = function(buf)
 			maxs: new Int16Array([view.getInt16(fileofs + 14, true), view.getInt16(fileofs + 16, true), view.getInt16(fileofs + 18, true)]),
 			firstmarksurface: view.getUint16(fileofs + 20, true),
 			nummarksurfaces: view.getUint16(fileofs + 22, true),
-			ambient_level: new Uint8Array([view.getUint8(fileofs + 24), view.getUint8(fileofs + 25), view.getUint8(fileofs + 26), view.getUint8(fileofs + 27)]),
+			ambient_level: mUint8Array([view.getUint8(fileofs + 24), view.getUint8(fileofs + 25), view.getUint8(fileofs + 26), view.getUint8(fileofs + 27)]),
 			cmds: [],
 			skychain: 0,
 			waterchain: 0
@@ -798,7 +801,7 @@ Mod.TranslatePlayerSkin = function(_data, skin)
         //console.log("mod rs1");
         //console.log(Array.prototype.slice.call(data).filter(function(x){return x!=0}));
     } else var data = _data;
-	var out = new Uint8Array(new ArrayBuffer(524288));
+	var out = tout;
 	var i, original;
 	for (i = 0; i < 131072; ++i)
 	{
@@ -874,7 +877,7 @@ Mod.LoadAllSkins = function(buffer, inmodel)
 		inmodel += 4;
 		if (model.getUint32(inmodel - 4, true) === 0)
 		{
-			skin = new Uint8Array(buffer, inmodel, skinsize);
+			skin = mUint8Array(buffer, inmodel, skinsize);
 			Mod.FloodFillSkin(skin);
 			Mod.loadmodel.skins[i] = {
 				group: false,
@@ -884,7 +887,7 @@ Mod.LoadAllSkins = function(buffer, inmodel)
 					skin)
 			};
 			if (Mod.loadmodel.player === true)
-				Mod.TranslatePlayerSkin(new Uint8Array(buffer, inmodel, skinsize), Mod.loadmodel.skins[i]);
+				Mod.TranslatePlayerSkin(mUint8Array(buffer, inmodel, skinsize), Mod.loadmodel.skins[i]);
 			inmodel += skinsize;
 		}
 		else
@@ -904,14 +907,14 @@ Mod.LoadAllSkins = function(buffer, inmodel)
 			}
 			for (j = 0; j < numskins; ++j)
 			{
-				skin = new Uint8Array(buffer, inmodel, skinsize);
+				skin = mUint8Array(buffer, inmodel, skinsize);
 				Mod.FloodFillSkin(skin);
 				group.skins[j].texturenum = GL.LoadTexture(Mod.loadmodel.name + '_' + i + '_' + j,
 					Mod.loadmodel.skinwidth,
 					Mod.loadmodel.skinheight,
 					skin);
 				if (Mod.loadmodel.player === true)
-					Mod.TranslatePlayerSkin(new Uint8Array(buffer, inmodel, skinsize), group.skins[j]);
+					Mod.TranslatePlayerSkin(mUint8Array(buffer, inmodel, skinsize), group.skins[j]);
 				inmodel += skinsize;
 			}
 			Mod.loadmodel.skins[i] = group;
@@ -932,9 +935,9 @@ Mod.LoadAllFrames = function(buffer, inmodel)
 		{
 			frame = {
 				group: false,
-				bboxmin: new Uint8Array([model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)]),
-				bboxmax: new Uint8Array([model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)]),
-				name: Q.memstr(new Uint8Array(buffer, inmodel + 8, 16)),
+				bboxmin: mUint8Array([model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)]),
+				bboxmax: mUint8Array([model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)]),
+				name: Q.memstr(mUint8Array(buffer, inmodel + 8, 16)),
 				v: []
 			};
 			inmodel += 24;
@@ -952,8 +955,8 @@ Mod.LoadAllFrames = function(buffer, inmodel)
 		{
 			group = {
 				group: true,
-				bboxmin: new Uint8Array([model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)]),
-				bboxmax: new Uint8Array([model.getUint8(inmodel + 8), model.getUint8(inmodel + 9), model.getUint8(inmodel + 10)]),
+				bboxmin: mUint8Array([model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)]),
+				bboxmax: mUint8Array([model.getUint8(inmodel + 8), model.getUint8(inmodel + 9), model.getUint8(inmodel + 10)]),
 				frames: []
 			};
 			numframes = model.getUint32(inmodel, true);
@@ -968,15 +971,15 @@ Mod.LoadAllFrames = function(buffer, inmodel)
 			for (j = 0; j < numframes; ++j)
 			{
 				frame = group.frames[j];
-				frame.bboxmin = new Uint8Array([model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)]);
-				frame.bboxmax = new Uint8Array([model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)]);
-				frame.name = Q.memstr(new Uint8Array(buffer, inmodel + 8, 16));
+				frame.bboxmin = mUint8Array([model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)]);
+				frame.bboxmax = mUint8Array([model.getUint8(inmodel + 4), model.getUint8(inmodel + 5), model.getUint8(inmodel + 6)]);
+				frame.name = Q.memstr(mUint8Array(buffer, inmodel + 8, 16));
 				frame.v = [];
 				inmodel += 24;
 				for (k = 0; k < Mod.loadmodel.numverts; ++k)
 				{
 					frame.v[k] = {
-						v: new Uint8Array([model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)]),
+						v: mUint8Array([model.getUint8(inmodel), model.getUint8(inmodel + 1), model.getUint8(inmodel + 2)]),
 						lightnormalindex: model.getUint8(inmodel + 3)
 					};
 					inmodel += 4;
@@ -1155,7 +1158,7 @@ Mod.LoadSpriteFrame = function(identifier, buffer, inframe, frame)
 		}
 	}
 
-	var data = new Uint8Array(buffer, inframe + 16, size);
+	var data = mUint8Array(buffer, inframe + 16, size);
 	var scaled_width = frame.width, scaled_height = frame.height;
 	if (((frame.width & (frame.width - 1)) !== 0) || ((frame.height & (frame.height - 1)) !== 0))
 	{
@@ -1196,7 +1199,7 @@ Mod.LoadSpriteFrame = function(identifier, buffer, inframe, frame)
 
 	glt = {texnum: gl.createTexture(), identifier: identifier, width: frame.width, height: frame.height};
 	GL.Bind(0, glt.texnum);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, scaled_width, scaled_height, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(trans));
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, scaled_width, scaled_height, 0, gl.RGBA, gl.UNSIGNED_BYTE, mUint8Array(trans));
 	gl.generateMipmap(gl.TEXTURE_2D);
 	gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, GL.filter_min);
 	gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, GL.filter_max);

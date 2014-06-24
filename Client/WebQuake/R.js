@@ -1,14 +1,14 @@
 var R = {
-    emins: new Float32Array(3),
-    emaxs: new Float32Array(3)
+    emins: mFloat32Array(3),
+    emaxs: mFloat32Array(3)
 };
-R.v9a = new Float32Array(9);
-R.v9b = new Float32Array(9);
-R.v9c = new Float32Array(9);
-R.v9d = new Float32Array(9);
-R.v3a = new Float32Array(3);
-R.v3b = new Float32Array(3);
-R.v3c = new Float32Array(3);
+R.v9a = mFloat32Array(9);
+R.v9b = mFloat32Array(9);
+R.v9c = mFloat32Array(9);
+R.v9d = mFloat32Array(9);
+R.v3a = mFloat32Array(3);
+R.v3b = mFloat32Array(3);
+R.v3c = mFloat32Array(3);
 R.a1024c = new Uint16Array(1024);
 // efrag
 R.rlpc = 0;
@@ -34,7 +34,7 @@ R.SplitEntityOnNode = function(node)
 
 R.dlightframecount = 0;
 
-R.lightstylevalue = new Uint8Array(new ArrayBuffer(64));
+R.lightstylevalue = mUint8Array(64);
 
 R.AnimateLight = function()
 {
@@ -75,7 +75,7 @@ R.RenderDlights = function()
 		l = CL.dlights[i];
 		if ((l.die < CL.state.time) || (l.radius === 0.0))
 			continue;
-		if (Vec.Length(new Float32Array([l.origin[0] - R.refdef.vieworg[0], l.origin[1] - R.refdef.vieworg[1], l.origin[2] - R.refdef.vieworg[2]])) < (l.radius * 0.35))
+		if (Vec.Length(mFloat32Array([l.origin[0] - R.refdef.vieworg[0], l.origin[1] - R.refdef.vieworg[1], l.origin[2] - R.refdef.vieworg[2]])) < (l.radius * 0.35))
 		{
 			a = l.radius * 0.0003;
 			V.blend[3] += a * (1.0 - V.blend[3]);
@@ -132,7 +132,7 @@ R.MarkLights = function(light, bit, node)
 
 R.PushDlights = function()
 {
-    R.nodemarked = new Uint8Array(CL.state.worldmodel.nodes.length);
+    R.nodemarked = mUint8Array(CL.state.worldmodel.nodes.length);
 	if (R.flashblend.value !== 0)
 		return;
 	var i;
@@ -270,7 +270,7 @@ R.LightPoint = function(p)
 {
 	if (CL.state.worldmodel.lightdata == null)
 		return 255;
-	var r = R.RecursiveLightPoint(CL.state.worldmodel.nodes[0], p, new Float32Array([p[0], p[1], p[2] - 2048.0]));
+	var r = R.RecursiveLightPoint(CL.state.worldmodel.nodes[0], p, mFloat32Array([p[0], p[1], p[2] - 2048.0]));
 	if (r === -1)
 		return 0;
 	return r;
@@ -282,14 +282,14 @@ R.visframecount = 0;
 
 R.frustum = [{}, {}, {}, {}];
 
-R.vup = new Float32Array(3);
-R.vpn = new Float32Array(3);
-R.vright = new Float32Array(3);
+R.vup = mFloat32Array(3);
+R.vpn = mFloat32Array(3);
+R.vright = mFloat32Array(3);
 
 R.refdef = {
 	vrect: {},
-	vieworg: new Float32Array(3),
-	viewangles: new Float32Array(3)
+	vieworg: mFloat32Array(3),
+	viewangles: mFloat32Array(3)
 };
 
 R.CullBox = function(mins, maxs)
@@ -343,168 +343,168 @@ R.DrawSpriteModel = function(e)
 };
 
 R.avertexnormals = [
-	new Float32Array([-0.525731, 0.0, 0.850651]),
-	new Float32Array([-0.442863, 0.238856, 0.864188]),
-	new Float32Array([-0.295242, 0.0, 0.955423]),
-	new Float32Array([-0.309017, 0.5, 0.809017]),
-	new Float32Array([-0.16246, 0.262866, 0.951056]),
-	new Float32Array([0.0, 0.0, 1.0]),
-	new Float32Array([0.0, 0.850651, 0.525731]),
-	new Float32Array([-0.147621, 0.716567, 0.681718]),
-	new Float32Array([0.147621, 0.716567, 0.681718]),
-	new Float32Array([0.0, 0.525731, 0.850651]),
-	new Float32Array([0.309017, 0.5, 0.809017]),
-	new Float32Array([0.525731, 0.0, 0.850651]),
-	new Float32Array([0.295242, 0.0, 0.955423]),
-	new Float32Array([0.442863, 0.238856, 0.864188]),
-	new Float32Array([0.16246, 0.262866, 0.951056]),
-	new Float32Array([-0.681718, 0.147621, 0.716567]),
-	new Float32Array([-0.809017, 0.309017, 0.5]),
-	new Float32Array([-0.587785, 0.425325, 0.688191]),
-	new Float32Array([-0.850651, 0.525731, 0.0]),
-	new Float32Array([-0.864188, 0.442863, 0.238856]),
-	new Float32Array([-0.716567, 0.681718, 0.147621]),
-	new Float32Array([-0.688191, 0.587785, 0.425325]),
-	new Float32Array([-0.5, 0.809017, 0.309017]),
-	new Float32Array([-0.238856, 0.864188, 0.442863]),
-	new Float32Array([-0.425325, 0.688191, 0.587785]),
-	new Float32Array([-0.716567, 0.681718, -0.147621]),
-	new Float32Array([-0.5, 0.809017, -0.309017]),
-	new Float32Array([-0.525731, 0.850651, 0.0]),
-	new Float32Array([0.0, 0.850651, -0.525731]),
-	new Float32Array([-0.238856, 0.864188, -0.442863]),
-	new Float32Array([0.0, 0.955423, -0.295242]),
-	new Float32Array([-0.262866, 0.951056, -0.16246]),
-	new Float32Array([0.0, 1.0, 0.0]),
-	new Float32Array([0.0, 0.955423, 0.295242]),
-	new Float32Array([-0.262866, 0.951056, 0.16246]),
-	new Float32Array([0.238856, 0.864188, 0.442863]),
-	new Float32Array([0.262866, 0.951056, 0.16246]),
-	new Float32Array([0.5, 0.809017, 0.309017]),
-	new Float32Array([0.238856, 0.864188, -0.442863]),
-	new Float32Array([0.262866, 0.951056, -0.16246]),
-	new Float32Array([0.5, 0.809017, -0.309017]),
-	new Float32Array([0.850651, 0.525731, 0.0]),
-	new Float32Array([0.716567, 0.681718, 0.147621]),
-	new Float32Array([0.716567, 0.681718, -0.147621]),
-	new Float32Array([0.525731, 0.850651, 0.0]),
-	new Float32Array([0.425325, 0.688191, 0.587785]),
-	new Float32Array([0.864188, 0.442863, 0.238856]),
-	new Float32Array([0.688191, 0.587785, 0.425325]),
-	new Float32Array([0.809017, 0.309017, 0.5]),
-	new Float32Array([0.681718, 0.147621, 0.716567]),
-	new Float32Array([0.587785, 0.425325, 0.688191]),
-	new Float32Array([0.955423, 0.295242, 0.0]),
-	new Float32Array([1.0, 0.0, 0.0]),
-	new Float32Array([0.951056, 0.16246, 0.262866]),
-	new Float32Array([0.850651, -0.525731, 0.0]),
-	new Float32Array([0.955423, -0.295242, 0.0]),
-	new Float32Array([0.864188, -0.442863, 0.238856]),
-	new Float32Array([0.951056, -0.16246, 0.262866]),
-	new Float32Array([0.809017, -0.309017, 0.5]),
-	new Float32Array([0.681718, -0.147621, 0.716567]),
-	new Float32Array([0.850651, 0.0, 0.525731]),
-	new Float32Array([0.864188, 0.442863, -0.238856]),
-	new Float32Array([0.809017, 0.309017, -0.5]),
-	new Float32Array([0.951056, 0.16246, -0.262866]),
-	new Float32Array([0.525731, 0.0, -0.850651]),
-	new Float32Array([0.681718, 0.147621, -0.716567]),
-	new Float32Array([0.681718, -0.147621, -0.716567]),
-	new Float32Array([0.850651, 0.0, -0.525731]),
-	new Float32Array([0.809017, -0.309017, -0.5]),
-	new Float32Array([0.864188, -0.442863, -0.238856]),
-	new Float32Array([0.951056, -0.16246, -0.262866]),
-	new Float32Array([0.147621, 0.716567, -0.681718]),
-	new Float32Array([0.309017, 0.5, -0.809017]),
-	new Float32Array([0.425325, 0.688191, -0.587785]),
-	new Float32Array([0.442863, 0.238856, -0.864188]),
-	new Float32Array([0.587785, 0.425325, -0.688191]),
-	new Float32Array([0.688191, 0.587785, -0.425325]),
-	new Float32Array([-0.147621, 0.716567, -0.681718]),
-	new Float32Array([-0.309017, 0.5, -0.809017]),
-	new Float32Array([0.0, 0.525731, -0.850651]),
-	new Float32Array([-0.525731, 0.0, -0.850651]),
-	new Float32Array([-0.442863, 0.238856, -0.864188]),
-	new Float32Array([-0.295242, 0.0,      -0.955423]),
-	new Float32Array([-0.16246, 0.262866,  -0.951056]),
-	new Float32Array([0.0, 0.0, -1.0]),
-	new Float32Array([0.295242, 0.0, -0.955423]),
-	new Float32Array([0.16246, 0.262866, -0.951056]),
-	new Float32Array([-0.442863, -0.238856, -0.864188]),
-	new Float32Array([-0.309017, -0.5, -0.809017]),
-	new Float32Array([-0.16246, -0.262866, -0.951056]),
-	new Float32Array([0.0, -0.850651, -0.525731]),
-	new Float32Array([-0.147621, -0.716567, -0.681718]),
-	new Float32Array([0.147621, -0.716567, -0.681718]),
-	new Float32Array([0.0, -0.525731, -0.850651]),
-	new Float32Array([0.309017, -0.5, -0.809017]),
-	new Float32Array([0.442863, -0.238856, -0.864188]),
-	new Float32Array([0.16246, -0.262866, -0.951056]),
-	new Float32Array([0.238856, -0.864188, -0.442863]),
-	new Float32Array([0.5, -0.809017, -0.309017]),
-	new Float32Array([0.425325, -0.688191, -0.587785]),
-	new Float32Array([0.716567, -0.681718, -0.147621]),
-	new Float32Array([0.688191, -0.587785, -0.425325]),
-	new Float32Array([0.587785, -0.425325, -0.688191]),
-	new Float32Array([0.0, -0.955423, -0.295242]),
-	new Float32Array([0.0, -1.0, 0.0]),
-	new Float32Array([0.262866, -0.951056, -0.16246]),
-	new Float32Array([0.0, -0.850651, 0.525731]),
-	new Float32Array([0.0, -0.955423, 0.295242]),
-	new Float32Array([0.238856, -0.864188, 0.442863]),
-	new Float32Array([0.262866, -0.951056, 0.16246]),
-	new Float32Array([0.5, -0.809017, 0.309017]),
-	new Float32Array([0.716567, -0.681718, 0.147621]),
-	new Float32Array([0.525731, -0.850651, 0.0]),
-	new Float32Array([-0.238856, -0.864188, -0.442863]),
-	new Float32Array([-0.5, -0.809017, -0.309017]),
-	new Float32Array([-0.262866, -0.951056, -0.16246]),
-	new Float32Array([-0.850651, -0.525731, 0.0]),
-	new Float32Array([-0.716567, -0.681718, -0.147621]),
-	new Float32Array([-0.716567, -0.681718, 0.147621]),
-	new Float32Array([-0.525731, -0.850651, 0.0]),
-	new Float32Array([-0.5, -0.809017, 0.309017]),
-	new Float32Array([-0.238856, -0.864188, 0.442863]),
-	new Float32Array([-0.262866, -0.951056, 0.16246]),
-	new Float32Array([-0.864188, -0.442863, 0.238856]),
-	new Float32Array([-0.809017, -0.309017, 0.5]),
-	new Float32Array([-0.688191, -0.587785, 0.425325]),
-	new Float32Array([-0.681718, -0.147621, 0.716567]),
-	new Float32Array([-0.442863, -0.238856, 0.864188]),
-	new Float32Array([-0.587785, -0.425325, 0.688191]),
-	new Float32Array([-0.309017, -0.5, 0.809017]),
-	new Float32Array([-0.147621, -0.716567, 0.681718]),
-	new Float32Array([-0.425325, -0.688191, 0.587785]),
-	new Float32Array([-0.16246, -0.262866, 0.951056]),
-	new Float32Array([0.442863, -0.238856, 0.864188]),
-	new Float32Array([0.16246, -0.262866, 0.951056]),
-	new Float32Array([0.309017, -0.5, 0.809017]),
-	new Float32Array([0.147621, -0.716567, 0.681718]),
-	new Float32Array([0.0, -0.525731, 0.850651]),
-	new Float32Array([0.425325, -0.688191, 0.587785]),
-	new Float32Array([0.587785, -0.425325, 0.688191]),
-	new Float32Array([0.688191, -0.587785, 0.425325]),
-	new Float32Array([-0.955423, 0.295242, 0.0]),
-	new Float32Array([-0.951056, 0.16246, 0.262866]),
-	new Float32Array([-1.0, 0.0, 0.0]),
-	new Float32Array([-0.850651, 0.0, 0.525731]),
-	new Float32Array([-0.955423, -0.295242, 0.0]),
-	new Float32Array([-0.951056, -0.16246, 0.262866]),
-	new Float32Array([-0.864188, 0.442863,   -0.238856]),
-	new Float32Array([-0.951056, 0.16246,    -0.262866]),
-	new Float32Array([-0.809017, 0.309017, -0.5]),
-	new Float32Array([-0.864188, -0.442863, -0.238856]),
-	new Float32Array([-0.951056, -0.16246, -0.262866]),
-	new Float32Array([-0.809017, -0.309017, -0.5]),
-	new Float32Array([-0.681718, 0.147621, -0.716567]),
-	new Float32Array([-0.681718, -0.147621, -0.716567]),
-	new Float32Array([-0.850651, 0.0, -0.525731]),
-	new Float32Array([-0.688191, 0.587785, -0.425325]),
-	new Float32Array([-0.587785, 0.425325, -0.688191]),
-	new Float32Array([-0.425325, 0.688191, -0.587785]),
-	new Float32Array([-0.425325, -0.688191, -0.587785]),
-	new Float32Array([-0.587785, -0.425325, -0.688191]),
-	new Float32Array([-0.688191, -0.587785, -0.425325])
+	mFloat32Array([-0.525731, 0.0, 0.850651]),
+	mFloat32Array([-0.442863, 0.238856, 0.864188]),
+	mFloat32Array([-0.295242, 0.0, 0.955423]),
+	mFloat32Array([-0.309017, 0.5, 0.809017]),
+	mFloat32Array([-0.16246, 0.262866, 0.951056]),
+	mFloat32Array([0.0, 0.0, 1.0]),
+	mFloat32Array([0.0, 0.850651, 0.525731]),
+	mFloat32Array([-0.147621, 0.716567, 0.681718]),
+	mFloat32Array([0.147621, 0.716567, 0.681718]),
+	mFloat32Array([0.0, 0.525731, 0.850651]),
+	mFloat32Array([0.309017, 0.5, 0.809017]),
+	mFloat32Array([0.525731, 0.0, 0.850651]),
+	mFloat32Array([0.295242, 0.0, 0.955423]),
+	mFloat32Array([0.442863, 0.238856, 0.864188]),
+	mFloat32Array([0.16246, 0.262866, 0.951056]),
+	mFloat32Array([-0.681718, 0.147621, 0.716567]),
+	mFloat32Array([-0.809017, 0.309017, 0.5]),
+	mFloat32Array([-0.587785, 0.425325, 0.688191]),
+	mFloat32Array([-0.850651, 0.525731, 0.0]),
+	mFloat32Array([-0.864188, 0.442863, 0.238856]),
+	mFloat32Array([-0.716567, 0.681718, 0.147621]),
+	mFloat32Array([-0.688191, 0.587785, 0.425325]),
+	mFloat32Array([-0.5, 0.809017, 0.309017]),
+	mFloat32Array([-0.238856, 0.864188, 0.442863]),
+	mFloat32Array([-0.425325, 0.688191, 0.587785]),
+	mFloat32Array([-0.716567, 0.681718, -0.147621]),
+	mFloat32Array([-0.5, 0.809017, -0.309017]),
+	mFloat32Array([-0.525731, 0.850651, 0.0]),
+	mFloat32Array([0.0, 0.850651, -0.525731]),
+	mFloat32Array([-0.238856, 0.864188, -0.442863]),
+	mFloat32Array([0.0, 0.955423, -0.295242]),
+	mFloat32Array([-0.262866, 0.951056, -0.16246]),
+	mFloat32Array([0.0, 1.0, 0.0]),
+	mFloat32Array([0.0, 0.955423, 0.295242]),
+	mFloat32Array([-0.262866, 0.951056, 0.16246]),
+	mFloat32Array([0.238856, 0.864188, 0.442863]),
+	mFloat32Array([0.262866, 0.951056, 0.16246]),
+	mFloat32Array([0.5, 0.809017, 0.309017]),
+	mFloat32Array([0.238856, 0.864188, -0.442863]),
+	mFloat32Array([0.262866, 0.951056, -0.16246]),
+	mFloat32Array([0.5, 0.809017, -0.309017]),
+	mFloat32Array([0.850651, 0.525731, 0.0]),
+	mFloat32Array([0.716567, 0.681718, 0.147621]),
+	mFloat32Array([0.716567, 0.681718, -0.147621]),
+	mFloat32Array([0.525731, 0.850651, 0.0]),
+	mFloat32Array([0.425325, 0.688191, 0.587785]),
+	mFloat32Array([0.864188, 0.442863, 0.238856]),
+	mFloat32Array([0.688191, 0.587785, 0.425325]),
+	mFloat32Array([0.809017, 0.309017, 0.5]),
+	mFloat32Array([0.681718, 0.147621, 0.716567]),
+	mFloat32Array([0.587785, 0.425325, 0.688191]),
+	mFloat32Array([0.955423, 0.295242, 0.0]),
+	mFloat32Array([1.0, 0.0, 0.0]),
+	mFloat32Array([0.951056, 0.16246, 0.262866]),
+	mFloat32Array([0.850651, -0.525731, 0.0]),
+	mFloat32Array([0.955423, -0.295242, 0.0]),
+	mFloat32Array([0.864188, -0.442863, 0.238856]),
+	mFloat32Array([0.951056, -0.16246, 0.262866]),
+	mFloat32Array([0.809017, -0.309017, 0.5]),
+	mFloat32Array([0.681718, -0.147621, 0.716567]),
+	mFloat32Array([0.850651, 0.0, 0.525731]),
+	mFloat32Array([0.864188, 0.442863, -0.238856]),
+	mFloat32Array([0.809017, 0.309017, -0.5]),
+	mFloat32Array([0.951056, 0.16246, -0.262866]),
+	mFloat32Array([0.525731, 0.0, -0.850651]),
+	mFloat32Array([0.681718, 0.147621, -0.716567]),
+	mFloat32Array([0.681718, -0.147621, -0.716567]),
+	mFloat32Array([0.850651, 0.0, -0.525731]),
+	mFloat32Array([0.809017, -0.309017, -0.5]),
+	mFloat32Array([0.864188, -0.442863, -0.238856]),
+	mFloat32Array([0.951056, -0.16246, -0.262866]),
+	mFloat32Array([0.147621, 0.716567, -0.681718]),
+	mFloat32Array([0.309017, 0.5, -0.809017]),
+	mFloat32Array([0.425325, 0.688191, -0.587785]),
+	mFloat32Array([0.442863, 0.238856, -0.864188]),
+	mFloat32Array([0.587785, 0.425325, -0.688191]),
+	mFloat32Array([0.688191, 0.587785, -0.425325]),
+	mFloat32Array([-0.147621, 0.716567, -0.681718]),
+	mFloat32Array([-0.309017, 0.5, -0.809017]),
+	mFloat32Array([0.0, 0.525731, -0.850651]),
+	mFloat32Array([-0.525731, 0.0, -0.850651]),
+	mFloat32Array([-0.442863, 0.238856, -0.864188]),
+	mFloat32Array([-0.295242, 0.0,      -0.955423]),
+	mFloat32Array([-0.16246, 0.262866,  -0.951056]),
+	mFloat32Array([0.0, 0.0, -1.0]),
+	mFloat32Array([0.295242, 0.0, -0.955423]),
+	mFloat32Array([0.16246, 0.262866, -0.951056]),
+	mFloat32Array([-0.442863, -0.238856, -0.864188]),
+	mFloat32Array([-0.309017, -0.5, -0.809017]),
+	mFloat32Array([-0.16246, -0.262866, -0.951056]),
+	mFloat32Array([0.0, -0.850651, -0.525731]),
+	mFloat32Array([-0.147621, -0.716567, -0.681718]),
+	mFloat32Array([0.147621, -0.716567, -0.681718]),
+	mFloat32Array([0.0, -0.525731, -0.850651]),
+	mFloat32Array([0.309017, -0.5, -0.809017]),
+	mFloat32Array([0.442863, -0.238856, -0.864188]),
+	mFloat32Array([0.16246, -0.262866, -0.951056]),
+	mFloat32Array([0.238856, -0.864188, -0.442863]),
+	mFloat32Array([0.5, -0.809017, -0.309017]),
+	mFloat32Array([0.425325, -0.688191, -0.587785]),
+	mFloat32Array([0.716567, -0.681718, -0.147621]),
+	mFloat32Array([0.688191, -0.587785, -0.425325]),
+	mFloat32Array([0.587785, -0.425325, -0.688191]),
+	mFloat32Array([0.0, -0.955423, -0.295242]),
+	mFloat32Array([0.0, -1.0, 0.0]),
+	mFloat32Array([0.262866, -0.951056, -0.16246]),
+	mFloat32Array([0.0, -0.850651, 0.525731]),
+	mFloat32Array([0.0, -0.955423, 0.295242]),
+	mFloat32Array([0.238856, -0.864188, 0.442863]),
+	mFloat32Array([0.262866, -0.951056, 0.16246]),
+	mFloat32Array([0.5, -0.809017, 0.309017]),
+	mFloat32Array([0.716567, -0.681718, 0.147621]),
+	mFloat32Array([0.525731, -0.850651, 0.0]),
+	mFloat32Array([-0.238856, -0.864188, -0.442863]),
+	mFloat32Array([-0.5, -0.809017, -0.309017]),
+	mFloat32Array([-0.262866, -0.951056, -0.16246]),
+	mFloat32Array([-0.850651, -0.525731, 0.0]),
+	mFloat32Array([-0.716567, -0.681718, -0.147621]),
+	mFloat32Array([-0.716567, -0.681718, 0.147621]),
+	mFloat32Array([-0.525731, -0.850651, 0.0]),
+	mFloat32Array([-0.5, -0.809017, 0.309017]),
+	mFloat32Array([-0.238856, -0.864188, 0.442863]),
+	mFloat32Array([-0.262866, -0.951056, 0.16246]),
+	mFloat32Array([-0.864188, -0.442863, 0.238856]),
+	mFloat32Array([-0.809017, -0.309017, 0.5]),
+	mFloat32Array([-0.688191, -0.587785, 0.425325]),
+	mFloat32Array([-0.681718, -0.147621, 0.716567]),
+	mFloat32Array([-0.442863, -0.238856, 0.864188]),
+	mFloat32Array([-0.587785, -0.425325, 0.688191]),
+	mFloat32Array([-0.309017, -0.5, 0.809017]),
+	mFloat32Array([-0.147621, -0.716567, 0.681718]),
+	mFloat32Array([-0.425325, -0.688191, 0.587785]),
+	mFloat32Array([-0.16246, -0.262866, 0.951056]),
+	mFloat32Array([0.442863, -0.238856, 0.864188]),
+	mFloat32Array([0.16246, -0.262866, 0.951056]),
+	mFloat32Array([0.309017, -0.5, 0.809017]),
+	mFloat32Array([0.147621, -0.716567, 0.681718]),
+	mFloat32Array([0.0, -0.525731, 0.850651]),
+	mFloat32Array([0.425325, -0.688191, 0.587785]),
+	mFloat32Array([0.587785, -0.425325, 0.688191]),
+	mFloat32Array([0.688191, -0.587785, 0.425325]),
+	mFloat32Array([-0.955423, 0.295242, 0.0]),
+	mFloat32Array([-0.951056, 0.16246, 0.262866]),
+	mFloat32Array([-1.0, 0.0, 0.0]),
+	mFloat32Array([-0.850651, 0.0, 0.525731]),
+	mFloat32Array([-0.955423, -0.295242, 0.0]),
+	mFloat32Array([-0.951056, -0.16246, 0.262866]),
+	mFloat32Array([-0.864188, 0.442863,   -0.238856]),
+	mFloat32Array([-0.951056, 0.16246,    -0.262866]),
+	mFloat32Array([-0.809017, 0.309017, -0.5]),
+	mFloat32Array([-0.864188, -0.442863, -0.238856]),
+	mFloat32Array([-0.951056, -0.16246, -0.262866]),
+	mFloat32Array([-0.809017, -0.309017, -0.5]),
+	mFloat32Array([-0.681718, 0.147621, -0.716567]),
+	mFloat32Array([-0.681718, -0.147621, -0.716567]),
+	mFloat32Array([-0.850651, 0.0, -0.525731]),
+	mFloat32Array([-0.688191, 0.587785, -0.425325]),
+	mFloat32Array([-0.587785, 0.425325, -0.688191]),
+	mFloat32Array([-0.425325, 0.688191, -0.587785]),
+	mFloat32Array([-0.425325, -0.688191, -0.587785]),
+	mFloat32Array([-0.587785, -0.425325, -0.688191]),
+	mFloat32Array([-0.688191, -0.587785, -0.425325])
 ];
 
 R.DrawAliasModel = function(e)
@@ -512,12 +512,12 @@ R.DrawAliasModel = function(e)
 	var clmodel = e.model;
 
 	if (R.CullBox(
-		new Float32Array([
+		mFloat32Array([
 			e.origin[0] - clmodel.boundingradius,
 			e.origin[1] - clmodel.boundingradius,
 			e.origin[2] - clmodel.boundingradius
 		]),
-		new Float32Array([
+		mFloat32Array([
 			e.origin[0] + clmodel.boundingradius,
 			e.origin[1] + clmodel.boundingradius,
 			e.origin[2] + clmodel.boundingradius
@@ -554,7 +554,7 @@ R.DrawAliasModel = function(e)
 		dl = CL.dlights[i];
 		if (dl.die < CL.state.time)
 			continue;
-		add = dl.radius - Vec.Length(new Float32Array([e.origin[0] - dl.origin[0], e.origin[1] - dl.origin[1], e.origin[1] - dl.origin[1]]));
+		add = dl.radius - Vec.Length(mFloat32Array([e.origin[0] - dl.origin[0], e.origin[1] - dl.origin[1], e.origin[1] - dl.origin[1]]));
 		if (add > 0.0)
 		{
 			ambientlight += add;
@@ -570,7 +570,7 @@ R.DrawAliasModel = function(e)
 	gl.uniform1f(program.uAmbientLight, ambientlight * 0.0078125);
 	gl.uniform1f(program.uShadeLight, shadelight * 0.0078125);
 
-	var forward = new Float32Array(3), right = new Float32Array(3), up = new Float32Array(3);
+	var forward = mFloat32Array(3), right = mFloat32Array(3), up = mFloat32Array(3);
 	Vec.AngleVectors(e.angles, forward, right, up);
     R.v3a.set([-1.0, 0.0, 0.0]);
     right.set([
@@ -771,7 +771,7 @@ R.SetFrustum = function()
 	}
 };
 
-R.perspective = new Float32Array([
+R.perspective = mFloat32Array([
 	0.0, 0.0, 0.0, 0.0,
 	0.0, 0.0, 0.0, 0.0,
 	0.0, 0.0, -65540.0 / 65532.0, -1.0,
@@ -780,7 +780,7 @@ R.perspective = new Float32Array([
 
 R.Perspective = function()
 {
-	var viewangles = new Float32Array([
+	var viewangles = mFloat32Array([
 		R.refdef.viewangles[0] * Math.PI / 180.0,
 		(R.refdef.viewangles[1] - 90.0) * Math.PI / -180.0,
 		R.refdef.viewangles[2] * Math.PI / -180.0
@@ -791,7 +791,7 @@ R.Perspective = function()
 	var cy = Math.cos(viewangles[1]);
 	var sr = Math.sin(viewangles[2]);
 	var cr = Math.cos(viewangles[2]);
-	var viewMatrix = new Float32Array([
+	var viewMatrix = mFloat32Array([
 		cr * cy + sr * sp * sy,		cp * sy,	-sr * cy + cr * sp * sy,
 		cr * -sy + sr * sp * cy,	cp * cy,	-sr * -sy + cr * sp * cy,
 		sr * cp,					-sp,		cr * cp
@@ -890,9 +890,9 @@ R.MakeBrushModelDisplayLists = function(m)
 	if (m.cmds != null)
 		gl.deleteBuffer(m.cmds);
 	var i, j, k;
-	var cmds = new Float32Array(65536);
+	var cmds = mFloat32Array(65536);
     var cmdslen = 0;
-	var texture, chain, leaf, surf, vert, styles = new Float32Array([0.0, 0.0, 0.0, 0.0]);
+	var texture, chain, leaf, surf, vert, styles = mFloat32Array([0.0, 0.0, 0.0, 0.0]);
 	var verts = 0;
 	m.chains = [];
 	for (i = 0; i < m.textures.length; ++i)
@@ -971,9 +971,9 @@ R.MakeWorldModelDisplayLists = function(m)
 	if (m.cmds != null)
 		return;
 	var i, j, k, l;
-	var cmds = new Float32Array(524288*4);
+	var cmds = mFloat32Array(524288*4);
     var cmdslen = 0;
-	var texture, leaf, chain, surf, vert, styles = new Float32Array([0.0, 0.0, 0.0, 0.0]);
+	var texture, leaf, chain, surf, vert, styles = mFloat32Array([0.0, 0.0, 0.0, 0.0]);
 	var verts = 0;
 	for (i = 0; i < m.textures.length; ++i)
 	{
@@ -1093,7 +1093,7 @@ R.MakeWorldModelDisplayLists = function(m)
 
 R.InitTextures = function()
 {
-	var data = new Uint8Array(new ArrayBuffer(256));
+	var data = mUint8Array(256);
 	var i, j;
 	for (i = 0; i < 8; ++i)
 	{
@@ -1133,13 +1133,13 @@ R.InitTextures = function()
 
 	R.fullbright_texture = gl.createTexture();
 	GL.Bind(0, R.fullbright_texture);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 0, 0, 0]));
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, mUint8Array([255, 0, 0, 0]));
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
 	R.null_texture = gl.createTexture();
 	GL.Bind(0, R.null_texture);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, mUint8Array([0, 0, 0, 0]));
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 };
@@ -1202,7 +1202,7 @@ R.Init = function()
 
 	R.dlightvecs = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, R.dlightvecs);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+	gl.bufferData(gl.ARRAY_BUFFER, mFloat32Array([
 		0.0, -1.0, 0.0,
 		0.0, 0.0, 1.0,
 		-0.382683, 0.0, 0.92388,
@@ -1269,9 +1269,9 @@ R.ptype = {
 	blob2: 7
 };
 
-R.ramp1 = new Uint8Array([0x6f, 0x6d, 0x6b, 0x69, 0x67, 0x65, 0x63, 0x61]);
-R.ramp2 = new Uint8Array([0x6f, 0x6e, 0x6d, 0x6c, 0x6b, 0x6a, 0x68, 0x66]);
-R.ramp3 = new Uint8Array([0x6d, 0x6b, 6, 5, 4, 3]);
+R.ramp1 = mUint8Array([0x6f, 0x6d, 0x6b, 0x69, 0x67, 0x65, 0x63, 0x61]);
+R.ramp2 = mUint8Array([0x6f, 0x6e, 0x6d, 0x6c, 0x6b, 0x6a, 0x68, 0x66]);
+R.ramp3 = mUint8Array([0x6d, 0x6b, 6, 5, 4, 3]);
 
 R.InitParticles = function()
 {
@@ -1287,7 +1287,7 @@ R.InitParticles = function()
 
 	R.avelocities = [];
 	for (i = 0; i <= 161; ++i)
-		R.avelocities[i] = new Float32Array([Math.random() * 2.56, Math.random() * 2.56, Math.random() * 2.56]);
+		R.avelocities[i] = mFloat32Array([Math.random() * 2.56, Math.random() * 2.56, Math.random() * 2.56]);
 
 	GL.CreateProgram('Particle', ['uOrigin', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uScale', 'uGamma', 'uColor'], ['aPoint'], []);
 };
@@ -1310,12 +1310,12 @@ R.EntityParticles = function(ent)
 			color: 0x6f,
 			ramp: 0.0,
 			type: R.ptype.explode,
-			org: new Float32Array([
+			org: mFloat32Array([
 				ent.origin[0] + R.avertexnormals[i][0] * 64.0 + cp * cy * 16.0,
 				ent.origin[1] + R.avertexnormals[i][1] * 64.0 + cp * sy * 16.0,
 				ent.origin[2] + R.avertexnormals[i][2] * 64.0 + sp * -16.0
 			]),
-			vel: new Float32Array([0.0, 0.0, 0.0])
+			vel: mFloat32Array([0.0, 0.0, 0.0])
 		};
 	}
 };
@@ -1325,7 +1325,7 @@ R.ClearParticles = function()
 	var i;
 	R.particles = [];
 	for (i = 0; i < R.numparticles; ++i)
-		R.particles[i] = {die: -1.0, org: new Float32Array(3), vel: new Float32Array(3)};
+		R.particles[i] = {die: -1.0, org: mFloat32Array(3), vel: mFloat32Array(3)};
 };
 
 R.ReadPointFile_f = function()
@@ -1358,8 +1358,8 @@ R.ReadPointFile_f = function()
 			die: 99999.0,
 			color: -c & 15,
 			type: R.ptype.tracer,
-			vel: new Float32Array([0.0, 0.0, 0.0]),
-			org: new Float32Array([Q.atof(org[0]), Q.atof(org[1]), Q.atof(org[2])])
+			vel: mFloat32Array([0.0, 0.0, 0.0]),
+			org: mFloat32Array([Q.atof(org[0]), Q.atof(org[1]), Q.atof(org[2])])
 		};
 	}
 	Con.Print(c + ' points read\n');
@@ -1367,8 +1367,8 @@ R.ReadPointFile_f = function()
 
 R.ParseParticleEffect = function()
 {
-	var org = new Float32Array([MSG.ReadCoord(), MSG.ReadCoord(), MSG.ReadCoord()]);
-	var dir = new Float32Array([MSG.ReadChar() * 0.0625, MSG.ReadChar() * 0.0625, MSG.ReadChar() * 0.0625]);
+	var org = mFloat32Array([MSG.ReadCoord(), MSG.ReadCoord(), MSG.ReadCoord()]);
+	var dir = mFloat32Array([MSG.ReadChar() * 0.0625, MSG.ReadChar() * 0.0625, MSG.ReadChar() * 0.0625]);
 	var msgcount = MSG.ReadByte();
 	var color = MSG.ReadByte();
 	if (msgcount === 255)
@@ -1387,12 +1387,12 @@ R.ParticleExplosion = function(org)
 			color: R.ramp1[0],
 			ramp: Math.floor(Math.random() * 4.0),
 			type: ((i & 1) !== 0) ? R.ptype.explode : R.ptype.explode2,
-			org: new Float32Array([
+			org: mFloat32Array([
 				org[0] + Math.random() * 32.0 - 16.0,
 				org[1] + Math.random() * 32.0 - 16.0,
 				org[2] + Math.random() * 32.0 - 16.0
 			]),
-			vel: new Float32Array([Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0])
+			vel: mFloat32Array([Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0])
 		};
 	}
 };
@@ -1406,12 +1406,12 @@ R.ParticleExplosion2 = function(org, colorStart, colorLength)
 			die: CL.state.time + 0.3,
 			color: colorStart + (colorMod++ % colorLength),
 			type: R.ptype.blob,
-			org: new Float32Array([
+			org: mFloat32Array([
 				org[0] + Math.random() * 32.0 - 16.0,
 				org[1] + Math.random() * 32.0 - 16.0,
 				org[2] + Math.random() * 32.0 - 16.0
 			]),
-			vel: new Float32Array([Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0])
+			vel: mFloat32Array([Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0, Math.random() * 512.0 - 256.0])
 		};
 	}
 };
@@ -1422,8 +1422,8 @@ R.BlobExplosion = function(org)
 	for (i = 0; i < allocated.length; ++i)
 	{
 		p = R.particles[allocated[i]];
-        if(!p.vel) p.vel = new Float32Array(3);
-        if(!p.org) p.org = new Float32Array(3);
+        if(!p.vel) p.vel = mFloat32Array(3);
+        if(!p.org) p.org = mFloat32Array(3);
 		p.die = CL.state.time + 1.0 + Math.random() * 0.4;
 		if ((i & 1) !== 0)
 		{
@@ -1453,12 +1453,12 @@ R.RunParticleEffect = function(org, dir, color, count)
 			die: CL.state.time + 0.6 * Math.random(),
 			color: (color & 0xf8) + Math.floor(Math.random() * 8.0),
 			type: R.ptype.slowgrav,
-			org: new Float32Array([
+			org: mFloat32Array([
 				org[0] + Math.random() * 16.0 - 8.0,
 				org[1] + Math.random() * 16.0 - 8.0,
 				org[2] + Math.random() * 16.0 - 8.0
 			]),
-			vel: new Float32Array([dir[0] * 15.0, dir[1] * 15.0, dir[2] * 15.0])
+			vel: mFloat32Array([dir[0] * 15.0, dir[1] * 15.0, dir[2] * 15.0])
 		};
 	}
 };
@@ -1466,7 +1466,7 @@ R.RunParticleEffect = function(org, dir, color, count)
 R.LavaSplash = function(org)
 {
 	var allocated = R.AllocParticles(1024), i, j, k = 0, p;
-	var dir = new Float32Array(3), vel;
+	var dir = mFloat32Array(3), vel;
 	for (i = -16; i <= 15; ++i)
 	{
 		for (j = -16; j <= 15; ++j)
@@ -1474,8 +1474,8 @@ R.LavaSplash = function(org)
 			if (k >= allocated.length)
 				return;
 			p = R.particles[allocated[k++]];
-            if(!p.vel) p.vel = new Float32Array(3);
-            if(!p.org) p.org = new Float32Array(3);
+            if(!p.vel) p.vel = mFloat32Array(3);
+            if(!p.org) p.org = mFloat32Array(3);
 			p.die = CL.state.time + 2.0 + Math.random() * 0.64;
 			p.color = 224 + Math.floor(Math.random() * 8.0);
 			p.type = R.ptype.slowgrav;
@@ -1493,7 +1493,7 @@ R.LavaSplash = function(org)
 R.TeleportSplash = function(org)
 {
 	var allocated = R.AllocParticles(896), i, j, k, l = 0, p;
-	var dir = new Float32Array(3), vel;
+	var dir = mFloat32Array(3), vel;
 	for (i = -16; i <= 15; i += 4)
 	{
 		for (j = -16; j <= 15; j += 4)
@@ -1503,8 +1503,8 @@ R.TeleportSplash = function(org)
 				if (l >= allocated.length)
 					return;
 				p = R.particles[allocated[l++]];
-                if(!p.vel) p.vel = new Float32Array(3);
-                if(!p.org) p.org = new Float32Array(3);
+                if(!p.vel) p.vel = mFloat32Array(3);
+                if(!p.org) p.org = mFloat32Array(3);
 				p.die = CL.state.time + 0.2 + Math.random() * 0.16;
 				p.color = 7 + Math.floor(Math.random() * 8.0);
 				p.type = R.ptype.slowgrav;
@@ -1525,7 +1525,7 @@ R.TeleportSplash = function(org)
 R.tracercount = 0;
 R.RocketTrail = function(start, end, type)
 {
-	var vec = new Float32Array([end[0] - start[0], end[1] - start[1], end[2] - start[2]]);
+	var vec = mFloat32Array([end[0] - start[0], end[1] - start[1], end[2] - start[2]]);
 	var len = Math.sqrt(Vec.DotProduct(vec, vec));
 	if (len === 0.0)
 		return;
@@ -1541,8 +1541,8 @@ R.RocketTrail = function(start, end, type)
 	for (i = 0; i < allocated.length; ++i)
 	{
 		p = R.particles[allocated[i]];
-        if(!p.vel) p.vel = new Float32Array(3);
-        if(!p.org) p.org = new Float32Array(3);
+        if(!p.vel) p.vel = mFloat32Array(3);
+        if(!p.org) p.org = mFloat32Array(3);
 		p.vel.set([0.0, 0.0, 0.0]);
 		p.die = CL.state.time + 2.0;
 		switch (type)
@@ -1716,9 +1716,9 @@ R.AllocParticles = function(count)
 
 // surf
 
-R.lightmap_modified = new Uint8Array(4194304);
-R.lightmaps = new Uint8Array(new ArrayBuffer(4194304));
-R.dlightmaps = new Uint8Array(new ArrayBuffer(1048576));
+R.lightmap_modified = mUint8Array(4194304);
+R.lightmaps = mUint8Array(4194304);
+R.dlightmaps = mUint8Array(1048576);
 
 R.AddDynamicLights = function(surf)
 {
@@ -1727,7 +1727,7 @@ R.AddDynamicLights = function(surf)
 	var size = smax * tmax;
 	var tex = CL.state.worldmodel.texinfo[surf.texinfo];
 	var i, light, s, t;
-	var dist, rad, minlight, impact = new Float32Array(3), local = new Float32Array(2), sd, td;
+	var dist, rad, minlight, impact = mFloat32Array(3), local = mFloat32Array(2), sd, td;
 
 	var blocklights = new Uint32Array(size);
 	//for (i = 0; i < size; ++i)
@@ -1855,12 +1855,12 @@ R.DrawBrushModel = function(e)
 	if (clmodel.submodel === true)
 	{
 		if (R.CullBox(
-			new Float32Array([
+			mFloat32Array([
 				e.origin[0] + clmodel.mins[0],
 				e.origin[1] + clmodel.mins[1],
 				e.origin[2] + clmodel.mins[2]
 			]),
-			new Float32Array([
+			mFloat32Array([
 				e.origin[0] + clmodel.maxs[0],
 				e.origin[1] + clmodel.maxs[1],
 				e.origin[2] + clmodel.maxs[2]
@@ -1870,12 +1870,12 @@ R.DrawBrushModel = function(e)
 	else
 	{
 		if (R.CullBox(
-			new Float32Array([
+			mFloat32Array([
 				e.origin[0] - clmodel.radius,
 				e.origin[1] - clmodel.radius,
 				e.origin[2] - clmodel.radius
 			]),
-			new Float32Array([
+			mFloat32Array([
 				e.origin[0] + clmodel.radius,
 				e.origin[1] + clmodel.radius,
 				e.origin[2] + clmodel.radius
@@ -2025,7 +2025,7 @@ R.MarkLeaves = function()
 			node.markvisframe = R.visframecount;
 		}
 	}
-    var p = new Float32Array(3);
+    var p = mFloat32Array(3);
 	do
 	{
         p.set(R.refdef.vieworg);
@@ -2103,7 +2103,7 @@ R.BuildSurfaceDisplayList = function(fa)
 	fa.verts = [];
 	if (fa.numedges <= 2)
 		return;
-	var i, index, vec = new Float32Array(3), vert, s, t;
+	var i, index, vec = mFloat32Array(3), vert, s, t;
 	var texinfo = R.currentmodel.texinfo[fa.texinfo];
 	var texture = R.currentmodel.textures[texinfo.texture];
 	for (i = 0; i < fa.numedges; ++i)
@@ -2113,7 +2113,7 @@ R.BuildSurfaceDisplayList = function(fa)
 			vec.set(R.currentmodel.vertexes[R.currentmodel.edges[index][0]]);
 		else
 			vec.set(R.currentmodel.vertexes[R.currentmodel.edges[-index][1]]);
-		vert = new Float32Array(7);
+		vert = mFloat32Array(7);
         vert.subarray(0,3).set(vec);
 		if (fa.sky !== true)
 		{
@@ -2196,8 +2196,8 @@ R.WarpScreen = function()
 
 R.MakeSky = function()
 {
-	var sin = new Float32Array([0.0, 0.19509, 0.382683, 0.55557, 0.707107, 0.831470, 0.92388, 0.980785, 1.0]);
-	var vecs = new Float32Array(1024), i, j;
+	var sin = mFloat32Array([0.0, 0.19509, 0.382683, 0.55557, 0.707107, 0.831470, 0.92388, 0.980785, 1.0]);
+	var vecs = mFloat32Array(1024), i, j;
     var vecslen = 0;
 
 	for (i = 0; i < 7; i += 2)
@@ -2306,7 +2306,7 @@ R.InitSky = function(src)
 			trans32[(i << 7) + j] = COM.LittleLong(VID.d_8to24table[src[(i << 8) + j + 128]] + 0xff000000);
 	}
 	GL.Bind(0, R.solidskytexture);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(trans));
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, mUint8Array(trans));
 	gl.generateMipmap(gl.TEXTURE_2D);
 
 	for (i = 0; i < 128; ++i)
@@ -2321,6 +2321,6 @@ R.InitSky = function(src)
 		}
 	}
 	GL.Bind(0, R.alphaskytexture);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(trans));
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, mUint8Array(trans));
 	gl.generateMipmap(gl.TEXTURE_2D);
 };

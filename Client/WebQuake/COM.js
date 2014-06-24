@@ -99,9 +99,9 @@ COM.CheckRegistered = function()
 			Sys.Error('You must have the registered version to use modified games');
 		return;
 	}
-	var check = new Uint8Array(h);
+	var check = mUint8Array(h);
 	var pop =
-	new Uint8Array([
+	mUint8Array([
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x67, 0x00, 0x00,
@@ -156,7 +156,7 @@ COM.InitArgv = function(argv)
 COM.Init = function()
 {
 	var swaptest = new ArrayBuffer(2);
-	var swaptestview = new Uint8Array(swaptest);
+	var swaptestview = mUint8Array(swaptest);
 	swaptestview[0] = 1;
 	swaptestview[1] = 0;
 	if ((new Uint16Array(swaptest))[0] === 1)
@@ -246,7 +246,7 @@ COM.ReadFileEFS = function(filename){
         var stat = FS.stat(filename);
         var stream = FS.open(filename, 'r');
         var buf = new ArrayBuffer(stat.size);
-        var dest = new Uint8Array(buf);
+        var dest = mUint8Array(buf);
         FS.read(stream, dest, 0, stat.size, 0);
         FS.close(stream);
         COM.files[filename] = buf;
@@ -272,7 +272,7 @@ COM.LoadTextFile = function(filename)
 	var buf = COM.LoadFile(filename);
 	if (buf == null)
 		return;
-	var bufview = new Uint8Array(buf);
+	var bufview = mUint8Array(buf);
 	var f = [];
 	var i;
 	for (i = 0; i < bufview.length; ++i)
@@ -299,13 +299,13 @@ COM.LoadPackFile = function(pakbuf)
 	if (numpackfiles !== 0)
 	{
 		var info = pakbuf;
-		if (CRC.Block(new Uint8Array(info)) !== 32981)
+		if (CRC.Block(mUint8Array(info)) !== 32981)
 			COM.modified = true;
         var dvinfo = new DataView(info, dirofs);
 		var i;
 		for (i = 0; i < numpackfiles; ++i)
 		{
-		    name = Q.memstr(new Uint8Array(info, dirofs + (i << 6), 56)).toLowerCase();
+		    name = Q.memstr(mUint8Array(info, dirofs + (i << 6), 56)).toLowerCase();
 			pack[name] =
 			{
 				filepos: dvinfo.getUint32((i << 6) + 56, true),
@@ -343,7 +343,7 @@ COM.AddGameDirectory = function(dir, callback)
           var reader = new FileReader();
           reader.addEventListener("loadend", function() {
                 console.log("Loaded pak file: " + file.name);
-                var array = new Uint8Array(reader.result);
+                var array = mUint8Array(reader.result);
                 (function(_array){
                     search.pack.push({pak: _array, files: COM.LoadPackFile(array.buffer)});
                  }(array));
