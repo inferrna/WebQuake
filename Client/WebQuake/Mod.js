@@ -1,4 +1,5 @@
 var Mod = {};
+var tout = mUint8Array(524288);
 
 Mod.effects = {
 	brightfield: 1,
@@ -800,7 +801,7 @@ Mod.TranslatePlayerSkin = function(_data, skin)
         //console.log("mod rs1");
         //console.log(Array.prototype.slice.call(data).filter(function(x){return x!=0}));
     } else var data = _data;
-	var out = mUint8Array(524288);
+	var out = tout;
 	var i, original;
 	for (i = 0; i < 131072; ++i)
 	{
