@@ -47,25 +47,19 @@ function AsmFuncs(stdlib, env, heap) {
         //return  +((+res32f[0])*(+res32f[3])+(+res32f[1])*(+res32f[4])+(+res32f[2])*(+res32f[5])) ;
         return  +(res64f[0]*res64f[3]+res64f[1]*res64f[4]+res64f[2]*res64f[5]);
     }
-    function concat_rotations(){
-        /*res32f[18] = ((+res32f[0])*(+res32f[9])+(+res32f[1])*(+res32f[12])+(+res32f[2])*(+res32f[15]));
-        res32f[19] = ((+res32f[0])*(+res32f[10])+(+res32f[1])*(+res32f[13])+(+res32f[2])*(+res32f[16]));
-        res32f[20] = ((+res32f[0])*(+res32f[11])+(+res32f[1])*(+res32f[14])+(+res32f[2])*(+res32f[17]));
-        res32f[21] = ((+res32f[3])*(+res32f[9])+(+res32f[4])*(+res32f[12])+(+res32f[5])*(+res32f[15]));
-        res32f[22] = ((+res32f[3])*(+res32f[10])+(+res32f[4])*(+res32f[13])+(+res32f[5])*(+res32f[16]));
-        res32f[23] = ((+res32f[3])*(+res32f[11])+(+res32f[4])*(+res32f[14])+(+res32f[5])*(+res32f[17]));
-        res32f[24] = ((+res32f[6])*(+res32f[9])+(+res32f[7])*(+res32f[12])+(+res32f[8])*(+res32f[15]));
-        res32f[25] = ((+res32f[6])*(+res32f[10])+(+res32f[7])*(+res32f[13])+(+res32f[8])*(+res32f[16]));
-        res32f[26] = ((+res32f[6])*(+res32f[11])+(+res32f[7])*(+res32f[14])+(+res32f[8])*(+res32f[17]));*/
-        res64f[18] = +(res64f[0]*res64f[ 9]+res64f[1]*res64f[12]+res64f[2]*res64f[15]);
-        res64f[19] = +(res64f[0]*res64f[10]+res64f[1]*res64f[13]+res64f[2]*res64f[16]);
-        res64f[20] = +(res64f[0]*res64f[11]+res64f[1]*res64f[14]+res64f[2]*res64f[17]);
-        res64f[21] = +(res64f[3]*res64f[ 9]+res64f[4]*res64f[12]+res64f[5]*res64f[15]);
-        res64f[22] = +(res64f[3]*res64f[10]+res64f[4]*res64f[13]+res64f[5]*res64f[16]);
-        res64f[23] = +(res64f[3]*res64f[11]+res64f[4]*res64f[14]+res64f[5]*res64f[17]);
-        res64f[24] = +(res64f[6]*res64f[ 9]+res64f[7]*res64f[12]+res64f[8]*res64f[15]);
-        res64f[25] = +(res64f[6]*res64f[10]+res64f[7]*res64f[13]+res64f[8]*res64f[16]);
-        res64f[26] = +(res64f[6]*res64f[11]+res64f[7]*res64f[14]+res64f[8]*res64f[17]);
+    function concat_rotations(m1, m2, r){
+        m1 = m1|0;
+        m2 = m2|0;
+        r = r|0;
+        /*res32f[(r+0)<<2>>2] = ((+res32f[(m1)<<2>>2])*(+res32f[(m2+0)<<2>>2])+(+res32f[(m1+1)<<2>>2])*(+res32f[(m2+3)<<2>>2])+(+res32f[(m1+2)<<2>>2])*(+res32f[(m2+6)<<2>>2]));
+        res32f[(r+1)<<2>>2] = ((+res32f[(m1+0)<<2>>2])*(+res32f[(m2+1)<<2>>2])+(+res32f[(m1+1)<<2>>2])*(+res32f[(m2+4)<<2>>2])+(+res32f[(m1+2)<<2>>2])*(+res32f[(m2+7)<<2>>2]));
+        res32f[(r+2)<<2>>2] = ((+res32f[(m1+0)<<2>>2])*(+res32f[(m2+2)<<2>>2])+(+res32f[(m1+1)<<2>>2])*(+res32f[(m2+5)<<2>>2])+(+res32f[(m1+2)<<2>>2])*(+res32f[(m2+8)<<2>>2]));
+        res32f[(r+3)<<2>>2] = ((+res32f[(m1+3)<<2>>2])*(+res32f[(m2+0)<<2>>2])+(+res32f[(m1+4)<<2>>2])*(+res32f[(m2+3)<<2>>2])+(+res32f[(m1+5)<<2>>2])*(+res32f[(m2+6)<<2>>2]));
+        res32f[(r+4)<<2>>2] = ((+res32f[(m1+3)<<2>>2])*(+res32f[(m2+1)<<2>>2])+(+res32f[(m1+4)<<2>>2])*(+res32f[(m2+4)<<2>>2])+(+res32f[(m1+5)<<2>>2])*(+res32f[(m2+7)<<2>>2]));
+        res32f[(r+5)<<2>>2] = ((+res32f[(m1+3)<<2>>2])*(+res32f[(m2+2)<<2>>2])+(+res32f[(m1+4)<<2>>2])*(+res32f[(m2+5)<<2>>2])+(+res32f[(m1+5)<<2>>2])*(+res32f[(m2+8)<<2>>2]));
+        res32f[(r+6)<<2>>2] = ((+res32f[(m1+6)<<2>>2])*(+res32f[(m2+0)<<2>>2])+(+res32f[(m1+7)<<2>>2])*(+res32f[(m2+3)<<2>>2])+(+res32f[(m1+8)<<2>>2])*(+res32f[(m2+6)<<2>>2]));
+        res32f[(r+7)<<2>>2] = ((+res32f[(m1+6)<<2>>2])*(+res32f[(m2+1)<<2>>2])+(+res32f[(m1+7)<<2>>2])*(+res32f[(m2+4)<<2>>2])+(+res32f[(m1+8)<<2>>2])*(+res32f[(m2+7)<<2>>2]));
+        res32f[(r+8)<<2>>2] = ((+res32f[(m1+6)<<2>>2])*(+res32f[(m2+2)<<2>>2])+(+res32f[(m1+7)<<2>>2])*(+res32f[(m2+5)<<2>>2])+(+res32f[(m1+8)<<2>>2])*(+res32f[(m2+8)<<2>>2]));*/
         return 0;
     }
     function scale_texture(inwidth, inheight, outwidth, outheight){
@@ -109,7 +103,7 @@ function AsmFuncs(stdlib, env, heap) {
 
 if(!window['asm_funcs']){
     console.warn("Init buffer. Must be single.");
-    var buffer = new ArrayBuffer(BUFFER_SIZE);
+    var buffer = new ArrayBuffer(BUFFER_SIZE);//memory.F4.buffer;
     window['mybuffer'] = buffer;
     var asm_funcs = AsmFuncs(window, 0, window['mybuffer']);
     window['asm_funcs'] = asm_funcs;

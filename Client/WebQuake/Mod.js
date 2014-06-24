@@ -64,7 +64,8 @@ Mod.PointInLeaf = function(p, model)
 
 Mod.DecompressVis = function(i, model)
 {
-	var decompressed = [], c, out, row = (model.leafs.length + 7) >> 3;
+	var c, out, row = (model.leafs.length + 7) >> 3;
+    var decompressed = new Uint8Array(row);
 	if (model.visdata == null)
 	{
 		for (; row >= 0; --row)
@@ -257,8 +258,9 @@ Mod.LoadTextures = function(buf)
 		if (tx.name.charCodeAt(1) !== 48)
 			continue;
 		name = tx.name.substring(2);
-		tx.anims = [i];
-		tx.alternate_anims = [];
+		tx.anims = new Uint8Array(64);
+        tx.anims[0] = i;
+		tx.alternate_anims = new Uint8Array(64);
 		for (j = 0; j < nummiptex; ++j)
 		{
 			tx2 = Mod.loadmodel.textures[j];
@@ -287,16 +289,16 @@ Mod.LoadTextures = function(buf)
 			}
 			Sys.Error('Bad animating texture ' + tx.name);
 		}
-		for (j = 0; j < tx.anims.length; ++j)
+		/*for (j = 0; j < tx.anims.length; ++j)
 		{
-			if (tx.anims[j] == null)
+			if (tx.anims[j] === 0)
 				Sys.Error('Missing frame ' + j + ' of ' + tx.name);
 		}
 		for (j = 0; j < tx.alternate_anims.length; ++j)
 		{
-			if (tx.alternate_anims[j] == null)
+			if (tx.alternate_anims[j] === 0)
 				Sys.Error('Missing frame ' + j + ' of ' + tx.name);
-		}
+		}*/
 		Mod.loadmodel.textures[i] = tx;
 	}
 
