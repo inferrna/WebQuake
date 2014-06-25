@@ -161,7 +161,7 @@ GL.TextureMode_f = function()
 	}
 };
 
-GL.ortho = new Float32Array([
+GL.ortho = mFloat32Array([
 	0.0, 0.0, 0.0, 0.0,
 	0.0, 0.0, 0.0, 0.0,
 	0.0, 0.0, 0.00001, 0.0,
@@ -442,7 +442,7 @@ GL.UnbindProgram = function()
 	GL.currentprogram = null;
 };
 
-GL.identity = new Float32Array([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]);
+GL.identity = mFloat32Array([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]);
 
 
 
