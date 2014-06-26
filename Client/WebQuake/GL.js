@@ -44,9 +44,13 @@ function AsmFuncs(stdlib, env, heap) {
         res32f[(res+8)<<2>>2] = +(cp * cr);
         return 0;
     }
-    function dot_product(){
+    function dot_product(v1, v2){
+        v1 = v1|0;
+        v2 = v2|0;
         //return  +((+res32f[0])*(+res32f[3])+(+res32f[1])*(+res32f[4])+(+res32f[2])*(+res32f[5])) ;
-        return  +(res64f[0]*res64f[3]+res64f[1]*res64f[4]+res64f[2]*res64f[5]);
+        return  +((+res32f[(v1+0)<<2>>2])*(+res32f[(v2+0)<<2>>2])
+                 +(+res32f[(v1+1)<<2>>2])*(+res32f[(v2+1)<<2>>2])
+                 +(+res32f[(v1+2)<<2>>2])*(+res32f[(v2+2)<<2>>2]));
     }
     function concat_rotations(m1, m2, r){
         m1 = m1|0;
@@ -161,7 +165,7 @@ GL.TextureMode_f = function()
 	}
 };
 
-GL.ortho = mFloat32Array([
+GL.ortho = new Float32Array([
 	0.0, 0.0, 0.0, 0.0,
 	0.0, 0.0, 0.0, 0.0,
 	0.0, 0.0, 0.00001, 0.0,
@@ -442,7 +446,7 @@ GL.UnbindProgram = function()
 	GL.currentprogram = null;
 };
 
-GL.identity = mFloat32Array([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]);
+GL.identity = new Float32Array([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]);
 
 
 
