@@ -1,3 +1,4 @@
+var tofree = [];
 mUint16Array = function(param, off, ln){
     const $M = memory;
     const $malloc = $M.malloc, $U2 = $M.U2;
@@ -16,6 +17,8 @@ mUint16Array = function(param, off, ln){
         if(off || ln) var res = new Uint16Array(param, off, ln);
         else          var res = new Uint16Array(param);
     }
+    if(this._addr && mUint16Array.caller) 
+        tofree.push(this._addr << 1);
     //console.log(this._addr);
     return res;
 };
@@ -37,6 +40,8 @@ mUint8Array = function(param, off, ln){
         if(off || ln) var res = new Uint8Array(param, off, ln);
         else          var res = new Uint8Array(param);
     }
+    if(this._addr && mUint8Array.caller) 
+        tofree.push(this._addr);
     //console.log(this._addr);
     return res;
 };
@@ -58,6 +63,8 @@ mFloat32Array = function(param, off, ln){
         if(off || ln) var res = new Float32Array(param, off, ln);
         else          var res = new Float32Array(param);
     }
+    if(this._addr && mFloat32Array.caller) 
+        tofree.push(this._addr << 2);
     //console.log(this._addr);
     return res;
 };
@@ -65,4 +72,10 @@ mfree = function(array){
     const $M = memory;
     const $free = $M.free;
     $free(array.byteOffset);
+};
+
+freetofree = function(){
+   for(var i=0; i<tofree.length; i++)
+       $free(tofree[i])
+   tofree = [];
 };

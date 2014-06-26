@@ -1254,6 +1254,7 @@ R.TimeRefresh_f = function()
 	gl.finish();
 	var time = Sys.FloatTime() - start;
 	Con.Print(time.toFixed(6) + ' seconds (' + (128.0 / time).toFixed(6) + ' fps)\n');
+    freetofree();
 };
 
 // part
