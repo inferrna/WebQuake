@@ -8,7 +8,7 @@ Vec.v3a = mFloat32Array(3);
 Vec.v3b = mFloat32Array(3);
 Vec.v3c = mFloat32Array(3);
 
-Vec.origin = mFloat32Array([0.0, 0.0, 0.0]);
+Vec.origin = new Float32Array([0.0, 0.0, 0.0]);
 
 Vec.Perpendicular = function(v)
 {
@@ -29,15 +29,14 @@ Vec.Perpendicular = function(v)
 		pos = 0;
 		minelem = Math.abs(v[0]);
 	}
-	var tempvec = mFloat32Array([0.0, 0.0, 0.0]);
-	tempvec[pos] = 1.0;
 	var inv_denom = 1.0 / (Vec.DotProduct(v, v));
-	var d = (Vec.DotProduct(tempvec, v)) * inv_denom;
-	var dst = mFloat32Array([
-		tempvec[0] - d * v[0] * inv_denom,
-		tempvec[1] - d * v[1] * inv_denom,
-		tempvec[2] - d * v[2] * inv_denom
+	var d = v[pos] * inv_denom;
+	var dst = new Float32Array([
+		- d * v[0] * inv_denom,
+		- d * v[1] * inv_denom,
+		- d * v[2] * inv_denom
 	]);
+    dst[pos] += 1.0;
     //mfree(tempvec);
 	Vec.Normalize(dst);
 	return dst;
@@ -190,7 +189,7 @@ Vec.Copy = function(v1, v2)
 
 Vec.CrossProduct = function(v1, v2)
 {
-    var res = mFloat32Array(3);//Vec.v3c;
+    var res = new Float32Array(3);//Vec.v3c;
 	res.set([
 		v1[1] * v2[2] - v1[2] * v2[1],
 		v1[2] * v2[0] - v1[0] * v2[2],
@@ -220,10 +219,10 @@ Vec.Normalize = function(v)
 
 Vec.ConcatRotations = function(m1, m2)
 {
-    /*var res = mFloat32Array(9);
+    var res = mFloat32Array(9);
     window['asm_funcs'].concat_rotations(m1.byteOffset>>2, m2.byteOffset>>2, res.byteOffset>>2);
-    return res;*/
-    var res = Vec.v9d;
+    return res;
+    /*var res = Vec.v9d;
 	res.set([
 			m1[0] * m2[0] + m1[1] * m2[3] + m1[2] * m2[6],
 			m1[0] * m2[1] + m1[1] * m2[4] + m1[2] * m2[7],
@@ -235,5 +234,5 @@ Vec.ConcatRotations = function(m1, m2)
 			m1[6] * m2[1] + m1[7] * m2[4] + m1[8] * m2[7],
 			m1[6] * m2[2] + m1[7] * m2[5] + m1[8] * m2[8]
 	]);
-    return res;
+    return res;*/
 };

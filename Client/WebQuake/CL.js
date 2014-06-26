@@ -31,16 +31,16 @@ CL.WriteDemoMessage = function()
 	var len = CL.cls.demoofs + 16 + NET.message.cursize;
 	if (CL.cls.demofile.byteLength < len)
 	{
-		var src = mUint8Array(CL.cls.demofile, 0, CL.cls.demoofs);
+		var src = new Uint8Array(CL.cls.demofile, 0, CL.cls.demoofs);
 		CL.cls.demofile = new ArrayBuffer(CL.cls.demofile.byteLength + 16384);
-		(mUint8Array(CL.cls.demofile)).set(src);
+		(new Uint8Array(CL.cls.demofile)).set(src);
 	}
 	var f = new DataView(CL.cls.demofile, CL.cls.demoofs, 16);
 	f.setInt32(0, NET.message.cursize, true);
 	f.setFloat32(4, CL.state.viewangles[0], true);
 	f.setFloat32(8, CL.state.viewangles[1], true);
 	f.setFloat32(12, CL.state.viewangles[2], true);
-	(mUint8Array(CL.cls.demofile)).set(mUint8Array(NET.message.data, 0, NET.message.cursize), CL.cls.demoofs + 16);
+	(new Uint8Array(CL.cls.demofile)).set(new Uint8Array(NET.message.data, 0, NET.message.cursize), CL.cls.demoofs + 16);
 	CL.cls.demoofs = len;
 };
 
@@ -78,8 +78,8 @@ CL.GetMessage = function()
 			CL.StopPlayback();
 			return 0;
 		}
-		var src = mUint8Array(CL.cls.demofile, CL.cls.demoofs, NET.message.cursize);
-		var dest = mUint8Array(NET.message.data, 0, NET.message.cursize);
+		var src = new Uint8Array(CL.cls.demofile, CL.cls.demoofs, NET.message.cursize);
+		var dest = new Uint8Array(NET.message.data, 0, NET.message.cursize);
 		var i;
 		for (i = 0; i < NET.message.cursize; ++i)
 			dest[i] = src[i];
@@ -93,7 +93,7 @@ CL.GetMessage = function()
 		r = NET.GetMessage(CL.cls.netcon);
 		if ((r !== 1) && (r !== 2))
 			return r;
-		if ((NET.message.cursize === 1) && ((mUint8Array(NET.message.data, 0, 1))[0] === Protocol.svc.nop))
+		if ((NET.message.cursize === 1) && ((new Uint8Array(NET.message.data, 0, 1))[0] === Protocol.svc.nop))
 			Con.Print('<-- server to client keepalive\n');
 		else
 			break;
@@ -117,7 +117,7 @@ CL.Stop_f = function()
 	NET.message.cursize = 0;
 	MSG.WriteByte(NET.message, Protocol.svc.disconnect);
 	CL.WriteDemoMessage();
-	if (COM.WriteFile(CL.cls.demoname, mUint8Array(CL.cls.demofile), CL.cls.demoofs) !== true)
+	if (COM.WriteFile(CL.cls.demoname, new Uint8Array(CL.cls.demofile), CL.cls.demoofs) !== true)
 		Con.Print('ERROR: couldn\'t open.\n');
 	CL.cls.demofile = null;
 	CL.cls.demorecording = false;
@@ -155,7 +155,7 @@ CL.Record_f = function()
 	Con.Print('recording to ' + CL.cls.demoname + '.\n');
 	CL.cls.demofile = new ArrayBuffer(16384);
 	var track = CL.cls.forcetrack.toString() + '\n';
-	var i, dest = mUint8Array(CL.cls.demofile, 0, track.length);
+	var i, dest = new Uint8Array(CL.cls.demofile, 0, track.length);
 	for (i = 0; i < track.length; ++i)
 		dest[i] = track.charCodeAt(i);
 	CL.cls.demoofs = track.length;
@@ -183,7 +183,7 @@ CL.PlayDemo_f = function()
 		return;
 	}
 	CL.cls.demofile = demofile;
-	demofile = mUint8Array(demofile);
+	demofile = new Uint8Array(demofile);
 	CL.cls.demosize = demofile.length;
 	CL.cls.demoplayback = true;
 	CL.cls.state = CL.active.connected;
@@ -1095,8 +1095,8 @@ CL.KeepaliveMessage = function()
 	if ((SV.server.active === true) || (CL.cls.demoplayback === true))
 		return;
 	var oldsize = NET.message.cursize;
-	var olddata = mUint8Array(8192);
-	olddata.set(mUint8Array(NET.message.data, 0, oldsize));
+	var olddata = new Uint8Array(8192);
+	olddata.set(new Uint8Array(NET.message.data, 0, oldsize));
 	var ret;
 	for (;;)
 	{
@@ -1117,7 +1117,7 @@ CL.KeepaliveMessage = function()
 			break;
 	}
 	NET.message.cursize = oldsize;
-	(mUint8Array(NET.message.data, 0, oldsize)).set(olddata.subarray(0, oldsize));
+	(new Uint8Array(NET.message.data, 0, oldsize)).set(olddata.subarray(0, oldsize));
 	var time = Sys.FloatTime();
 	if ((time - CL.lastmsg) < 5.0)
 		return;

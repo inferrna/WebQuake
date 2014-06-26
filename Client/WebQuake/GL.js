@@ -12,10 +12,11 @@ function AsmFuncs(stdlib, env, heap) {
     var res64f = new stdlib.Float64Array(heap);
     var res8i = new stdlib.Uint8Array(heap);
     var inp8i = new stdlib.Uint8Array(heap);
-    function rotation_matrix(pitch, yaw, roll){
+    function rotation_matrix(pitch, yaw, roll, res){
         pitch = +pitch;
         yaw = +yaw;
         roll = +roll;
+        res = res|0;
         var sp = 0.0;
         var cp = 0.0;
         var sy = 0.0;
@@ -32,26 +33,30 @@ function AsmFuncs(stdlib, env, heap) {
         cy = +cos(yaw);
         sr = +sin(roll);
         cr = +cos(roll);
-        res64f[0] = +(cy * cp);
-        res64f[1] = +(sy * cp);
-        res64f[2] = +(-sp);
-        res64f[3] = +(-sy * cr + cy * sp * sr);
-        res64f[4] = +(cy * cr + sy * sp * sr);
-        res64f[5] = +( cp * sr);
-        res64f[6] = +(-sy * -sr + cy * sp * cr);
-        res64f[7] = +(cy * -sr + sy * sp * cr);
-        res64f[8] = +(cp * cr);
+        res32f[(res+0)<<2>>2] = +(cy * cp);
+        res32f[(res+1)<<2>>2] = +(sy * cp);
+        res32f[(res+2)<<2>>2] = +(-sp);
+        res32f[(res+3)<<2>>2] = +(-sy * cr + cy * sp * sr);
+        res32f[(res+4)<<2>>2] = +(cy * cr + sy * sp * sr);
+        res32f[(res+5)<<2>>2] = +( cp * sr);
+        res32f[(res+6)<<2>>2] = +(-sy * -sr + cy * sp * cr);
+        res32f[(res+7)<<2>>2] = +(cy * -sr + sy * sp * cr);
+        res32f[(res+8)<<2>>2] = +(cp * cr);
         return 0;
     }
-    function dot_product(){
+    function dot_product(v1, v2){
+        v1 = v1|0;
+        v2 = v2|0;
         //return  +((+res32f[0])*(+res32f[3])+(+res32f[1])*(+res32f[4])+(+res32f[2])*(+res32f[5])) ;
-        return  +(res64f[0]*res64f[3]+res64f[1]*res64f[4]+res64f[2]*res64f[5]);
+        return  +((+res32f[(v1+0)<<2>>2])*(+res32f[(v2+0)<<2>>2])
+                 +(+res32f[(v1+1)<<2>>2])*(+res32f[(v2+1)<<2>>2])
+                 +(+res32f[(v1+2)<<2>>2])*(+res32f[(v2+2)<<2>>2]));
     }
     function concat_rotations(m1, m2, r){
         m1 = m1|0;
         m2 = m2|0;
         r = r|0;
-        /*res32f[(r+0)<<2>>2] = ((+res32f[(m1)<<2>>2])*(+res32f[(m2+0)<<2>>2])+(+res32f[(m1+1)<<2>>2])*(+res32f[(m2+3)<<2>>2])+(+res32f[(m1+2)<<2>>2])*(+res32f[(m2+6)<<2>>2]));
+        res32f[(r+0)<<2>>2] = ((+res32f[(m1)<<2>>2])*(+res32f[(m2+0)<<2>>2])+(+res32f[(m1+1)<<2>>2])*(+res32f[(m2+3)<<2>>2])+(+res32f[(m1+2)<<2>>2])*(+res32f[(m2+6)<<2>>2]));
         res32f[(r+1)<<2>>2] = ((+res32f[(m1+0)<<2>>2])*(+res32f[(m2+1)<<2>>2])+(+res32f[(m1+1)<<2>>2])*(+res32f[(m2+4)<<2>>2])+(+res32f[(m1+2)<<2>>2])*(+res32f[(m2+7)<<2>>2]));
         res32f[(r+2)<<2>>2] = ((+res32f[(m1+0)<<2>>2])*(+res32f[(m2+2)<<2>>2])+(+res32f[(m1+1)<<2>>2])*(+res32f[(m2+5)<<2>>2])+(+res32f[(m1+2)<<2>>2])*(+res32f[(m2+8)<<2>>2]));
         res32f[(r+3)<<2>>2] = ((+res32f[(m1+3)<<2>>2])*(+res32f[(m2+0)<<2>>2])+(+res32f[(m1+4)<<2>>2])*(+res32f[(m2+3)<<2>>2])+(+res32f[(m1+5)<<2>>2])*(+res32f[(m2+6)<<2>>2]));
@@ -59,7 +64,7 @@ function AsmFuncs(stdlib, env, heap) {
         res32f[(r+5)<<2>>2] = ((+res32f[(m1+3)<<2>>2])*(+res32f[(m2+2)<<2>>2])+(+res32f[(m1+4)<<2>>2])*(+res32f[(m2+5)<<2>>2])+(+res32f[(m1+5)<<2>>2])*(+res32f[(m2+8)<<2>>2]));
         res32f[(r+6)<<2>>2] = ((+res32f[(m1+6)<<2>>2])*(+res32f[(m2+0)<<2>>2])+(+res32f[(m1+7)<<2>>2])*(+res32f[(m2+3)<<2>>2])+(+res32f[(m1+8)<<2>>2])*(+res32f[(m2+6)<<2>>2]));
         res32f[(r+7)<<2>>2] = ((+res32f[(m1+6)<<2>>2])*(+res32f[(m2+1)<<2>>2])+(+res32f[(m1+7)<<2>>2])*(+res32f[(m2+4)<<2>>2])+(+res32f[(m1+8)<<2>>2])*(+res32f[(m2+7)<<2>>2]));
-        res32f[(r+8)<<2>>2] = ((+res32f[(m1+6)<<2>>2])*(+res32f[(m2+2)<<2>>2])+(+res32f[(m1+7)<<2>>2])*(+res32f[(m2+5)<<2>>2])+(+res32f[(m1+8)<<2>>2])*(+res32f[(m2+8)<<2>>2]));*/
+        res32f[(r+8)<<2>>2] = ((+res32f[(m1+6)<<2>>2])*(+res32f[(m2+2)<<2>>2])+(+res32f[(m1+7)<<2>>2])*(+res32f[(m2+5)<<2>>2])+(+res32f[(m1+8)<<2>>2])*(+res32f[(m2+8)<<2>>2]));
         return 0;
     }
     function scale_texture(inwidth, inheight, outwidth, outheight){
@@ -103,7 +108,7 @@ function AsmFuncs(stdlib, env, heap) {
 
 if(!window['asm_funcs']){
     console.warn("Init buffer. Must be single.");
-    var buffer = new ArrayBuffer(BUFFER_SIZE);//memory.F4.buffer;
+    var buffer = memory.F4.buffer;
     window['mybuffer'] = buffer;
     var asm_funcs = AsmFuncs(window, 0, window['mybuffer']);
     window['asm_funcs'] = asm_funcs;
@@ -461,9 +466,9 @@ GL.RotationMatrix = function(pitch, yaw, roll)
 		-sy * cr + cy * sp * sr,	cy * cr + sy * sp * sr,		cp * sr,
 		-sy * -sr + cy * sp * cr,	cy * -sr + sy * sp * cr,	cp * cr
 	];*/
-    window['asm_funcs'].rotation_matrix(pitch, yaw, roll);
-    var res = new Float64Array(window['mybuffer'], 0, 9);
-    return new Float32Array(res);
+    var res = mFloat32Array(9);
+    window['asm_funcs'].rotation_matrix(pitch, yaw, roll, res.byteOffset>>2);
+    return res;
 };
 
 GL.Init = function()
