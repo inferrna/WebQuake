@@ -29,15 +29,14 @@ Vec.Perpendicular = function(v)
 		pos = 0;
 		minelem = Math.abs(v[0]);
 	}
-	var tempvec = new Float32Array([0.0, 0.0, 0.0]);
-	tempvec[pos] = 1.0;
 	var inv_denom = 1.0 / (Vec.DotProduct(v, v));
-	var d = (Vec.DotProduct(tempvec, v)) * inv_denom;
+	var d = v[pos] * inv_denom;
 	var dst = new Float32Array([
-		tempvec[0] - d * v[0] * inv_denom,
-		tempvec[1] - d * v[1] * inv_denom,
-		tempvec[2] - d * v[2] * inv_denom
+		- d * v[0] * inv_denom,
+		- d * v[1] * inv_denom,
+		- d * v[2] * inv_denom
 	]);
+    dst[pos] += 1.0;
     //mfree(tempvec);
 	Vec.Normalize(dst);
 	return dst;

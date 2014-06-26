@@ -1,7 +1,7 @@
 var V = {};
-V.v3a = new Float32Array(3);
-V.v3b = new Float32Array(3);
-V.v3c = new Float32Array(3);
+V.v3a = mFloat32Array(3);
+V.v3b = mFloat32Array(3);
+V.v3c = mFloat32Array(3);
 V.dmg_time = 0.0;
 
 V.CalcRoll = function(angles, velocity)
@@ -108,12 +108,12 @@ V.DriftPitch = function()
 	}
 };
 
-V.cshift_empty = new Float32Array([130.0, 80.0, 50.0, 0.0]);
-V.cshift_water = new Float32Array([130.0, 80.0, 50.0, 128.0]);
-V.cshift_slime = new Float32Array([0.0, 25.0, 5.0, 150.0]);
-V.cshift_lava = new Float32Array([255.0, 80.0, 0.0, 150.0]);
+V.cshift_empty = mFloat32Array([130.0, 80.0, 50.0, 0.0]);
+V.cshift_water = mFloat32Array([130.0, 80.0, 50.0, 128.0]);
+V.cshift_slime = mFloat32Array([0.0, 25.0, 5.0, 150.0]);
+V.cshift_lava =  mFloat32Array([255.0, 80.0, 0.0, 150.0]);
 
-V.blend = new Float32Array([0.0, 0.0, 0.0, 0.0]);
+V.blend = mFloat32Array([0.0, 0.0, 0.0, 0.0]);
 
 V.ParseDamage = function()
 {
