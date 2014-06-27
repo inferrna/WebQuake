@@ -120,7 +120,7 @@ V.ParseDamage = function()
 	var armor = MSG.ReadByte();
 	var blood = MSG.ReadByte();
 	var ent = CL.entities[CL.state.viewentity];
-	var from = new Float32Array([MSG.ReadCoord() - ent.origin[0], MSG.ReadCoord() - ent.origin[1], MSG.ReadCoord() - ent.origin[2]]);
+	var from = mFloat32Array([MSG.ReadCoord() - ent.origin[0], MSG.ReadCoord() - ent.origin[1], MSG.ReadCoord() - ent.origin[2]]);
 	Vec.Normalize(from);
 	var count = (blood + armor) * 0.5;
 	if (count < 10.0)

@@ -5,6 +5,7 @@ GL.currenttextures = [];
 GL.programs = [];
 function AsmFuncs(stdlib, env, heap) {
     "use asm";
+    var sqrt = stdlib.Math.sqrt;
     var sin = stdlib.Math.sin;
     var cos = stdlib.Math.cos;
     var floor = stdlib.Math.floor;
@@ -98,11 +99,29 @@ function AsmFuncs(stdlib, env, heap) {
         }
         return 0;
     }
+    function normalize(v)
+    {
+        v = v|0;
+        var length = 0.0;
+        length = +sqrt(+dot_product(v, v));
+        if (length == +0.0)
+        {
+            res32f[(v+0)<<2>>2] = +0.0;
+            res32f[(v+1)<<2>>2] = +0.0;
+            res32f[(v+2)<<2>>2] = +0.0;
+            return +0.0;
+        }
+        res32f[(v+0)<<2>>2] = +res32f[(v+0)<<2>>2]/length;
+        res32f[(v+1)<<2>>2] = +res32f[(v+0)<<2>>2]/length;
+        res32f[(v+2)<<2>>2] = +res32f[(v+0)<<2>>2]/length;
+        return +length;
+    }
     return {
             rotation_matrix: rotation_matrix,
             scale_texture: scale_texture,
             dot_product: dot_product,
-            concat_rotations: concat_rotations
+            concat_rotations: concat_rotations,
+            normalize: normalize
             };
 }
 

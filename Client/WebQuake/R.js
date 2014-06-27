@@ -1467,7 +1467,7 @@ R.RunParticleEffect = function(org, dir, color, count)
 R.LavaSplash = function(org)
 {
 	var allocated = R.AllocParticles(1024), i, j, k = 0, p;
-	var dir = new Float32Array(3), vel;
+	var dir = mFloat32Array(3), vel;
 	for (i = -16; i <= 15; ++i)
 	{
 		for (j = -16; j <= 15; ++j)
@@ -1494,7 +1494,7 @@ R.LavaSplash = function(org)
 R.TeleportSplash = function(org)
 {
 	var allocated = R.AllocParticles(896), i, j, k, l = 0, p;
-	var dir = new Float32Array(3), vel;
+	var dir = mFloat32Array(3), vel;
 	for (i = -16; i <= 15; i += 4)
 	{
 		for (j = -16; j <= 15; j += 4)

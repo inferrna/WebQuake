@@ -118,7 +118,7 @@ PF.centerprint = function()
 
 PF.normalize = function()
 {
-	var newvalue = new Float32Array(PR.globals_float.subarray(4, 7));
+	var newvalue = mFloat32Array(PR.globals_float.subarray(4, 7));
 	Vec.Normalize(newvalue);
     PR.globals_float.subarray(1, 4).set(newvalue);
 };
@@ -571,8 +571,8 @@ PF.aim = function()
 {
 	var ent = SV.server.edicts[PR.globals_int[4]];
 	var start = new Float32Array([ent.v_float[PR.entvars.origin], ent.v_float[PR.entvars.origin1], ent.v_float[PR.entvars.origin2] + 20.0]);
-	var dir = new Float32Array([PR.globals_float[PR.globalvars.v_forward], PR.globals_float[PR.globalvars.v_forward1], PR.globals_float[PR.globalvars.v_forward2]]);
-	var end = new Float32Array([start[0] + 2048.0 * dir[0], start[1] + 2048.0 * dir[1], start[2] + 2048.0 * dir[2]]);
+	var dir = mFloat32Array([PR.globals_float[PR.globalvars.v_forward], PR.globals_float[PR.globalvars.v_forward1], PR.globals_float[PR.globalvars.v_forward2]]);
+	var end = mFloat32Array([start[0] + 2048.0 * dir[0], start[1] + 2048.0 * dir[1], start[2] + 2048.0 * dir[2]]);
 	var tr = SV.Move(start, Vec.origin, Vec.origin, end, 0, ent);
 	if (tr.ent != null)
 	{

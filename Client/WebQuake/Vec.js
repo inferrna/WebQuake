@@ -8,7 +8,7 @@ Vec.v3a = mFloat32Array(3);
 Vec.v3b = mFloat32Array(3);
 Vec.v3c = mFloat32Array(3);
 
-Vec.origin = new Float32Array([0.0, 0.0, 0.0]);
+Vec.origin = mFloat32Array([0.0, 0.0, 0.0]);
 
 Vec.Perpendicular = function(v)
 {
@@ -31,7 +31,7 @@ Vec.Perpendicular = function(v)
 	}
 	var inv_denom = 1.0 / (Vec.DotProduct(v, v));
 	var d = v[pos] * inv_denom;
-	var dst = new Float32Array([
+	var dst = mFloat32Array([
 		- d * v[0] * inv_denom,
 		- d * v[1] * inv_denom,
 		- d * v[2] * inv_denom
@@ -189,7 +189,7 @@ Vec.Copy = function(v1, v2)
 
 Vec.CrossProduct = function(v1, v2)
 {
-    var res = new Float32Array(3);//Vec.v3c;
+    var res = mFloat32Array(3);//Vec.v3c;
 	res.set([
 		v1[1] * v2[2] - v1[2] * v2[1],
 		v1[2] * v2[0] - v1[0] * v2[2],
@@ -205,7 +205,8 @@ Vec.Length = function(v)
 
 Vec.Normalize = function(v)
 {
-	var length = Math.sqrt(Vec.DotProduct(v, v));
+    var length = window['asm_funcs'].normalize(v.byteOffset>>2);
+	/*var length = Math.sqrt(Vec.DotProduct(v, v));
 	if (length === 0.0)
 	{
 		v[0] = v[1] = v[2] = 0.0;
@@ -213,7 +214,7 @@ Vec.Normalize = function(v)
 	}
 	v[0] /= length;
 	v[1] /= length;
-	v[2] /= length;
+	v[2] /= length;*/
 	return length;
 };
 

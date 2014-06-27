@@ -1205,7 +1205,7 @@ SV.FlyMove = function(ent, time)
 			ED.SetVector(ent, PR.entvars.velocity, Vec.origin);
 			return 3;
 		}
-		planes[numplanes++] = new Float32Array(trace.plane.normal);
+		planes[numplanes++] = mFloat32Array(trace.plane.normal);
 		for (i = 0; i < numplanes; ++i)
 		{
 			SV.ClipVelocity(original_velocity, planes[i], new_velocity, 1.0);
@@ -1819,7 +1819,7 @@ SV.UserFriction = function()
 SV.Accelerate = function(wishvel, air)
 {
 	var ent = SV.player;
-	var wishdir = new Float32Array(wishvel);
+	var wishdir = mFloat32Array(wishvel);
 	var wishspeed = Vec.Normalize(wishdir);
 	if ((air === true) && (wishspeed > 30.0))
 		wishspeed = 30.0;
@@ -1917,7 +1917,7 @@ SV.AirMove = function()
 		forward[0] * fmove + right[0] * smove,
 		forward[1] * fmove + right[1] * smove,
 		((ent.v_float[PR.entvars.movetype] >> 0) !== SV.movetype.walk) ? cmd.upmove : 0.0]);
-	var wishdir = new Float32Array(wishvel);
+	var wishdir = mFloat32Array(wishvel);
 	if (Vec.Normalize(wishdir) > SV.maxspeed.value)
 	{
 		wishvel[0] = wishdir[0] * SV.maxspeed.value;
