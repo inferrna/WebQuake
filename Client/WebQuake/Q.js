@@ -1,4 +1,4 @@
-Q = {};
+var Q = {};
 
 Q.memstr = function(src)
 {
@@ -119,7 +119,15 @@ Q.atof = function(str)
 
 Q.btoa = function(src)
 {
-	var str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    var binary = ''
+    var bytesLen = src.byteLength;
+
+    for (var i = 0; i < bytesLen; i++) {
+         binary += String.fromCharCode(src[i])
+    }
+
+    return window.btoa(binary);
+	/*var str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	var val = [];
 	var len = src.length - (src.length % 3);
 	var c, i;
@@ -138,5 +146,5 @@ Q.btoa = function(src)
 		c = (src[len] << 8) + src[len + 1];
 		val[val.length] = str.charAt(c >> 10) + str.charAt((c >> 4) & 63) + str.charAt((c & 15) << 2) + '=';
 	}
-	return val.join('');
+	return val.join('');*/
 };
