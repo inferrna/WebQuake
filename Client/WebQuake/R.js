@@ -193,7 +193,7 @@ R.PushDlights = function()
 R.RecursiveLightPoint = function(node, start, end)
 {
     var cms =  (new Date).getMilliseconds();
-    if(cms - R.rlpc > 20) {
+    if(Math.abs(cms - R.rlpc) % 1000 > 8) {
         return 128;
     }
 	if (node.contents < 0)
@@ -2066,7 +2066,7 @@ R.MarkLeaves = function()
 	} while (false);
 	R.drawsky = false;
 	R.RecursiveWorldNode(CL.state.worldmodel.nodes[0]);
-    console.log(CL.state.worldmodel.nodes);//NFP
+    //console.log(CL.state.worldmodel.nodes);//NFP
 };
 
 R.AllocBlock = function(surf)

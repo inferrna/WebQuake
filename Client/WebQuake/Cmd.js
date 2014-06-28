@@ -1,4 +1,4 @@
-Cmd = {};
+var Cmd = {};
 
 Cmd.alias = [];
 

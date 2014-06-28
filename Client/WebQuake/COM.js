@@ -356,7 +356,7 @@ COM.AddGameDirectory = function(dir, callback)
                     reader.readAsArrayBuffer(file);
               };
           request.onerror = function () { console.warn("Unable to get the file: " + fnm + "got error: '\n    "+this.error); };
-      } else console.log("Non-pak file found: " + file.name);
+      } else console.log("Non-pak file found: " + file ? file.name : "no file");
       // Once we found a file we check if there is other results
       if (!this.done || this.result===undefined) {
         // Then we move to the next result, which call the cursor
