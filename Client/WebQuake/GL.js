@@ -9,6 +9,8 @@ function AsmFuncs(stdlib, env, heap) {
     var sin = stdlib.Math.sin;
     var cos = stdlib.Math.cos;
     var floor = stdlib.Math.floor;
+    var abs = stdlib.Math.abs;
+    var min = stdlib.Math.min;
     var res32f = new stdlib.Float32Array(heap);
     var res64f = new stdlib.Float64Array(heap);
     var res8i = new stdlib.Uint8Array(heap);
@@ -52,6 +54,37 @@ function AsmFuncs(stdlib, env, heap) {
         return  +((+res32f[(v1+0)<<2>>2])*(+res32f[(v2+0)<<2>>2])
                  +(+res32f[(v1+1)<<2>>2])*(+res32f[(v2+1)<<2>>2])
                  +(+res32f[(v1+2)<<2>>2])*(+res32f[(v2+2)<<2>>2]));
+    }
+    function perpendicular(v, dst)
+    {
+        v = v|0;
+        dst = dst|0;
+        var pos = 0;
+        var minelem = 1.0;
+        var inv_denom = 0.0;
+        var d = 0.0;
+        if (+abs(+res32f[(v+2)<<2>>2]) < minelem)
+        {
+            pos = 2;
+            minelem = +abs(+res32f[(v+2)<<2>>2]);
+        }
+        else if (+abs(+res32f[(v+1)<<2>>2]) < minelem)
+        {
+            pos = 1;
+            minelem = +abs(+res32f[(v+1)<<2>>2]);
+        }
+        else if (+abs(+res32f[(v+0)<<2>>2]) < minelem)
+        {
+            pos = 0;
+            minelem = +abs(+res32f[(v+0)<<2>>2]);
+        }
+        inv_denom = 1.0 / (+dot_product(v, v));
+        d = +res32f[(v+pos)<<2>>2] * inv_denom;
+        res32f[(dst+0)<<2>>2] = +(-d * +res32f[(v+0)<<2>>2] * inv_denom);
+        res32f[(dst+1)<<2>>2] = +(-d * +res32f[(v+1)<<2>>2] * inv_denom);
+        res32f[(dst+2)<<2>>2] = +(-d * +res32f[(v+2)<<2>>2] * inv_denom);
+        res32f[(dst+pos)<<2>>2] = +(+res32f[(dst+pos)<<2>>2]+1.0);
+        +normalize(dst);
     }
     function concat_rotations(m1, m2, r){
         m1 = m1|0;
@@ -121,7 +154,8 @@ function AsmFuncs(stdlib, env, heap) {
             scale_texture: scale_texture,
             dot_product: dot_product,
             concat_rotations: concat_rotations,
-            normalize: normalize
+            normalize: normalize,
+            perpendicular: perpendicular
             };
 }
 

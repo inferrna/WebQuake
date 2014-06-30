@@ -10,42 +10,16 @@ Vec.v3c = mFloat32Array(3);
 
 Vec.origin = mFloat32Array([0.0, 0.0, 0.0]);
 
-Vec.Perpendicular = function(v)
+Vec.Perpendicular = function(v, dst)
 {
-	var pos = 0;
-	var minelem = 1;
-	if (Math.abs(v[2]) < minelem)
-	{
-		pos = 2;
-		minelem = Math.abs(v[2]);
-	}
-	else if (Math.abs(v[1]) < minelem)
-	{
-		pos = 1;
-		minelem = Math.abs(v[1]);
-	}
-	else if (Math.abs(v[0]) < minelem)
-	{
-		pos = 0;
-		minelem = Math.abs(v[0]);
-	}
-	var inv_denom = 1.0 / (Vec.DotProduct(v, v));
-	var d = v[pos] * inv_denom;
-	var dst = mFloat32Array([
-		- d * v[0] * inv_denom,
-		- d * v[1] * inv_denom,
-		- d * v[2] * inv_denom
-	]);
-    dst[pos] += 1.0;
-    //mfree(tempvec);
-	Vec.Normalize(dst);
-	return dst;
+    window['asm_funcs'].perpendicular(v.byteOffset>>2, dst.byteOffset>>2);
 };
 
 Vec.RotatePointAroundVector = function(dir, point, degrees)
 {
     //console.log("Call to Vec.RotatePointAroundVector");
-	var r = Vec.Perpendicular(dir);
+	var r = mFloat32Array(3);
+    Vec.Perpendicular(dir, r);
 	var up = Vec.CrossProduct(r, dir);
 	var m = Vec.v9a; m.set([
 		r[0], up[0], dir[0],
