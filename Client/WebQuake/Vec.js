@@ -146,23 +146,27 @@ Vec.AngleVectors = function(angles, forward, right, up)
 	angle = angles[2] * Math.PI / 180.0;
 	var sr = Math.sin(angle);
 	var cr = Math.cos(angle);
-
-	if (forward != null)
-	{
-		forward.set([cp * cy, cp * sy, -sp]);
-	}
-	if (right != null)
-	{
-		right.set([cr * sy - sr * sp * cy,
-		          -sr * sp * sy - cr * cy,
-		          -sr * cp]);
-	}
-	if (up != null)
-	{
-		up.set([cr * sp * cy + sr * sy,
-		        cr * sp * sy - sr * cy,
-		        cr * cp]);
-	}
+    try {
+        if (forward != null)
+        {
+            forward.set([cp * cy, cp * sy, -sp]);
+        }
+        if (right != null)
+        {
+            right.set([cr * sy - sr * sp * cy,
+                      -sr * sp * sy - cr * cy,
+                      -sr * cp]);
+        }
+        if (up != null)
+        {
+            up.set([cr * sp * cy + sr * sy,
+                    cr * sp * sy - sr * cy,
+                    cr * cp]);
+        }
+    } catch(e) {
+        console.log(e);
+        console.log("Caller was " + Vec.AngleVectors.caller.name);
+    }
 };
 
 Vec.DotProduct = function(v1, v2)
