@@ -69,12 +69,13 @@ mFloat32Array = function(param, off, ln){
     return res;
 };
 mfree = function(array){
-    const $M = memory;
-    const $free = $M.free;
     $free(array.byteOffset);
 };
 
 freetofree = function(){
+   const $M = memory;
+   const $free = $M.free;
+ //  console.log("call to freetofree. To free "+tofree.length+" total arrays.");//NFP
    for(var i=0; i<tofree.length; i++)
        $free(tofree[i])
    tofree = [];

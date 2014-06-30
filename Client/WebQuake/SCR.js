@@ -350,7 +350,7 @@ SCR.UpdateScreen = function()
 	}
 
 	gl.disable(gl.BLEND);
-
+    freetofree();
 	if (SCR.screenshot === true)
 	{
 		SCR.screenshot = false;
