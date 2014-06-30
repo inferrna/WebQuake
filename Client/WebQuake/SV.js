@@ -2451,7 +2451,7 @@ SV.ClipMoveToEntity = function(ent, start, mins, maxs, end)
 		endpos: new Float32Array(end),
 		plane: {normal: new Float32Array([0.0, 0.0, 0.0]), dist: 0.0}
 	};
-	var offset = [];
+	var offset = new Float32Array(3);
 	var hull = SV.HullForEntity(ent, mins, maxs, offset);
 	SV.RecursiveHullCheck(hull, hull.firstclipnode, 0.0, 1.0,
 		new Float32Array([start[0] - offset[0], start[1] - offset[1], start[2] - offset[2]]),
@@ -2523,6 +2523,7 @@ SV.ClipToLinks = function(node, clip)
 
 SV.Move = function(start, mins, maxs, end, type, passedict)
 {
+    console.log("SV.Move");//NFP
 	var clip = {
 		trace: SV.ClipMoveToEntity(SV.server.edicts[0], start, mins, maxs, end),
 		start: start,

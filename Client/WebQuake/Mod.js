@@ -251,6 +251,8 @@ Mod.LoadTextures = function(buf)
 	}
 
 	var j, tx2, num, name;
+    console.log("nummiptex");//NFP
+    console.log(nummiptex);//NFP
 	for (i = 0; i < nummiptex; ++i)
 	{
 		tx = Mod.loadmodel.textures[i];
@@ -259,9 +261,9 @@ Mod.LoadTextures = function(buf)
 		if (tx.name.charCodeAt(1) !== 48)
 			continue;
 		name = tx.name.substring(2);
-		tx.anims = new Uint8Array(64);
+		tx.anims = [];
         tx.anims[0] = i;
-		tx.alternate_anims = new Uint8Array(64);
+		tx.alternate_anims = [];
 		for (j = 0; j < nummiptex; ++j)
 		{
 			tx2 = Mod.loadmodel.textures[j];
