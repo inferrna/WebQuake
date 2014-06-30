@@ -1479,7 +1479,7 @@ SV.CheckWater = function(ent)
 
 SV.WallFriction = function(ent, trace)
 {
-	var forward = [];
+	var forward = new Float32Array(3);
 	Vec.AngleVectors(ED.Vector(ent, PR.entvars.v_angle), forward);
 	var normal = trace.plane.normal;
 	var d = normal[0] * forward[0] + normal[1] * forward[1] + normal[2] * forward[2] + 0.5;
@@ -1840,7 +1840,7 @@ SV.Accelerate = function(wishvel, air)
 SV.WaterMove = function()
 {
 	var ent = SV.player, cmd = Host.client.cmd;
-	var forward = [], right = [];
+	var forward = new Float32Array(3), right = new Float32Array(3);
 	Vec.AngleVectors(ED.Vector(ent, PR.entvars.v_angle), forward, right);
 	var wishvel = new Float32Array([
 		forward[0] * cmd.forwardmove + right[0] * cmd.sidemove,

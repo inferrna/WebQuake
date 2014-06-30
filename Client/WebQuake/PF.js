@@ -24,8 +24,8 @@ PF.objerror = function()
 
 PF.makevectors = function()
 {
-	var forward = [], right = [], up = [];
-	Vec.AngleVectors([PR.globals_float[4], PR.globals_float[5], PR.globals_float[6]], forward, right, up);
+	var forward = new Float32Array(3), right = new Float32Array(3), up = new Float32Array(3);
+	Vec.AngleVectors(new Float32Array([PR.globals_float[4], PR.globals_float[5], PR.globals_float[6]]), forward, right, up);
 	var i;
 	for (i = 0; i <= 2; ++i)
 	{
