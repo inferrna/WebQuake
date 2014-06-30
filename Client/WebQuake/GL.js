@@ -112,8 +112,8 @@ function AsmFuncs(stdlib, env, heap) {
             return +0.0;
         }
         res32f[(v+0)<<2>>2] = +res32f[(v+0)<<2>>2]/length;
-        res32f[(v+1)<<2>>2] = +res32f[(v+0)<<2>>2]/length;
-        res32f[(v+2)<<2>>2] = +res32f[(v+0)<<2>>2]/length;
+        res32f[(v+1)<<2>>2] = +res32f[(v+1)<<2>>2]/length;
+        res32f[(v+2)<<2>>2] = +res32f[(v+2)<<2>>2]/length;
         return +length;
     }
     return {
