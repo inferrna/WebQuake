@@ -7,6 +7,7 @@ Vec.v9d = mFloat32Array(9);
 Vec.v3a = mFloat32Array(3);
 Vec.v3b = mFloat32Array(3);
 Vec.v3c = mFloat32Array(3);
+Vec.v3d = mFloat32Array(3);
 
 Vec.origin = mFloat32Array([0.0, 0.0, 0.0]);
 
@@ -18,7 +19,7 @@ Vec.Perpendicular = function(v, dst)
 Vec.RotatePointAroundVector = function(dir, point, degrees)
 {
     //console.log("Call to Vec.RotatePointAroundVector");
-	var r = mFloat32Array(3);
+	var r = Vec.v3d;
     Vec.Perpendicular(dir, r);
 	var up = Vec.CrossProduct(r, dir);
 	var m = Vec.v9a; m.set([
