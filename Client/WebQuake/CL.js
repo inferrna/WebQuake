@@ -559,7 +559,7 @@ CL.ClearState = function()
 		mviewangles: [new Float32Array([0.0, 0.0, 0.0]), new Float32Array([0.0, 0.0, 0.0])],
 		viewangles: new Float32Array([0.0, 0.0, 0.0]),
 		mvelocity: [new Float32Array([0.0, 0.0, 0.0]), new Float32Array([0.0, 0.0, 0.0])],
-		velocity: new Float32Array([0.0, 0.0, 0.0]),
+		velocity: mFloat32Array([0.0, 0.0, 0.0]),
 		punchangle: new Float32Array([0.0, 0.0, 0.0]),
 		idealpitch: 0.0,
 		pitchvel: 0.0,
@@ -736,7 +736,7 @@ CL.AllocDlight = function(key)
 		if (dl == null)
 			dl = CL.dlights[0];
 	}
-	dl.origin = new Float32Array([0.0, 0.0, 0.0]);
+	dl.origin = mFloat32Array([0.0, 0.0, 0.0]);
 	dl.radius = 0.0;
 	dl.die = 0.0;
 	dl.decay = 0.0;
@@ -1341,8 +1341,8 @@ CL.ParseStatic = function()
 	ent.frame = ent.baseline.frame;
 	ent.skinnum = ent.baseline.skin;
 	ent.effects = ent.baseline.effects;
-	ent.origin = new Float32Array(ent.baseline.origin);
-	ent.angles = new Float32Array(ent.baseline.angles);
+	ent.origin = mFloat32Array(ent.baseline.origin);
+	ent.angles = mFloat32Array(ent.baseline.angles);
 	R.currententity = ent;
 	R.emins.set([ent.origin[0] + ent.model.mins[0], ent.origin[1] + ent.model.mins[1], ent.origin[2] + ent.model.mins[2]]);
 	R.emaxs.set([ent.origin[0] + ent.model.maxs[0], ent.origin[1] + ent.model.maxs[1], ent.origin[2] + ent.model.maxs[2]]);
@@ -1681,7 +1681,7 @@ CL.NewTempEntity = function()
 CL.UpdateTEnts = function()
 {
 	CL.num_temp_entities = 0;
-	var i, b, dist = new Float32Array(3), yaw, pitch, org = new Float32Array(3), d, ent;
+	var i, b, dist = mFloat32Array(3), yaw, pitch, org = mFloat32Array(3), d, ent;
 	for (i = 0; i <= 23; ++i)
 	{
 		b = CL.beams[i];
@@ -1717,9 +1717,9 @@ CL.UpdateTEnts = function()
 		for (; d > 0.0; )
 		{
 			ent = CL.NewTempEntity();
-			ent.origin = new Float32Array(org);
+			ent.origin = mFloat32Array(org);
 			ent.model = b.model;
-			ent.angles = new Float32Array([pitch, yaw, Math.random() * 360.0]);
+			ent.angles = mFloat32Array([pitch, yaw, Math.random() * 360.0]);
 			org[0] += dist[0] * 30.0;
 			org[1] += dist[1] * 30.0;
 			org[2] += dist[2] * 30.0;

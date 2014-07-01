@@ -162,7 +162,7 @@ S.Spatialize = function(ch)
 		return;
 	}
 
-	var source = new Float32Array([
+	var source = mFloat32Array([
 		ch.origin[0] - S.listener_origin[0],
 		ch.origin[1] - S.listener_origin[1],
 		ch.origin[2] - S.listener_origin[2]

@@ -270,7 +270,7 @@ R.LightPoint = function(p)
 	if (CL.state.worldmodel.lightdata == null)
 		return 255;
     R.rlpc = (new Date).getMilliseconds();
-	var r = R.RecursiveLightPoint(CL.state.worldmodel.nodes[0], p, new Float32Array([p[0], p[1], p[2] - 2048.0]));
+	var r = R.RecursiveLightPoint(CL.state.worldmodel.nodes[0], p, mFloat32Array([p[0], p[1], p[2] - 2048.0]));
 	if (r === -1)
 		return 0;
 	return r;
@@ -512,12 +512,12 @@ R.DrawAliasModel = function(e)
 	var clmodel = e.model;
 
 	if (R.CullBox(
-		new Float32Array([
+		mFloat32Array([
 			e.origin[0] - clmodel.boundingradius,
 			e.origin[1] - clmodel.boundingradius,
 			e.origin[2] - clmodel.boundingradius
 		]),
-		new Float32Array([
+		mFloat32Array([
 			e.origin[0] + clmodel.boundingradius,
 			e.origin[1] + clmodel.boundingradius,
 			e.origin[2] + clmodel.boundingradius
@@ -570,7 +570,7 @@ R.DrawAliasModel = function(e)
 	gl.uniform1f(program.uAmbientLight, ambientlight * 0.0078125);
 	gl.uniform1f(program.uShadeLight, shadelight * 0.0078125);
 
-	var forward = new Float32Array(3), right = new Float32Array(3), up = new Float32Array(3);
+	var forward = mFloat32Array(3), right = mFloat32Array(3), up = mFloat32Array(3);
 	Vec.AngleVectors(e.angles, forward, right, up);
     R.v3a.set([-1.0, 0.0, 0.0]);
     right.set([
@@ -1526,7 +1526,7 @@ R.TeleportSplash = function(org)
 R.tracercount = 0;
 R.RocketTrail = function(start, end, type)
 {
-	var vec = new Float32Array([end[0] - start[0], end[1] - start[1], end[2] - start[2]]);
+	var vec = mFloat32Array([end[0] - start[0], end[1] - start[1], end[2] - start[2]]);
 	var len = Math.sqrt(Vec.DotProduct(vec, vec));
 	if (len === 0.0)
 		return;
@@ -1728,7 +1728,7 @@ R.AddDynamicLights = function(surf)
 	var size = smax * tmax;
 	var tex = CL.state.worldmodel.texinfo[surf.texinfo];
 	var i, light, s, t;
-	var dist, rad, minlight, impact = new Float32Array(3), local = new Float32Array(2), sd, td;
+	var dist, rad, minlight, impact = mFloat32Array(3), local = mFloat32Array(2), sd, td;
 
 	var blocklights = new Uint32Array(size);
 	//for (i = 0; i < size; ++i)
@@ -1962,7 +1962,7 @@ R.RecursiveWorldNode = function(node)
               node = node.children ? node.children[1] : null;
           }
     }
-  console.log("toprocess "+toprocess.length);
+  //console.log("toprocess "+toprocess.length);
   toprocess.forEach(function(nd){
         nd.visframe = R.visframecount;
         if (nd.skychain !== nd.waterchain) R.drawsky = true;
@@ -2127,7 +2127,7 @@ R.BuildSurfaceDisplayList = function(fa)
 	fa.verts = [];
 	if (fa.numedges <= 2)
 		return;
-	var i, index, vec = new Float32Array(3), vert, s, t;
+	var i, index, vec = mFloat32Array(3), vert, s, t;
 	var texinfo = R.currentmodel.texinfo[fa.texinfo];
 	var texture = R.currentmodel.textures[texinfo.texture];
 	for (i = 0; i < fa.numedges; ++i)
@@ -2220,8 +2220,8 @@ R.WarpScreen = function()
 
 R.MakeSky = function()
 {
-	var sin = new Float32Array([0.0, 0.19509, 0.382683, 0.55557, 0.707107, 0.831470, 0.92388, 0.980785, 1.0]);
-	var vecs = new Float32Array(1024), i, j;
+	var sin = mFloat32Array([0.0, 0.19509, 0.382683, 0.55557, 0.707107, 0.831470, 0.92388, 0.980785, 1.0]);
+	var vecs = mFloat32Array(1024), i, j;
     var vecslen = 0;
 
 	for (i = 0; i < 7; i += 2)

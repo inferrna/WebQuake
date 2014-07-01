@@ -2122,7 +2122,7 @@ SV.InitBoxHull = function()
 		plane = {};
 		SV.box_planes[i] = plane;
 		plane.type = i >> 1;
-		plane.normal = new Float32Array([0.0, 0.0, 0.0]);
+		plane.normal = mFloat32Array([0.0, 0.0, 0.0]);
 		plane.normal[i >> 1] = 1.0;
 		plane.dist = 0.0;
 	}
@@ -2414,12 +2414,12 @@ SV.RecursiveHullCheck = function(hull, num, p1f, p2f, p1, p2, trace)
 
 	if (side === 0)
 	{
-		trace.plane.normal = new Float32Array(plane.normal);
+		trace.plane.normal = mFloat32Array(plane.normal);
 		trace.plane.dist = plane.dist;
 	}
 	else
 	{
-		trace.plane.normal = new Float32Array([-plane.normal[0], -plane.normal[1], -plane.normal[2]]);
+		trace.plane.normal = mFloat32Array([-plane.normal[0], -plane.normal[1], -plane.normal[2]]);
 		trace.plane.dist = -plane.dist;
 	}
 
@@ -2523,7 +2523,7 @@ SV.ClipToLinks = function(node, clip)
 
 SV.Move = function(start, mins, maxs, end, type, passedict)
 {
-    console.log("SV.Move");//NFP
+    //console.log("SV.Move");//NFP
 	var clip = {
 		trace: SV.ClipMoveToEntity(SV.server.edicts[0], start, mins, maxs, end),
 		start: start,

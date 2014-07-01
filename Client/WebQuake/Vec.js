@@ -41,13 +41,7 @@ Vec.RotatePointAroundVector = function(dir, point, degrees)
         Vec.DotProduct(rot, point),
         Vec.DotProduct(rot.subarray(3<<2, 3), point),
         Vec.DotProduct(rot.subarray(6<<2, 3), point),
-		/*rot[0] * point[0] + rot[1] * point[1] + rot[2] * point[2],
-		rot[3] * point[0] + rot[4] * point[1] + rot[5] * point[2],
-		rot[6] * point[0] + rot[7] * point[1] + rot[8] * point[2]*/
 	]);
-    //mfree(up);
-    //mfree(r);
-    //mfree(rot);
     return res;
 };
 
@@ -146,11 +140,8 @@ Vec.AngleVectors = function(angles, forward, right, up)
 
 Vec.DotProduct = function(v1, v2)
 {
-    /*(new Float64Array(window['mybuffer'], 0, 3)).set(v1.subarray(0,3));
-    (new Float64Array(window['mybuffer'], 3<<3, 3)).set(v2.subarray(0,3));
-    return window['asm_funcs'].dot_product();*/
-    //return GL.datav.getFloat32(6<<2);
-	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+    return window['asm_funcs'].dot_product(v1.byteOffset>>2, v2.byteOffset>>2);
+	//return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 };
 
 Vec.Copy = function(v1, v2)

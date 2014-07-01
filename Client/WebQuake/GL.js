@@ -50,7 +50,6 @@ function AsmFuncs(stdlib, env, heap) {
     function dot_product(v1, v2){
         v1 = v1|0;
         v2 = v2|0;
-        //return  +((+res32f[0])*(+res32f[3])+(+res32f[1])*(+res32f[4])+(+res32f[2])*(+res32f[5])) ;
         return  +((+res32f[(v1+0)<<2>>2])*(+res32f[(v2+0)<<2>>2])
                  +(+res32f[(v1+1)<<2>>2])*(+res32f[(v2+1)<<2>>2])
                  +(+res32f[(v1+2)<<2>>2])*(+res32f[(v2+2)<<2>>2]));

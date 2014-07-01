@@ -350,7 +350,7 @@ Mod.LoadVertexes = function(buf)
 	var i;
 	for (i = 0; i < count; ++i)
 	{
-		Mod.loadmodel.vertexes[i] = new Float32Array([view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true)]);
+		Mod.loadmodel.vertexes[i] = mFloat32Array([view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true)]);
 		fileofs += 12;
 	}
 };
@@ -457,8 +457,8 @@ Mod.LoadTexinfo = function(buf)
 	{
 		out = {
 			vecs: [
-				new Float32Array([view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true), view.getFloat32(fileofs + 12, true)]),
-				new Float32Array([view.getFloat32(fileofs + 16, true), view.getFloat32(fileofs + 20, true), view.getFloat32(fileofs + 24, true), view.getFloat32(fileofs + 28, true)])
+				mFloat32Array([view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true), view.getFloat32(fileofs + 12, true)]),
+				mFloat32Array([view.getFloat32(fileofs + 16, true), view.getFloat32(fileofs + 20, true), view.getFloat32(fileofs + 24, true), view.getFloat32(fileofs + 28, true)])
 			],
 			texture: view.getUint32(fileofs + 32, true),
 			flags: view.getUint32(fileofs + 36, true)
