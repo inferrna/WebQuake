@@ -1931,7 +1931,7 @@ R.DrawBrushModel = function(e)
 
 R.RecursiveWorldNode = function(node)
 {
-	if (node.contents === Mod.contents.solid)
+	/*if (node.contents === Mod.contents.solid)
 		return;
 	if (node.contents < 0)
 	{
@@ -1943,7 +1943,30 @@ R.RecursiveWorldNode = function(node)
 		return;
 	}
 	R.RecursiveWorldNode(node.children[0]);
-	R.RecursiveWorldNode(node.children[1]);
+	R.RecursiveWorldNode(node.children[1]);*/
+
+
+  var parentStack = [];
+  var toprocess = [];
+  while (parentStack.length || node)
+    if(node && node.contents !== Mod.contents.solid){
+      parentStack.push(node);
+      node = node.children ? node.children[0] : null;
+    } else {
+      node = parentStack.pop();
+      if(node)
+          if(node.contents < 0){
+              if(node.markvisframe === R.visframecount) toprocess.push(node);
+              node = null;
+          } else {
+              node = node.children ? node.children[1] : null;
+          }
+    }
+  console.log("toprocess "+toprocess.length);
+  toprocess.forEach(function(nd){
+        nd.visframe = R.visframecount;
+        if (nd.skychain !== nd.waterchain) R.drawsky = true;
+    });
 };
 
 R.DrawWorld = function()
