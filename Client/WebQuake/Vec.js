@@ -61,7 +61,9 @@ Vec.BoxOnPlaneSide = function(emins, emaxs, p)
 			return 2;
 		return 3;
 	}
-	var dist1, dist2;
+    return window['asm_funcs'].box_onplane(emins.byteOffset>>2, emaxs.byteOffset>>2,
+                                           p.normal.byteOffset>>2, p.signbits, p.dist);
+	/*var dist1, dist2;
 	switch (p.signbits)
 	{
 	case 0:
@@ -104,7 +106,7 @@ Vec.BoxOnPlaneSide = function(emins, emaxs, p)
 		sides = 1;
 	if (dist2 < p.dist)
 		sides += 2;
-	return sides;
+	return sides;*/
 };
 
 Vec.AngleVectors = function(angles, forward, right, up)

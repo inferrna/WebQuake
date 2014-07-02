@@ -90,78 +90,82 @@ function AsmFuncs(stdlib, env, heap) {
         mx = mx|0;
         nl = nl|0;
         sb = sb|0;
-        ds = ds|0;
+        ds = +ds;
         var dist1 = 0.0;
         var dist2 = 0.0;
-        var sides = 2;
+        var sides = 0;
         switch (sb|0)
         {
         case 0:
-            res32f[(ds+0)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
-            res32f[(ds+1)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
+            dist1  = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
+                   + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
+                   + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
+            dist2  = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
+                   + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
+                   + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
             break;                                                                                         
         case 1:                                                                                            
-            res32f[(ds+0)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
-            res32f[(ds+1)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
-            break;                                                                                    
-        case 2:                                                                                       
-            res32f[(ds+0)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
-            res32f[(ds+1)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
-            break;                                                                                    
-        case 3:                                                                                       
-            res32f[(ds+0)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
-            res32f[(ds+1)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
-            break;                                                                                   
-        case 4:                                                                                      
-            res32f[(ds+0)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
-            res32f[(ds+1)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
-            break;                                                                                   
-        case 5:                                                                                       
-            res32f[(ds+0)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
-            res32f[(ds+1)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
-            break;                                                                                  
-        case 6:                                                                                      
-            res32f[(ds+0)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
-            res32f[(ds+1)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
-            break;                                                                                  
-        case 7:                                                                                     
-            res32f[(ds+0)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
-            res32f[(ds+1)<<2>>2] = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
-                                 + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
-                                 + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
+            dist1 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
+            dist2 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
+            break;                                                              
+        case 2:                                                                 
+            dist1 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
+            dist2 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
+            break;                                                              
+        case 3:                                                                 
+            dist1 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
+            dist2 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
+            break;                                                             
+        case 4:                                                                
+            dist1 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
+            dist2 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
+            break;                                                             
+        case 5:                                                                 
+            dist1 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
+            dist2 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
+            break;                                                            
+        case 6:                                                                
+            dist1 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
+            dist2 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
+            break;                                                            
+        case 7:                                                               
+            dist1 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(ms+0)<<2>>2])
+                  + +(res32f[(nl+1)<<2>>2]) * +(res32f[(ms+1)<<2>>2])
+                  + +(res32f[(nl+2)<<2>>2]) * +(res32f[(ms+2)<<2>>2]);
+            dist2 = +(res32f[(nl+0)<<2>>2]) * +(res32f[(mx+0)<<2>>2])
+                                        + +(res32f[(nl+1)<<2>>2]) * +(res32f[(mx+1)<<2>>2])
+                                        + +(res32f[(nl+2)<<2>>2]) * +(res32f[(mx+2)<<2>>2]);
             break;
         }
-
+        if (dist1 >= ds)
+            sides = 1;
+        if (dist2 < ds)
+            sides = sides|0 + 2;
+        return +~sides;
     }
     function concat_rotations(m1, m2, r){
         m1 = m1|0;
@@ -232,7 +236,8 @@ function AsmFuncs(stdlib, env, heap) {
             dot_product: dot_product,
             concat_rotations: concat_rotations,
             normalize: normalize,
-            perpendicular: perpendicular
+            perpendicular: perpendicular,
+            box_onplane: box_onplane
             };
 }
 
