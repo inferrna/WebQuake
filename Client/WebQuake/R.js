@@ -1931,21 +1931,6 @@ R.DrawBrushModel = function(e)
 
 R.RecursiveWorldNode = function(node)
 {
-	/*if (node.contents === Mod.contents.solid)
-		return;
-	if (node.contents < 0)
-	{
-		if (node.markvisframe !== R.visframecount)
-			return;
-		node.visframe = R.visframecount;
-		if (node.skychain !== node.waterchain)
-			R.drawsky = true;
-		return;
-	}
-	R.RecursiveWorldNode(node.children[0]);
-	R.RecursiveWorldNode(node.children[1]);*/
-
-
   var parentStack = [];
   var toprocess = [];
   while (parentStack.length || node)
@@ -1962,7 +1947,6 @@ R.RecursiveWorldNode = function(node)
               node = node.children ? node.children[1] : null;
           }
     }
-  //console.log("toprocess "+toprocess.length);
   toprocess.forEach(function(nd){
         nd.visframe = R.visframecount;
         if (nd.skychain !== nd.waterchain) R.drawsky = true;
