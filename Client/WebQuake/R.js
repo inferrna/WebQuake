@@ -267,19 +267,25 @@ R.RecursiveLightPoint = function(node, start, end)
 
 R.LightPoint = function(p)
 {
+/*
+    console.log("CL.state.worldmodel.faces.length=="+CL.state.worldmodel.faces.length);
+    console.log("CL.state.worldmodel.texinfo.length=="+CL.state.worldmodel.texinfo.length);
+
     var vecss = mUint32Array(2*CL.state.worldmodel.texinfo.length); //double-dim array of tex.vecs
     CL.state.worldmodel.texinfo.forEach(function(x, i){vecss[i*2+0] = x.vecs[0].byteOffset>>2; 
                                                        vecss[i*2+1] = x.vecs[1].byteOffset>>2;});
     var texmins =  mFloat32Array(2*CL.state.worldmodel.faces.length); //double-dim array of surf.texturemins
     var extents =  mFloat32Array(2*CL.state.worldmodel.faces.length); //double-dim array of surf.extents
     var texinfos = mUint32Array(CL.state.worldmodel.faces.length);    //array of pointers to vecss (surf.texinfo)
+    var lightofs = mUint32Array(CL.state.worldmodel.faces.length);    //array of lightof
     CL.state.worldmodel.faces.forEach(function(x, i){texinfos[i] = x.texinfo;
+                                                     lightofs[i] = x.lightof;
                                                      texmins[i*2+0] = x.texturemins[0];
                                                      texmins[i*2+1] = x.texturemins[1];
                                                      extents[i*2+0] = x.extents[0];
                                                      extents[i*2+1] = x.extents[1];
                                                     });
-
+*/
 
 	if (CL.state.worldmodel.lightdata == null)
 		return 255;
