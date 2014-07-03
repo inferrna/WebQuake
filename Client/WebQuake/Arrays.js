@@ -1,4 +1,27 @@
 var tofree = [];
+mUint32Array = function(param, off, ln){
+    const $M = memory;
+    const $malloc = $M.malloc, $U4 = $M.U4;
+    if(param instanceof Array || param instanceof Uint8Array || param instanceof Uint16Array || param instanceof Uint32Array ){
+        //console.log("new Float32Array called on array "+param.length);
+        this._len = param.length;
+        this._addr =  $malloc((4 * this._len|0)>>>0) >> 2;
+        var res = $U4.subarray(this._addr, this._addr+this._len);
+        res.set(param);
+    } else if(typeof param === 'number'){
+        //console.log("new Float32Array called on number");
+        this._len = param;
+        this._addr =  $malloc((4 * param|0)>>>0) >> 2;
+        var res = $U4.subarray(this._addr, this._addr+this._len);
+    } else if(param instanceof ArrayBuffer){
+        if(off || ln) var res = new Uint32Array(param, off, ln);
+        else          var res = new Uint32Array(param);
+    }
+    if(this._addr && mUint32Array.caller) 
+        tofree.push(this._addr << 1);
+    //console.log(this._addr);
+    return res;
+};
 mUint16Array = function(param, off, ln){
     const $M = memory;
     const $malloc = $M.malloc, $U2 = $M.U2;

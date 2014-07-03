@@ -229,6 +229,8 @@ R.RecursiveLightPoint = function(node, start, end)
 		if ((surf.sky === true) || (surf.turbulent === true))
 			continue;
 
+		if (surf.lightofs === 0)
+			return 0;
 		tex = CL.state.worldmodel.texinfo[surf.texinfo];
 
 		s = Vec.DotProduct(mid, tex.vecs[0]) + tex.vecs[0][3];
@@ -238,8 +240,6 @@ R.RecursiveLightPoint = function(node, start, end)
 		if (t < surf.texturemins[1])
 			continue;
 
-		if (surf.lightofs === 0)
-			return 0;
 		ds = s - surf.texturemins[0];
 		dt = t - surf.texturemins[1];
 		if ((ds > surf.extents[0]) || (dt > surf.extents[1]))
@@ -267,6 +267,20 @@ R.RecursiveLightPoint = function(node, start, end)
 
 R.LightPoint = function(p)
 {
+    var vecss = mUint32Array(2*CL.state.worldmodel.texinfo.length); //double-dim array of tex.vecs
+    CL.state.worldmodel.texinfo.forEach(function(x, i){vecss[i*2+0] = x.vecs[0].byteOffset>>2; 
+                                                       vecss[i*2+1] = x.vecs[1].byteOffset>>2;});
+    var texmins =  mFloat32Array(2*CL.state.worldmodel.faces.length); //double-dim array of surf.texturemins
+    var extents =  mFloat32Array(2*CL.state.worldmodel.faces.length); //double-dim array of surf.extents
+    var texinfos = mUint32Array(CL.state.worldmodel.faces.length);    //array of pointers to vecss (surf.texinfo)
+    CL.state.worldmodel.faces.forEach(function(x, i){texinfos[i] = x.texinfo;
+                                                     texmins[i*2+0] = x.texturemins[0];
+                                                     texmins[i*2+1] = x.texturemins[1];
+                                                     extents[i*2+0] = x.extents[0];
+                                                     extents[i*2+1] = x.extents[1];
+                                                    });
+
+
 	if (CL.state.worldmodel.lightdata == null)
 		return 255;
     R.rlpc = (new Date).getMilliseconds();
