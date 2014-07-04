@@ -235,7 +235,9 @@ R.RecursiveLightPoint = function(node, start, end)
 		tex = CL.state.worldmodel.texinfo[surf.texinfo];
         ti = memory.U4[CL.state.worldmodel.faces_texinfos[j]];
 
-		s = Vec.DotProduct(mid, memory.F4[CL.state.worldmodel.texinfo_vecs0[ti]]) + memory.F4[CL.state.worldmodel.texinfo_vecs0[ti]+3];
+		s = window['asm_funcs'].dot_product(mid.byteOffset>>2, CL.state.worldmodel.texinfo_vecs0[ti])
+          + memory.F4[CL.state.worldmodel.texinfo_vecs0[ti]+3];
+
 		if (s < memory.I4[CL.state.worldmodel.faces_texmins[j]])//surf.texturemins[0])
 			continue;
 		t = Vec.DotProduct(mid, tex.vecs[1]) + tex.vecs[1][3];
