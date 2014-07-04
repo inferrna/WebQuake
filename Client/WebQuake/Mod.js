@@ -452,17 +452,21 @@ Mod.LoadTexinfo = function(buf)
 		Sys.Error('Mod.LoadTexinfo: funny lump size in ' + Mod.loadmodel.name);
 	var count = filelen / 40;
 	Mod.loadmodel.texinfo = [];
+    Mod.loadmodel.texinfo_vecs0 = mFloat32Arrayp(count);
+    Mod.loadmodel.texinfo_vecs1 = mFloat32Arrayp(count);
 	var i, out;
 	for (i = 0; i < count; ++i)
 	{
 		out = {
 			vecs: [
-				mFloat32Array([view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true), view.getFloat32(fileofs + 12, true)]),
-				mFloat32Array([view.getFloat32(fileofs + 16, true), view.getFloat32(fileofs + 20, true), view.getFloat32(fileofs + 24, true), view.getFloat32(fileofs + 28, true)])
+				mFloat32Arrayp([view.getFloat32(fileofs, true), view.getFloat32(fileofs + 4, true), view.getFloat32(fileofs + 8, true), view.getFloat32(fileofs + 12, true)]),
+				mFloat32Arrayp([view.getFloat32(fileofs + 16, true), view.getFloat32(fileofs + 20, true), view.getFloat32(fileofs + 24, true), view.getFloat32(fileofs + 28, true)])
 			],
 			texture: view.getUint32(fileofs + 32, true),
 			flags: view.getUint32(fileofs + 36, true)
 		};
+        Mod.loadmodel.texinfo_vecs0[i] = out.vecs[0].byteOffset>>2;
+        Mod.loadmodel.texinfo_vecs1[i] = out.vecs[1].byteOffset>>2;
 		if (out.texture >= Mod.loadmodel.textures.length)
 		{
 			out.texture = Mod.loadmodel.textures.length - 1;
@@ -475,6 +479,7 @@ Mod.LoadTexinfo = function(buf)
 
 Mod.LoadFaces = function(buf)
 {
+    console.log("Call Mod.LoadFaces");
 	var view = new DataView(buf);
 	var fileofs = view.getUint32((Mod.lump.faces << 3) + 4, true);
 	var filelen = view.getUint32((Mod.lump.faces << 3) + 8, true);
@@ -484,7 +489,11 @@ Mod.LoadFaces = function(buf)
 	Mod.loadmodel.firstface = 0;
 	Mod.loadmodel.numfaces = count;
 	Mod.loadmodel.faces = [];
-	var i, styles, out;
+    Mod.loadmodel.faces_texmins = mUint32Arrayp(count);
+    Mod.loadmodel.faces_extents = mUint32Arrayp(count);
+    Mod.loadmodel.faces_texinfos = mUint32Arrayp(count);
+    Mod.loadmodel.faces_lightofs = mUint32Arrayp(count);
+    var i, styles, out;
 	var mins, maxs, j, e, tex, v, val;
 	for (i = 0; i < count; ++i)
 	{
@@ -507,8 +516,8 @@ Mod.LoadFaces = function(buf)
 		if (styles[3] !== 255)
 			out.styles[3] = styles[3];
 
-		mins = [999999, 999999];
-		maxs = [-99999, -99999];
+		mins = mFloat32Array([999999, 999999]);
+		maxs = mFloat32Array([-99999, -99999]);
 		tex = Mod.loadmodel.texinfo[out.texinfo];
 		out.texture = tex.texture;
 		for (j = 0; j < out.numedges; ++j)
@@ -529,9 +538,12 @@ Mod.LoadFaces = function(buf)
 			if (val > maxs[1])
 				maxs[1] = val;
 		}
-		out.texturemins = [Math.floor(mins[0] / 16) * 16, Math.floor(mins[1] / 16) * 16];
-		out.extents = [Math.ceil(maxs[0] / 16) * 16 - out.texturemins[0], Math.ceil(maxs[1] / 16) * 16 - out.texturemins[1]];
-
+		out.texturemins = mInt32Arrayp([Math.floor(mins[0] / 16) * 16, Math.floor(mins[1] / 16) * 16]);
+		out.extents = mInt32Arrayp([Math.ceil(maxs[0] / 16) * 16 - out.texturemins[0], Math.ceil(maxs[1] / 16) * 16 - out.texturemins[1]]);
+        Mod.loadmodel.faces_texmins[i] = out.texturemins.byteOffset>>2;
+        Mod.loadmodel.faces_extents[i] = out.extents.byteOffset>>2;
+        Mod.loadmodel.faces_lightofs[i] = out.lightofs;
+        Mod.loadmodel.faces_texinfos[i] = out.texinfo;
 		if (Mod.loadmodel.textures[tex.texture].turbulent === true)
 			out.turbulent = true;
 		else if (Mod.loadmodel.textures[tex.texture].sky === true)

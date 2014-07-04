@@ -222,27 +222,29 @@ R.RecursiveLightPoint = function(node, start, end)
 	if ((back < 0) === side)
 		return -1;
 
-	var i, surf, tex, s, t, ds, dt, lightmap, size, maps;
+	var i, ti, j, surf, tex, s, t, ds, dt, lightmap, size, maps;
 	for (i = 0; i < node.numfaces; ++i)
 	{
-		surf = CL.state.worldmodel.faces[node.firstface + i];
+        j = node.firstface + i;
+		surf = CL.state.worldmodel.faces[j];
 		if ((surf.sky === true) || (surf.turbulent === true))
 			continue;
 
 		if (surf.lightofs === 0)
 			return 0;
 		tex = CL.state.worldmodel.texinfo[surf.texinfo];
+        ti = memory.U4[CL.state.worldmodel.faces_texinfos[j]];
 
-		s = Vec.DotProduct(mid, tex.vecs[0]) + tex.vecs[0][3];
-		if (s < surf.texturemins[0])
+		s = Vec.DotProduct(mid, memory.F4[CL.state.worldmodel.texinfo_vecs0[ti]]) + memory.F4[CL.state.worldmodel.texinfo_vecs0[ti]+3];
+		if (s < memory.I4[CL.state.worldmodel.faces_texmins[j]])//surf.texturemins[0])
 			continue;
 		t = Vec.DotProduct(mid, tex.vecs[1]) + tex.vecs[1][3];
-		if (t < surf.texturemins[1])
+		if (t < memory.I4[CL.state.worldmodel.faces_texmins[j]+1])//surf.texturemins[0])
 			continue;
 
-		ds = s - surf.texturemins[0];
-		dt = t - surf.texturemins[1];
-		if ((ds > surf.extents[0]) || (dt > surf.extents[1]))
+		ds = s - memory.I4[CL.state.worldmodel.faces_texmins[j]];
+		dt = t - memory.I4[CL.state.worldmodel.faces_texmins[j]+1];
+		if ((ds > memory.I4[CL.state.worldmodel.faces_extents[j]]) || (dt > memory.I4[CL.state.worldmodel.faces_extents[j]+1]))
 			continue;
 
 		ds >>= 4;
@@ -252,9 +254,9 @@ R.RecursiveLightPoint = function(node, start, end)
 		if (lightmap === 0)
 			return 0;
 
-		lightmap += dt * ((surf.extents[0] >> 4) + 1) + ds;
+		lightmap += dt * ((memory.I4[CL.state.worldmodel.faces_extents[j]] >> 4) + 1) + ds;
 		r = 0;
-		size = ((surf.extents[0] >> 4) + 1) * ((surf.extents[1] >> 4) + 1);
+		size = ((memory.I4[CL.state.worldmodel.faces_extents[j]] >> 4) + 1) * ((memory.I4[CL.state.worldmodel.faces_extents[j]+1] >> 4) + 1);
 		for (maps = 0; maps < surf.styles.length; ++maps)
 		{
 			r += CL.state.worldmodel.lightdata[lightmap] * R.lightstylevalue[surf.styles[maps]] * 22;
@@ -286,7 +288,12 @@ R.LightPoint = function(p)
                                                      extents[i*2+1] = x.extents[1];
                                                     });
 */
-
+    /*console.log("CL.state.worldmodel.faces/CL.state.worldmodel.faces_texmins");
+    console.log(CL.state.worldmodel.faces[5].texturemins[1]);
+    console.log(memory.F4[CL.state.worldmodel.faces_texmins[5]+1]);
+    console.log("CL.state.worldmodel.texinfo.vecs/CL.state.worldmodel.texinfo_vecs1");
+    console.log(CL.state.worldmodel.texinfo[5].vecs[0][3]);
+    console.log(memory.F4[CL.state.worldmodel.texinfo_vecs0[5]+3]);*/
 	if (CL.state.worldmodel.lightdata == null)
 		return 255;
     R.rlpc = (new Date).getMilliseconds();
