@@ -315,7 +315,7 @@ Mod.LoadLighting = function(buf)
 	var filelen = view.getUint32((Mod.lump.lighting << 3) + 8, true);
 	if (filelen === 0)
 		return;
-	Mod.loadmodel.lightdata = new Uint8Array(filelen);
+	Mod.loadmodel.lightdata = mUint8Arrayp(filelen);
 	Mod.loadmodel.lightdata.set(new Uint8Array(buf, fileofs, filelen));
 };
 
@@ -452,8 +452,8 @@ Mod.LoadTexinfo = function(buf)
 		Sys.Error('Mod.LoadTexinfo: funny lump size in ' + Mod.loadmodel.name);
 	var count = filelen / 40;
 	Mod.loadmodel.texinfo = [];
-    Mod.loadmodel.texinfo_vecs0 = mFloat32Arrayp(count);
-    Mod.loadmodel.texinfo_vecs1 = mFloat32Arrayp(count);
+    Mod.loadmodel.texinfo_vecs0 = mUint32Arrayp(count);
+    Mod.loadmodel.texinfo_vecs1 = mUint32Arrayp(count);
 	var i, out;
 	for (i = 0; i < count; ++i)
 	{
@@ -493,6 +493,9 @@ Mod.LoadFaces = function(buf)
     Mod.loadmodel.faces_extents = mUint32Arrayp(count);
     Mod.loadmodel.faces_texinfos = mUint32Arrayp(count);
     Mod.loadmodel.faces_lightofs = mUint32Arrayp(count);
+    Mod.loadmodel.faces_skies = mUint8Arrayp(count);
+    Mod.loadmodel.faces_styless = mUint32Arrayp(count);
+    Mod.loadmodel.faces_turbulents = mUint8Arrayp(count);
     var i, styles, out;
 	var mins, maxs, j, e, tex, v, val;
 	for (i = 0; i < count; ++i)
@@ -515,7 +518,8 @@ Mod.LoadFaces = function(buf)
 			out.styles[2] = styles[2];
 		if (styles[3] !== 255)
 			out.styles[3] = styles[3];
-
+        out.styles = mUint8Arrayp(out.styles);
+        Mod.loadmodel.faces_styless[i] = out.styles.byteOffset;
 		mins = mFloat32Array([999999, 999999]);
 		maxs = mFloat32Array([-99999, -99999]);
 		tex = Mod.loadmodel.texinfo[out.texinfo];
@@ -544,11 +548,16 @@ Mod.LoadFaces = function(buf)
         Mod.loadmodel.faces_extents[i] = out.extents.byteOffset>>2;
         Mod.loadmodel.faces_lightofs[i] = out.lightofs;
         Mod.loadmodel.faces_texinfos[i] = out.texinfo;
-		if (Mod.loadmodel.textures[tex.texture].turbulent === true)
-			out.turbulent = true;
-		else if (Mod.loadmodel.textures[tex.texture].sky === true)
-			out.sky = true;
-
+		if (Mod.loadmodel.textures[tex.texture].turbulent === true){
+			    out.turbulent = true;
+                Mod.loadmodel.faces_turbulents[i] = 255;
+                Mod.loadmodel.faces_skies[i] = 0;
+        }
+		else if (Mod.loadmodel.textures[tex.texture].sky === true){
+			    out.sky = true;
+                Mod.loadmodel.faces_turbulents[i] = 0;
+                Mod.loadmodel.faces_skies[i] = 255;
+        }
 		Mod.loadmodel.faces[i] = out;
 		fileofs += 20;
 	}

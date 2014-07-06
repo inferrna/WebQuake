@@ -54,6 +54,9 @@ function AsmFuncs(stdlib, env, heap) {
                  +(+res32f[(v1+1)<<2>>2])*(+res32f[(v2+1)<<2>>2])
                  +(+res32f[(v1+2)<<2>>2])*(+res32f[(v2+2)<<2>>2]));
     }
+
+
+
     function perpendicular(v, dst)
     {
         v = v|0;
