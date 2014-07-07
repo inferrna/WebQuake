@@ -191,21 +191,63 @@ R.PushDlights = function()
 };
 
 
-function inner_light(nf, //node.numfaces int
-                     ff, //node.firstface int
-                     md, //mid float[3]
-                     tm, //CL.state.worldmodel.faces_texmins    *Uint32
+function inner_light(nf, //node.numfaces                        int
+                     ff, //node.firstface                       int
+                     md, //mid                                  float[3]
+                     tm, //CL.state.worldmodel.faces_texmins    **Int32
+                     ts, //CL.state.worldmodel.faces_texinfos   *Uint32
                      v1, //CL.state.worldmodel.texinfo_vecs1    **Float32
                      v0, //CL.state.worldmodel.texinfo_vecs0    **Float32
                      sk, //CL.state.worldmodel.faces_skies      *Uint8
                      tb, //CL.state.worldmodel.faces_turbulents *Uint8
                      lo, //CL.state.worldmodel.faces_lightofs   *Uint8
-                     fe, //CL.state.worldmodel.faces_extents    *Uint8
+                     fe, //CL.state.worldmodel.faces_extents    **Int32
                      ld, //CL.state.worldmodel.lightdata        *Uint8
                      lv, //R.lightstylevalue                    *Uint8
                      st  //surf.styles                          **Uint8
                      ){
+    var i, j, s, t, ds, dt, lightmap, size, r;
+	for (i = 0; i < nf; ++i)
+	{
+        j = ff + i;
+		if ((memory.U1[sk+j] === 255) || (memory.U1[tb+j] === 255))
+			continue;
 
+        ti = memory.U4[memory.U4[ts+j]];
+
+		s = window['asm_funcs'].dot_product(md, memory.U4[v0+ti])
+          + memory.F4[memory.U4[v0+ti]+3];
+
+		if (s < memory.I4[memory.U4[tm+j]])//surf.texturemins[0])
+			continue;
+		t = window['asm_funcs'].dot_product(md, memory.U4[v1+ti])
+          + memory.F4[v1[ti]+3];
+		if (t < memory.I4[tm[j]+1])//surf.texturemins[0])
+			continue;
+
+		ds = s - memory.I4[memory.U4[ts+j]];
+		dt = t - memory.I4[memory.U4[ts+j]+1];
+		if ((ds > memory.I4[memory.U4[fe+j]]) || (dt > memory.I4[memory.U4[fe+j]+1]))
+			continue;
+
+		lightmap = memory.U1[lo+j];
+		if (lightmap === 0)
+			return 0;
+
+		ds >>= 4;
+		dt >>= 4;
+
+		lightmap += dt * ((memory.I4[memory.U4[fe+j]] >> 4) + 1) + ds;
+		r = 0;
+		size = ((memory.I4[memory.U4[fe+j]] >> 4) + 1) * ((memory.I4[memory.U4[fe+j]+1] >> 4) + 1);
+		for (maps = 0; maps < 4 && memory.U1[memory.U4[st+j]+maps]!==255; ++maps)
+		{
+			r += memory.U4[ld+lightmap] * memory.U1[lv+memory.U1[memory.U4[st+j]+maps]] * 22;
+			lightmap += size;
+		}
+		return r >> 8;
+	}
+    return -1;
 }
 
                     
@@ -243,7 +285,23 @@ R.RecursiveLightPoint = function(node, start, end)
 	if ((back < 0) === side)
 		return -1;
 
-	var i, ti, j, surf, tex, s, t, ds, dt, lightmap, size, maps;
+    r = inner_light(node.numfaces,                        //int
+                    node.firstface,                       //int
+                    mid.byteOffset>>2,                                  //float[3]
+                    CL.state.worldmodel.faces_texmins.byteOffset>>2,    //**Uint32
+                    CL.state.worldmodel.faces_texinfos.byteOffset>>2,   //*Uint32
+                    CL.state.worldmodel.texinfo_vecs1.byteOffset>>2,    //**Float32
+                    CL.state.worldmodel.texinfo_vecs0.byteOffset>>2,    //**Float32
+                    CL.state.worldmodel.faces_skies.byteOffset,         //*Uint8
+                    CL.state.worldmodel.faces_turbulents.byteOffset,    //*Uint8
+                    CL.state.worldmodel.faces_lightofs.byteOffset,      //*Uint8
+                    CL.state.worldmodel.faces_extents.byteOffset>>2,    //**Uint32
+                    CL.state.worldmodel.lightdata.byteOffset,           //*Uint8
+                    R.lightstylevalue.byteOffset,                       //*Uint8
+                    CL.state.worldmodel.faces_styless.byteOffset>>2     //**Uint8
+                    );
+    if(r>-1) return r;
+	/*var i, ti, j, surf, tex, s, t, ds, dt, lightmap, size, maps;
 	for (i = 0; i < node.numfaces; ++i)
 	{
         j = node.firstface + i;
@@ -285,7 +343,7 @@ R.RecursiveLightPoint = function(node, start, end)
 			lightmap += size;
 		}
 		return r >> 8;
-	}
+	}*/
 	return R.RecursiveLightPoint(node.children[side !== true ? 1 : 0], mid, end);
 };
 

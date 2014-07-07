@@ -11,6 +11,7 @@ function AsmFuncs(stdlib, env, heap) {
     var floor = stdlib.Math.floor;
     var abs = stdlib.Math.abs;
     var min = stdlib.Math.min;
+    var res32u = new stdlib.Uint32Array(heap);
     var res32f = new stdlib.Float32Array(heap);
     var res64f = new stdlib.Float64Array(heap);
     var res8i = new stdlib.Uint8Array(heap);
@@ -55,6 +56,87 @@ function AsmFuncs(stdlib, env, heap) {
                  +(+res32f[(v1+2)<<2>>2])*(+res32f[(v2+2)<<2>>2]));
     }
 
+    function inner_light(nf, //node.numfaces                        int
+                         ff, //node.firstface                       int
+                         md, //mid                                  float[3]
+                         tm, //CL.state.worldmodel.faces_texmins    **Int32
+                         ts, //CL.state.worldmodel.faces_texinfos   *Uint32
+                         v1, //CL.state.worldmodel.texinfo_vecs1    **Float32
+                         v0, //CL.state.worldmodel.texinfo_vecs0    **Float32
+                         sk, //CL.state.worldmodel.faces_skies      *Uint8
+                         tb, //CL.state.worldmodel.faces_turbulents *Uint8
+                         lo, //CL.state.worldmodel.faces_lightofs   *Uint8
+                         fe, //CL.state.worldmodel.faces_extents    **Int32
+                         ld, //CL.state.worldmodel.lightdata        *Uint8
+                         lv, //R.lightstylevalue                    *Uint8
+                         st  //surf.styles                          **Uint8
+                         ){
+        nf = nf|0;  
+        ff = ff|0;
+        md = md|0;
+        tm = tm|0;
+        ts = ts|0;
+        v1 = v1|0;
+        v0 = v0|0;
+        sk = sk|0;
+        tb = tb|0;
+        lo = lo|0;
+        fe = fe|0;
+        ld = ld|0;
+        lv = lv|0;
+        st = st|0;
+
+        var i = 0;
+        var j = 0;
+        var s = 0.0;
+        var t = 0.0;
+        var ds = 0.0;
+        var dt = 0.0;
+        var maps = 0;
+        var lightmap = 0; 
+        var size = 0;
+        var r = 0;
+        for (i = 0; (i|0) < (nf|0); i = (i+1)|0)
+        {
+            j = ff|0 + i;
+            if ((res8i[(sk+j)<<2>>2] === 255) || (res8i[(tb+j)<<2>>2] === 255))
+                continue;
+            ti = res32u[res32u[(ts+j)<<2>>2]<<2>>2];
+
+            s = +dot_product(md, res32u[(v0+ti)<<2>>2])
+              + res32f[(res32u[(v0+ti)<<2>>2]+3)<<2>>2]];
+
+            if (s < res32s[res32u[(tm+j)<<2>>2]])//surf.texturemins[0])
+                continue;
+            t = +dot_product(md, res32u[(v1+ti)<<2>>2])
+              + res32f[(res32u[(v1+ti)<<2>>2]+3)<<2>>2];
+            if (t < res32s[(res32u[(tm+j)<<2>>2]+1)<<2>>2])//surf.texturemins[0])
+                continue;
+
+            ds = s - res32s[res32u[(ts+j)<<2>>2]];
+            dt = t - res32s[(res32u[(ts+j)<<2>>2]+1)<<2>>2];
+            if ((ds > res32s[res32u[(fe+j)<<2>>2]]) || (dt > res32s[(res32u[(fe+j)<<2>>2]+1)<<2>>2]))
+                continue;
+
+            lightmap = res8i[(lo+j)<<2>>2];
+            if (lightmap === 0)
+                return 0;
+
+            ds >>= 4;
+            dt >>= 4;
+
+            lightmap += dt * ((res32s[res32u[fe+j]] >> 4) + 1) + ds;
+            r = 0;
+            size = ((res32s[res32u[fe+j]] >> 4) + 1) * ((res32s[res32u[fe+j]+1] >> 4) + 1);
+            for (maps = 0; maps < 4 && res8i[res32u[st+j]+maps]!==255; ++maps)
+            {
+                r += res32u[ld+lightmap] * res8i[lv+res8i[res32u[st+j]+maps]] * 22;
+                lightmap += size;
+            }
+            return r >> 8;
+        }
+        return -1;
+    }
 
 
     function perpendicular(v, dst)
