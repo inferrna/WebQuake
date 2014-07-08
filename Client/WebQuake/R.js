@@ -261,9 +261,9 @@ R.RecursiveLightPoint = function(node, start, end)
     }
 
     parentStack = [];
-    parentStack.push(null);
-    _topn =  [node, start, end];
-    while ( _topn != null ){
+    parentStack.push([node, start, end]);
+    while ( parentStack.count ){
+        _topn = parentStack.pop();
         topn = _topn[0];
         start = _topn[1];
         end = _topn[2];
@@ -285,15 +285,30 @@ R.RecursiveLightPoint = function(node, start, end)
                         CL.state.worldmodel.faces_styless.byteOffset>>2     //**Uint8
                         );
             if(r>=0) return r;
+            else {
+                var normal = topn.plane.normal;
+                var back = Vec.DotProduct(end, normal) - topn.plane.dist;
+                var front = Vec.DotProduct(start, normal) - topn.plane.dist;
+                var side = front < 0;
+                var frac = front / (front - back);
+                var mid = R.v3c;
+                mid.set([
+                    start[0] + (end[0] - start[0]) * frac,
+                    start[1] + (end[1] - start[1]) * frac,
+                    start[2] + (end[2] - start[2]) * frac
+                ]);
+                parentStack.push([topn.children[side === true ? 1 : 0], start, mid]);
+                continue;
+            }
         }
 
         var normal = topn.plane.normal;
         var back = Vec.DotProduct(end, normal) - topn.plane.dist;
+        var front = Vec.DotProduct(start, normal) - topn.plane.dist;
         var side = front < 0;
             if ((back < 0) === side){
                 parentStack.push([topn.children[side === true ? 1 : 0], start, end]);
             } else {
-                var front = Vec.DotProduct(start, normal) - topn.plane.dist;
                 var frac = front / (front - back);
                 var mid = R.v3c;
                 mid.set([
@@ -302,9 +317,7 @@ R.RecursiveLightPoint = function(node, start, end)
                     start[2] + (end[2] - start[2]) * frac
                 ]);
                 parentStack.push([topn.children[side !== true ? 1 : 0], mid, end]);
-                parentStack.push([topn.children[side === true ? 1 : 0], start, mid]);
             }
-            topn = parentStack.pop();
     }
     return -1;
 /*
