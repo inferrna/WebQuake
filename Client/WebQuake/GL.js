@@ -11,7 +11,9 @@ function AsmFuncs(stdlib, env, heap) {
     var floor = stdlib.Math.floor;
     var abs = stdlib.Math.abs;
     var min = stdlib.Math.min;
+    var imul = stdlib.Math.imul;
     var res32u = new stdlib.Uint32Array(heap);
+    var res32s = new stdlib.Int32Array(heap);
     var res32f = new stdlib.Float32Array(heap);
     var res64f = new stdlib.Float64Array(heap);
     var res8i = new stdlib.Uint8Array(heap);
@@ -92,48 +94,52 @@ function AsmFuncs(stdlib, env, heap) {
         var t = 0.0;
         var ds = 0.0;
         var dt = 0.0;
+        var dsi = 0;
+        var dti = 0;
         var maps = 0;
         var lightmap = 0; 
         var size = 0;
         var r = 0;
+        var ti = 0;
         for (i = 0; (i|0) < (nf|0); i = (i+1)|0)
         {
             j = ff|0 + i;
-            if ((res8i[(sk+j)<<2>>2] === 255) || (res8i[(tb+j)<<2>>2] === 255))
-                continue;
-            ti = res32u[res32u[(ts+j)<<2>>2]<<2>>2];
+            if ((res8i[(sk+j|0)])|0 == 255) continue;
+            if ((res8i[(tb+j|0)])|0 == 255) continue;
+            ti = res32u[((res32u[(ts+j|0)<<2>>2]))<<2>>2]|0;
 
-            s = +dot_product(md, res32u[(v0+ti)<<2>>2])
-              + res32f[(res32u[(v0+ti)<<2>>2]+3)<<2>>2]];
+            s = +dot_product(md, (res32u[(v0+ti)<<2>>2])|0)
+                +(+res32f[(res32u[(v0+ti)<<2>>2]|0+3)<<2>>2]);
 
-            if (s < res32s[res32u[(tm+j)<<2>>2]])//surf.texturemins[0])
+            if (s < +~~(res32s[(res32u[(tm+j|0)<<2>>2]|0)<<2>>2]))//surf.texturemins[0])
                 continue;
-            t = +dot_product(md, res32u[(v1+ti)<<2>>2])
-              + res32f[(res32u[(v1+ti)<<2>>2]+3)<<2>>2];
-            if (t < res32s[(res32u[(tm+j)<<2>>2]+1)<<2>>2])//surf.texturemins[0])
-                continue;
-
-            ds = s - res32s[res32u[(ts+j)<<2>>2]];
-            dt = t - res32s[(res32u[(ts+j)<<2>>2]+1)<<2>>2];
-            if ((ds > res32s[res32u[(fe+j)<<2>>2]]) || (dt > res32s[(res32u[(fe+j)<<2>>2]+1)<<2>>2]))
+            t = +dot_product(md, res32u[(v1+ti)<<2>>2]|0)
+                +(+res32f[(res32u[(v1+ti)<<2>>2]|0+3)<<2>>2]);
+            if (t < +~~res32s[(res32u[(tm+j|0)<<2>>2]|0+1)<<2>>2])//surf.texturemins[0])
                 continue;
 
-            lightmap = res8i[(lo+j)<<2>>2];
-            if (lightmap === 0)
+            ds = s - +~~res32s[(res32u[(ts+j|0)<<2>>2]|0)<<2>>2];
+            dt = t - +~~res32s[(res32u[(ts+j|0)<<2>>2]|0+1)<<2>>2];
+            if (ds > +~~res32s[(res32u[(fe+j|0)<<2>>2]|0)<<2>>2]) continue;
+            if (dt > +~~res32s[(res32u[(fe+j|0)<<2>>2]|0+1)<<2>>2]) continue;
+
+            lightmap = res8i[(lo+j|0)]|0;
+            if (lightmap|0 == 0)
                 return 0;
 
-            ds >>= 4;
-            dt >>= 4;
+            dsi = ((~~ds)|0)>>4;
+            dti = ((~~dt)|0)>>4;
 
-            lightmap += dt * ((res32s[res32u[fe+j]] >> 4) + 1) + ds;
+            lightmap = lightmap|0 + (imul((dti|0), (((res32s[(res32u[(fe+j|0)<<2>>2]|0)<<2>>2]|0) >> 4) + 1)|0)|0) + dsi|0;
             r = 0;
-            size = ((res32s[res32u[fe+j]] >> 4) + 1) * ((res32s[res32u[fe+j]+1] >> 4) + 1);
-            for (maps = 0; maps < 4 && res8i[res32u[st+j]+maps]!==255; ++maps)
+            size = imul((((res32s[(res32u[(fe+j|0)<<2>>2])<<2>>2]|0) >> 4)|0 + 1), ((res32s[(res32u[(fe+j|0)<<2>>2]|0+1)<<2>>2]|0 >> 4) + 1))|0;
+            for (maps = 0; (maps|0) < 4 & (res8i[(res32u[(st+j|0)<<2>>2]|0+maps)]|0)!=255; (maps+1)|0)
             {
-                r += res32u[ld+lightmap] * res8i[lv+res8i[res32u[st+j]+maps]] * 22;
-                lightmap += size;
+                r = r|0 + (~~((imul((res32u[(ld+lightmap|0)<<2>>2])|0, res8i[(lv|0+(res8i[(res32u[(st+j|0)<<2>>2]|0)+maps|0]|0))]|0)|0)*22))|0;
+                lightmap = size|0 + lightmap;
             }
-            return r >> 8;
+            r = (r|0)>>8;
+            return (~~r);
         }
         return -1;
     }
@@ -322,7 +328,8 @@ function AsmFuncs(stdlib, env, heap) {
             concat_rotations: concat_rotations,
             normalize: normalize,
             perpendicular: perpendicular,
-            box_onplane: box_onplane
+            box_onplane: box_onplane,
+            inner_light: inner_light
             };
 }
 

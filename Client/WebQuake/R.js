@@ -259,13 +259,59 @@ R.RecursiveLightPoint = function(node, start, end)
     if(Math.abs(cms - R.rlpc) % 1000 > 8) {
         return 128;
     }
-	if (node.contents < 0)
-		return -1;
 
-	var normal = node.plane.normal;
-	var front = Vec.DotProduct(start, normal) - node.plane.dist;
-	var back = Vec.DotProduct(end, normal) - node.plane.dist;
-	var side = front < 0;
+    parentStack = [];
+    parentStack.push(null);
+    _topn =  [node, start, end];
+    while ( _topn != null ){
+        topn = _topn[0];
+        start = _topn[1];
+        end = _topn[2];
+        if (topn.contents < 0){
+            _topn = parentStack.pop();
+            r = window['asm_funcs'].inner_light(_topn[0].numfaces,                        //int
+                        _topn[0].firstface,                       //int
+                        mid.byteOffset>>2,                                  //float[3]
+                        CL.state.worldmodel.faces_texmins.byteOffset>>2,    //**Uint32
+                        CL.state.worldmodel.faces_texinfos.byteOffset>>2,   //*Uint32
+                        CL.state.worldmodel.texinfo_vecs1.byteOffset>>2,    //**Float32
+                        CL.state.worldmodel.texinfo_vecs0.byteOffset>>2,    //**Float32
+                        CL.state.worldmodel.faces_skies.byteOffset,         //*Uint8
+                        CL.state.worldmodel.faces_turbulents.byteOffset,    //*Uint8
+                        CL.state.worldmodel.faces_lightofs.byteOffset,      //*Uint8
+                        CL.state.worldmodel.faces_extents.byteOffset>>2,    //**Uint32
+                        CL.state.worldmodel.lightdata.byteOffset,           //*Uint8
+                        R.lightstylevalue.byteOffset,                       //*Uint8
+                        CL.state.worldmodel.faces_styless.byteOffset>>2     //**Uint8
+                        );
+            if(r>=0) return r;
+        }
+
+        var normal = topn.plane.normal;
+        var back = Vec.DotProduct(end, normal) - topn.plane.dist;
+        var side = front < 0;
+            if ((back < 0) === side){
+                parentStack.push([topn.children[side === true ? 1 : 0], start, end]);
+            } else {
+                var front = Vec.DotProduct(start, normal) - topn.plane.dist;
+                var frac = front / (front - back);
+                var mid = R.v3c;
+                mid.set([
+                    start[0] + (end[0] - start[0]) * frac,
+                    start[1] + (end[1] - start[1]) * frac,
+                    start[2] + (end[2] - start[2]) * frac
+                ]);
+                parentStack.push([topn.children[side !== true ? 1 : 0], mid, end]);
+                parentStack.push([topn.children[side === true ? 1 : 0], start, mid]);
+            }
+            topn = parentStack.pop();
+    }
+    return -1;
+/*
+    var normal = node.plane.normal;
+    var front = Vec.DotProduct(start, normal) - node.plane.dist;
+    var back = Vec.DotProduct(end, normal) - node.plane.dist;
+    var side = front < 0;
 
 	if ((back < 0) === side)
 		return R.RecursiveLightPoint(node.children[side === true ? 1 : 0], start, end);
@@ -285,7 +331,7 @@ R.RecursiveLightPoint = function(node, start, end)
 	if ((back < 0) === side)
 		return -1;
 
-    r = inner_light(node.numfaces,                        //int
+    r = window['asm_funcs'].inner_light(node.numfaces,                        //int
                     node.firstface,                       //int
                     mid.byteOffset>>2,                                  //float[3]
                     CL.state.worldmodel.faces_texmins.byteOffset>>2,    //**Uint32
@@ -300,51 +346,9 @@ R.RecursiveLightPoint = function(node, start, end)
                     R.lightstylevalue.byteOffset,                       //*Uint8
                     CL.state.worldmodel.faces_styless.byteOffset>>2     //**Uint8
                     );
-    if(r>-1) return r;
-	/*var i, ti, j, surf, tex, s, t, ds, dt, lightmap, size, maps;
-	for (i = 0; i < node.numfaces; ++i)
-	{
-        j = node.firstface + i;
-		surf = CL.state.worldmodel.faces[j];
-		if ((CL.state.worldmodel.faces_skies[j] === 255) || (CL.state.worldmodel.faces_turbulents[j] === 255))
-			continue;
-
-		tex = CL.state.worldmodel.texinfo[surf.texinfo];
-        ti = memory.U4[CL.state.worldmodel.faces_texinfos[j]];
-
-		s = window['asm_funcs'].dot_product(mid.byteOffset>>2, CL.state.worldmodel.texinfo_vecs0[ti])
-          + memory.F4[CL.state.worldmodel.texinfo_vecs0[ti]+3];
-
-		if (s < memory.I4[CL.state.worldmodel.faces_texmins[j]])//surf.texturemins[0])
-			continue;
-		t = window['asm_funcs'].dot_product(mid.byteOffset>>2, CL.state.worldmodel.texinfo_vecs1[ti])
-          + memory.F4[CL.state.worldmodel.texinfo_vecs1[ti]+3];
-		if (t < memory.I4[CL.state.worldmodel.faces_texmins[j]+1])//surf.texturemins[0])
-			continue;
-
-		ds = s - memory.I4[CL.state.worldmodel.faces_texmins[j]];
-		dt = t - memory.I4[CL.state.worldmodel.faces_texmins[j]+1];
-		if ((ds > memory.I4[CL.state.worldmodel.faces_extents[j]]) || (dt > memory.I4[CL.state.worldmodel.faces_extents[j]+1]))
-			continue;
-
-		lightmap = CL.state.worldmodel.faces_lightofs[j];
-		if (lightmap === 0)
-			return 0;
-
-		ds >>= 4;
-		dt >>= 4;
-
-		lightmap += dt * ((memory.I4[CL.state.worldmodel.faces_extents[j]] >> 4) + 1) + ds;
-		r = 0;
-		size = ((memory.I4[CL.state.worldmodel.faces_extents[j]] >> 4) + 1) * ((memory.I4[CL.state.worldmodel.faces_extents[j]+1] >> 4) + 1);
-		for (maps = 0; maps < surf.styles.length && memory.U1[CL.state.worldmodel.faces_styless[j+maps]]!==255; ++maps)
-		{
-			r += CL.state.worldmodel.lightdata[lightmap] * R.lightstylevalue[memory.U1[CL.state.worldmodel.faces_styless[j+maps]]] * 22;
-			lightmap += size;
-		}
-		return r >> 8;
-	}*/
+    if(r>=0) return r;
 	return R.RecursiveLightPoint(node.children[side !== true ? 1 : 0], mid, end);
+*/
 };
 
 R.LightPoint = function(p)
